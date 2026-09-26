@@ -93,9 +93,10 @@ void main() async {
   final generador = const CPE_GeneradorXml();
   final xmlUbl = generador.generarFactura(factura);
 
-  // 8. Firma Digital XML-DSig
-  final firmador = CPE_FirmadorXml.paraPruebas();
-  final firma = await firmador.firmarXml(xmlUbl);
+  // 8. Firma Digital XML-DSig con certificado provisto por el llamador
+  final certificado = CPE_CertificadoDigital.mockPruebas();
+  const firmador = CPE_FirmadorXml();
+  final firma = await firmador.firmarXml(xmlUbl, certificado: certificado);
   print('Resumen Digital (Hash QR / DigestValue): ${firma.digestValue}');
 
   // 9. Empaquetado ZIP

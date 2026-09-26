@@ -127,10 +127,13 @@ lib/
 
 Conforme a la norma técnica peruana y OASIS UBL:
 1. El comprobante XML se procesa mediante canonicalización C14N (`http://www.w3.org/TR/2001/REC-xml-c14n-20010315`).
-2. Se calcula el resumen criptográfico SHA-256 (`DigestValue`), que a su vez se utiliza para el Hash del comprobante en el código QR.
+2. Se calcula el resumen criptográfico SHA-256 (`DigestValue`), que a su vez se utiliza para el Hash del comprobante en la representación impresa y código QR.
 3. Se firma digitalmente con el algoritmo RSA-SHA256 (`http://www.w3.org/2001/04/xmldsig-more#rsa-sha256`).
-4. El bloque `ds:Signature` se inyecta en la primera extensión `ext:UBLExtensions > ext:UBLExtension > ext:ExtensionContent`.
-5. La arquitectura permite inyectar certificados X.509 en archivo `.p12`/`.pfx` o delegar la firma a un HSM o servicio externo vía `CPE_Firmador`.
+4. El bloque `ds:Signature` se inyecta en la extensión `ext:UBLExtensions > ext:UBLExtension > ext:ExtensionContent`.
+5. **Certificado Digital Inyectado desde el Llamador (`CPE_CertificadoDigital`):**
+   - Las funciones de firma y emisión (`emitirFactura`, `emitirBoleta`, etc.) exigen el certificado digital directamente desde quien invoca la API.
+   - **Regla Estricta de Entornos:** Los certificados mock (`CPE_CertificadoDigital.mockPruebas()`) o la resolución automática por omisión están permitidos **ÚNICAMENTE** en el entorno de pruebas (`CPE_Entorno.beta`).
+   - En entornos de `homologacion` y `produccion`, es obligatorio suministrar un `CPE_CertificadoDigital` válido (no mock) emitido por una Entidad de Certificación acreditada. Cualquier intento de usar un certificado simulado o nulo en producción o certificación arroja inmediatamente un `ArgumentError`.
 
 ---
 

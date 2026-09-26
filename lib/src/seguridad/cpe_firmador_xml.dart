@@ -2,37 +2,20 @@
 // Todos los derechos reservados. Uso sujeto a la licencia en el archivo LICENSE.
 
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
 import 'package:xml/xml.dart';
-
 import 'cpe_firmador.dart';
 
-/// Implementación del estándar W3C XML-DSig para Comprobantes UBL 2.1 de SUNAT.
+/// Implementación estándar W3C XML-DSig para Comprobantes UBL 2.1 de SUNAT.
+///
+/// Recibe el certificado digital de forma explícita desde el llamador en cada invocación.
 class CPE_FirmadorXml implements CPE_Firmador {
-  /// Certificado X.509 codificado en Base64 (sin encabezados PEM).
-  final String certificadoBase64;
-
-  /// Función opcional para firmar con clave privada RSA.
-  /// Si es nula, se genera una firma simulada con formato estándar para pruebas.
-  final List<int> Function(List<int> datos)? funcionFirmaRsa;
-
-  const CPE_FirmadorXml({
-    required this.certificadoBase64,
-    this.funcionFirmaRsa,
-  });
-
-  /// Firmador de prueba o simulación para validación de estructura XML.
-  factory CPE_FirmadorXml.paraPruebas() {
-    return const CPE_FirmadorXml(
-      certificadoBase64:
-          'MIIE+zCCA+OgAwIBAgIUQWEzREVG...CERTIFICADO_PRUEBA_SUNAT...',
-    );
-  }
+  const CPE_FirmadorXml();
 
   @override
   Future<CPE_ResultadoFirma> firmarXml(
     String xmlSinFirmar, {
+    required CPE_CertificadoDigital certificado,
     String idFirma = 'SignatureSUNAT',
   }) async {
     final documento = XmlDocument.parse(xmlSinFirmar);
@@ -60,23 +43,23 @@ class CPE_FirmadorXml implements CPE_Firmador {
     final bytesSignedInfo = utf8.encode(signedInfoXml);
     String signatureBase64;
 
-    if (funcionFirmaRsa != null) {
-      final signatureBytes = funcionFirmaRsa!(bytesSignedInfo);
+    if (certificado.funcionFirmaRsa != null) {
+      final signatureBytes = certificado.funcionFirmaRsa!(bytesSignedInfo);
       signatureBase64 = base64.encode(signatureBytes);
     } else {
-      // Simulación válida sintácticamente para pruebas estructurales
+      // Cálculo de firma simulada para pruebas/mock
       final hashPrueba = sha256.convert(bytesSignedInfo).bytes;
       signatureBase64 = base64.encode(hashPrueba);
     }
 
-    // 4. Construir bloque completo de ds:Signature
+    // 4. Construir bloque completo ds:Signature
     final signatureBlock =
         '''<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="$idFirma">
 $signedInfoXml
 <ds:SignatureValue>$signatureBase64</ds:SignatureValue>
 <ds:KeyInfo>
 <ds:X509Data>
-<ds:X509Certificate>$certificadoBase64</ds:X509Certificate>
+<ds:X509Certificate>${certificado.certificadoBase64}</ds:X509Certificate>
 </ds:X509Data>
 </ds:KeyInfo>
 </ds:Signature>''';

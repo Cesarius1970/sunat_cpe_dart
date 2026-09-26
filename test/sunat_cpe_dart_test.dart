@@ -175,8 +175,11 @@ void main() {
       final generador = const CPE_GeneradorXml();
       final xmlSinFirmar = generador.generarFactura(factura);
 
-      final firmador = CPE_FirmadorXml.paraPruebas();
-      final resultadoFirma = await firmador.firmarXml(xmlSinFirmar);
+      const firmador = CPE_FirmadorXml();
+      final resultadoFirma = await firmador.firmarXml(
+        xmlSinFirmar,
+        certificado: CPE_CertificadoDigital.mockPruebas(),
+      );
 
       expect(resultadoFirma.xmlFirmado, contains('<ds:Signature'));
       expect(resultadoFirma.xmlFirmado, contains('<ds:DigestValue>'));
@@ -326,6 +329,135 @@ void main() {
         mockTransporte.ultimoNombreArchivoEnviado,
         equals('20100070970-01-F001-00000001.zip'),
       );
+    });
+
+    test('Entorno Beta permite certificado mock explícito o implícito', () async {
+      final emisor = CPE_Contribuyente.emisorRuc(
+        ruc: '20100070970',
+        razonSocial: 'EMISOR TEST S.A.C.',
+      );
+      final receptor = const CPE_Contribuyente(
+        numeroDocumento: '20500000002',
+        tipoDocumento: CPE_Catalogo06_TipoDocumentoIdentidad.ruc,
+        razonSocial: 'CLIENTE PRUEBA',
+      );
+      final item = CPE_Item.calcularDesdeValorUnitario(
+        numeroLinea: 1,
+        codigo: 'SERV-01',
+        descripcion: 'Consultoría TI',
+        cantidad: Decimal.one,
+        valorUnitario: CPE_Monto.desdeTexto('100.00'),
+      );
+      final factura = CPE_Factura(
+        serie: 'F001',
+        correlativo: 2,
+        fechaEmision: DateTime.now(),
+        emisor: emisor,
+        receptor: receptor,
+        moneda: CPE_Catalogo02_Moneda.sol,
+        items: [item],
+        totales: CPE_Totales.calcularDesdeItems([item]),
+      );
+
+      final credenciales = const CPE_Credenciales(
+        ruc: '20100070970',
+        usuarioSol: 'MODDATOS',
+        claveSol: 'moddatos',
+        entorno: CPE_Entorno.beta,
+      );
+
+      final mockTransporte = _MockTransporte();
+      final servicio = CPE_EmisorServicio(
+        credenciales: credenciales,
+        clienteTransportePersonalizado: mockTransporte,
+      );
+
+      // 1. Beta sin certificado explícito usa mock automáticamente
+      final resp1 = await servicio.emitirFactura(factura);
+      expect(resp1.exito, isTrue);
+
+      // 2. Beta con mock explícito funciona
+      final resp2 = await servicio.emitirFactura(
+        factura,
+        certificado: CPE_CertificadoDigital.mockPruebas(),
+      );
+      expect(resp2.exito, isTrue);
+    });
+
+    test('Entorno Producción prohíbe mock y exige certificado real', () async {
+      final emisor = CPE_Contribuyente.emisorRuc(
+        ruc: '20100070970',
+        razonSocial: 'EMISOR REAL S.A.C.',
+      );
+      final receptor = const CPE_Contribuyente(
+        numeroDocumento: '20500000002',
+        tipoDocumento: CPE_Catalogo06_TipoDocumentoIdentidad.ruc,
+        razonSocial: 'CLIENTE REAL',
+      );
+      final item = CPE_Item.calcularDesdeValorUnitario(
+        numeroLinea: 1,
+        codigo: 'SERV-01',
+        descripcion: 'Servicio Real',
+        cantidad: Decimal.one,
+        valorUnitario: CPE_Monto.desdeTexto('200.00'),
+      );
+      final factura = CPE_Factura(
+        serie: 'F001',
+        correlativo: 10,
+        fechaEmision: DateTime.now(),
+        emisor: emisor,
+        receptor: receptor,
+        moneda: CPE_Catalogo02_Moneda.sol,
+        items: [item],
+        totales: CPE_Totales.calcularDesdeItems([item]),
+      );
+
+      final credencialesProd = const CPE_Credenciales(
+        ruc: '20100070970',
+        usuarioSol: 'USUARIOPROD',
+        claveSol: 'claveprod',
+        entorno: CPE_Entorno.produccion,
+      );
+
+      final mockTransporte = _MockTransporte();
+      final servicioProd = CPE_EmisorServicio(
+        credenciales: credencialesProd,
+        clienteTransportePersonalizado: mockTransporte,
+      );
+
+      // 1. Producción sin certificado lanza ArgumentError
+      expect(
+        () => servicioProd.emitirFactura(factura),
+        throwsA(isA<ArgumentError>().having(
+          (e) => e.message,
+          'mensaje',
+          contains('El parámetro [certificado] es obligatorio'),
+        )),
+      );
+
+      // 2. Producción con certificado mock lanza ArgumentError
+      expect(
+        () => servicioProd.emitirFactura(
+          factura,
+          certificado: CPE_CertificadoDigital.mockPruebas(),
+        ),
+        throwsA(isA<ArgumentError>().having(
+          (e) => e.message,
+          'mensaje',
+          contains('No se permite utilizar un certificado mock'),
+        )),
+      );
+
+      // 3. Producción con certificado real (no mock) funciona
+      const certReal = CPE_CertificadoDigital(
+        certificadoBase64: 'MIIE...CERTIFICADO_REAL_PRODUCCION...',
+        esMock: false,
+      );
+      final respProd = await servicioProd.emitirFactura(
+        factura,
+        certificado: certReal,
+      );
+      expect(respProd.exito, isTrue);
     });
   });
 }

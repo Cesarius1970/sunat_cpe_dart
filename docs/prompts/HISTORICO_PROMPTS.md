@@ -111,3 +111,26 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
   - Se validó el proyecto con `dart analyze` y `dart test`.
   - Se generó el commit Git estándar al cierre de la interacción.
 
+---
+
+## Interacción #006
+- **Fecha/Hora:** 2026-09-26
+- **Solicitud del Usuario:**
+  > "Refactorizar las funciones que interactuen con la API en el envio/recepcion y que necesiten un certificado digital. Estas funciones deben pedir como parametro el certificado digital desde el llamador. SOLO usar un certificado mock en ambientes de “Pruebas”"
+- **Acciones Realizadas:**
+  - Se creó la clase `CPE_CertificadoDigital` en `lib/src/seguridad/cpe_firmador.dart` con soporte para X.509 Base64, clave privada PEM, contraseña PKCS#12, función de firma RSA y discriminador `esMock`.
+  - Se actualizó el contrato `CPE_Firmador` y la implementación `CPE_FirmadorXml` para requerir el certificado digital de forma obligatoria en cada invocación de firma (`firmarXml(xml, certificado: cert)`).
+  - Se refactorizó la fachada principal `CPE_EmisorServicio` (`lib/src/cpe_emisor_servicio.dart`), incorporando validación centralizada mediante `_resolverCertificado()`:
+    - En ambientes de `produccion` y `homologacion`, se exige estrictamente un certificado digital válido no-mock; el intento de usar un mock o no proveer certificado lanza un `ArgumentError`.
+    - En ambiente de pruebas (`beta`), se permite el uso de certificados mock (`CPE_CertificadoDigital.mockPruebas()`) o su resolución por omisión.
+    - Se agregaron parámetros `{CPE_CertificadoDigital? certificado}` a todos los métodos de emisión: `emitirFactura`, `emitirBoleta`, `emitirNotaCredito`, `emitirNotaDebito`, `emitirGuiaRemision`, `emitirResumenDiario` y `emitirComunicacionBaja`.
+  - Se actualizaron las pruebas unitarias en `test/sunat_cpe_dart_test.dart` con cobertura completa para:
+    1. Emisión en Beta con mock por omisión.
+    2. Emisión en Beta con mock explícito.
+    3. Emisión en Producción sin certificado (falla con `ArgumentError`).
+    4. Emisión en Producción con certificado mock (falla con `ArgumentError`).
+    5. Emisión en Producción con certificado real (éxito).
+  - Se actualizó `example/sunat_cpe_dart_example.dart` y la documentación técnica en `docs/MANUAL_TECNICO.md`.
+  - Se validó la suite con `dart analyze` (0 errores) y `dart test` (17 pruebas aprobadas).
+  - Se generó el commit Git correspondiente al cierre de la fase.
+
