@@ -4,7 +4,7 @@ version: 0.1.0
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart
 repository: https://github.com/Cesarius1970/sunat_cpe_dart
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
-documentation: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/docs
+documentation: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/doc
 
 topics:
   - sunat

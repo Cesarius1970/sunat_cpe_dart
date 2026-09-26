@@ -16,6 +16,6 @@ Todas las modificaciones notables a este proyecto serán documentadas en este ar
 - Capa de comunicación híbrida: SOAP con WS-Security (`CPE_ClienteSoap`) y REST OAuth2 (`CPE_ClienteRest`).
 - Fachada integral de emisión y consulta `CPE_EmisorServicio`.
 - Utilidades: compresión ZIP y parser de CDR (`CPE_EmpaquetadorZip`), validación de RUC Módulo 11 (`CPE_ValidadorRuc`).
-- Manual Técnico en `docs/MANUAL_TECNICO.md`.
-- Reglas de gobernanza y Git en `docs/REGLAS_PROYECTO.md`.
-- Histórico cronológico de prompts en `docs/prompts/HISTORICO_PROMPTS.md`.
+- Manual Técnico en `doc/MANUAL_TECNICO.md`.
+- Reglas de gobernanza y Git en `doc/REGLAS_PROYECTO.md`.
+- Histórico cronológico de prompts en `doc/prompts/HISTORICO_PROMPTS.md`.

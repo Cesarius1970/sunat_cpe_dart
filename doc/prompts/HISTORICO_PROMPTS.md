@@ -56,12 +56,12 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
   Pon como regla que no se puede usar decimales de punto flotante para calcular o almacenar valores de moneda. Analizar la declaración de la API SUNAT para respaldar o ignorar esta regla.
   ```
 - **Asistente:**
-  - Se establecieron y documentaron las reglas de desarrollo y gobernanza del proyecto (`docs/REGLAS_PROYECTO.md`).
-  - Se creó la carpeta `docs/prompts/` y este archivo `HISTORICO_PROMPTS.md`.
+  - Se establecieron y documentaron las reglas de desarrollo y gobernanza del proyecto (`doc/REGLAS_PROYECTO.md`).
+  - Se creó la carpeta `doc/prompts/` y este archivo `HISTORICO_PROMPTS.md`.
   - Se actualizó `pubspec.yaml` según los lineamientos de pub.dev y Dart team.
   - Se crearon los archivos de copyright y autoría: `LICENSE` (MIT a nombre de César A Vergara Buenaventura) y `AUTHORS`.
   - Se analizó técnicamente la normativa SUNAT UBL 2.1 respecto a tipos numéricos para importes y tributos: se confirmó y respaldó la regla de prohibir `double` (IEEE 754) e implementar precisión exacta usando `package:decimal`.
-  - Se elaboró el manual técnico de arquitectura y algoritmos en `docs/MANUAL_TECNICO.md`.
+  - Se elaboró el manual técnico de arquitectura y algoritmos en `doc/MANUAL_TECNICO.md`.
   - Se documentaron en el código base inicial las convenciones de prefijos `CPE_` / `cpe_`, tipos monetarios y comentarios en español bajo formato dartdoc.
   - Se generó el commit Git estándar correspondiente al cierre de la interacción.
 
@@ -89,7 +89,7 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
   - Se creó la capa de transporte con interfaz común `CPE_ClienteTransporte`, cliente SOAP `CPE_ClienteSoap` (con WS-Security para `sendBill`, `sendSummary`, `getStatus`), cliente REST `CPE_ClienteRest` (con autenticación OAuth2 para Guías de Remisión) y modelo `CPE_RespuestaSunat` con parser automático de CDR.
   - Se implementó la fachada de alto nivel `CPE_EmisorServicio` para orquestar la generación, firma, empaquetado y emisión.
   - Se implementaron utilidades de compresión ZIP (`CPE_EmpaquetadorZip`) y validación de RUC por módulo 11 (`CPE_ValidadorRuc`).
-  - Se actualizó el manual técnico en `docs/MANUAL_TECNICO.md`.
+  - Se actualizó el manual técnico en `doc/MANUAL_TECNICO.md`.
   - Se implementó suite de pruebas con 15 pruebas unitarias e integrales aprobadas al 100%.
   - Se generó el commit Git estándar al cierre de la interacción.
 
@@ -104,8 +104,8 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
 - **Asistente:**
   - Se verificó y configuró el remoto Git `origin` apuntando a `https://github.com/Cesarius1970/sunat_cpe_dart.git`.
   - Se refactorizó exhaustivamente el archivo `README.md` incorporando insignias oficiales, descripción completa de características, instalación vía Git, ejemplo rápido de uso con `CPE_EmisorServicio` y enlaces a la documentación.
-  - Se actualizó el encabezado de `docs/MANUAL_TECNICO.md` con el enlace al repositorio oficial.
-  - Se incorporó la sección 6 en `docs/REGLAS_PROYECTO.md` formalizando la URL oficial del repositorio y la rama de seguimiento `main`.
+  - Se actualizó el encabezado de `doc/MANUAL_TECNICO.md` con el enlace al repositorio oficial.
+  - Se incorporó la sección 6 en `doc/REGLAS_PROYECTO.md` formalizando la URL oficial del repositorio y la rama de seguimiento `main`.
   - Se actualizó el `CHANGELOG.md` detallando las capacidades de la versión 0.1.0 y el enlace del repositorio.
   - Se verificó la consistencia en `pubspec.yaml` (`homepage`, `repository`, `issue_tracker`, `documentation`).
   - Se validó el proyecto con `dart analyze` y `dart test`.
@@ -130,7 +130,25 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
     3. Emisión en Producción sin certificado (falla con `ArgumentError`).
     4. Emisión en Producción con certificado mock (falla con `ArgumentError`).
     5. Emisión en Producción con certificado real (éxito).
-  - Se actualizó `example/sunat_cpe_dart_example.dart` y la documentación técnica en `docs/MANUAL_TECNICO.md`.
+  - Se actualizó `example/sunat_cpe_dart_example.dart` y la documentación técnica en `doc/MANUAL_TECNICO.md`.
   - Se validó la suite con `dart analyze` (0 errores) y `dart test` (17 pruebas aprobadas).
+  - Se generó el commit Git correspondiente al cierre de la fase.
+
+---
+
+## Interacción #007
+- **Fecha/Hora:** 2026-09-26
+- **Solicitud del Usuario:**
+  > "renombrar el directorio "docs" por "doc" en el sistema de archivos y toda referencia documentada"
+- **Acciones Realizadas:**
+  - Se renombró el directorio en el sistema de archivos de `docs/` a `doc/` usando `git mv docs doc` para preservar el historial.
+  - Se actualizaron todas las referencias documentadas en:
+    - `pubspec.yaml` (campo `documentation: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/doc`).
+    - `README.md` (enlaces a `doc/MANUAL_TECNICO.md`, `doc/REGLAS_PROYECTO.md`, `doc/prompts/HISTORICO_PROMPTS.md`).
+    - `CHANGELOG.md` (referencias a archivos bajo `doc/`).
+    - `doc/REGLAS_PROYECTO.md` (referencias de rutas a `doc/prompts/`).
+    - `doc/prompts/HISTORICO_PROMPTS.md` (actualización de menciones y registro secuencial de la interacción #007).
+  - Se verificó que ninguna URI externa (como `http://docs.oasis-open.org/...` de OASIS WS-Security) haya sido alterada indebidamente.
+  - Se verificó la integridad del proyecto con `dart analyze` y `dart test`.
   - Se generó el commit Git correspondiente al cierre de la fase.
 

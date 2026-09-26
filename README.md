@@ -131,9 +131,9 @@ void main() async {
 
 ## Documentación del Proyecto
 
-- [Manual Técnico Detallado](docs/MANUAL_TECNICO.md) - Arquitectura, protocolos, algoritmos y catálogos.
-- [Reglas y Gobernanza del Proyecto](docs/REGLAS_PROYECTO.md) - Estándares de Git, código y nomenclatura.
-- [Histórico de Prompts](docs/prompts/HISTORICO_PROMPTS.md) - Registro cronológico y secuencial de interacciones.
+- [Manual Técnico Detallado](doc/MANUAL_TECNICO.md) - Arquitectura, protocolos, algoritmos y catálogos.
+- [Reglas y Gobernanza del Proyecto](doc/REGLAS_PROYECTO.md) - Estándares de Git, código y nomenclatura.
+- [Histórico de Prompts](doc/prompts/HISTORICO_PROMPTS.md) - Registro cronológico y secuencial de interacciones.
 - [Registro de Cambios (CHANGELOG)](CHANGELOG.md) - Versiones y notas de lanzamiento.
 
 ---

@@ -18,14 +18,14 @@ Este documento define los estándares obligatorios para el desarrollo de la libr
 - **Nomenclatura de Ramas:**
   - `feature/<nombre-caracteristica>`
   - `fix/<nombre-correccion>`
-  - `docs/<nombre-documentacion>`
+  - `doc/<nombre-documentacion>`
   - `chore/<tarea>`
 
 ---
 
 ## 2. Histórico de Prompts e Interacciones
-- Carpeta: `docs/prompts/`
-- Archivo: `docs/prompts/HISTORICO_PROMPTS.md`
+- Carpeta: `doc/prompts/`
+- Archivo: `doc/prompts/HISTORICO_PROMPTS.md`
 - Debe mantenerse actualizado cronológicamente, numerando cada interacción, guardando el prompt del usuario y el resumen/resultado de la respuesta del asistente.
 
 ---
