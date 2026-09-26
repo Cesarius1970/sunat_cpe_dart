@@ -3,6 +3,7 @@
 **Librería Dart para Comprobantes de Pago Electrónico (CPE) SUNAT - Estándar UBL 2.1**  
 **Autor y Titular de Derechos:** César A Vergara Buenaventura (<cesarvergarab@gmail.com>)  
 **Licencia:** MIT (ver archivo `LICENSE`)  
+**Repositorio Oficial:** [https://github.com/Cesarius1970/sunat_cpe_dart](https://github.com/Cesarius1970/sunat_cpe_dart)  
 **Versión:** 0.1.0  
 **Fecha de actualización:** 2026-09-26  
 

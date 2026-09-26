@@ -56,3 +56,11 @@ Este documento define los estándares obligatorios para el desarrollo de la libr
 - Cobertura de pruebas con `dart test` en `test/`.
 - Documentación de API pública con comentarios dartdoc `///`.
 - Gestión de autoría y licencias con `LICENSE` y `AUTHORS`.
+
+---
+
+## 6. Repositorio Oficial y Enlace Remoto
+- **URL Oficial:** [https://github.com/Cesarius1970/sunat_cpe_dart](https://github.com/Cesarius1970/sunat_cpe_dart)
+- **Rama principal:** `main`
+- **Control de origen:** El remoto `origin` debe apuntar a `https://github.com/Cesarius1970/sunat_cpe_dart.git`.
+

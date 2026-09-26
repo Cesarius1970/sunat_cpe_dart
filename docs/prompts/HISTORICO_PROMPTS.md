@@ -92,3 +92,22 @@ Registro secuencial y numerado de solicitudes, directivas y respuestas del asist
   - Se actualizó el manual técnico en `docs/MANUAL_TECNICO.md`.
   - Se implementó suite de pruebas con 15 pruebas unitarias e integrales aprobadas al 100%.
   - Se generó el commit Git estándar al cierre de la interacción.
+
+---
+
+## Interacción #005
+- **Fecha y Hora:** 2026-09-26 09:09:09 -05:00
+- **Usuario:**
+  ```text
+  Refactoriza los documentos y enlaza el git con https://github.com/Cesarius1970/sunat_cpe_dart
+  ```
+- **Asistente:**
+  - Se verificó y configuró el remoto Git `origin` apuntando a `https://github.com/Cesarius1970/sunat_cpe_dart.git`.
+  - Se refactorizó exhaustivamente el archivo `README.md` incorporando insignias oficiales, descripción completa de características, instalación vía Git, ejemplo rápido de uso con `CPE_EmisorServicio` y enlaces a la documentación.
+  - Se actualizó el encabezado de `docs/MANUAL_TECNICO.md` con el enlace al repositorio oficial.
+  - Se incorporó la sección 6 en `docs/REGLAS_PROYECTO.md` formalizando la URL oficial del repositorio y la rama de seguimiento `main`.
+  - Se actualizó el `CHANGELOG.md` detallando las capacidades de la versión 0.1.0 y el enlace del repositorio.
+  - Se verificó la consistencia en `pubspec.yaml` (`homepage`, `repository`, `issue_tracker`, `documentation`).
+  - Se validó el proyecto con `dart analyze` y `dart test`.
+  - Se generó el commit Git estándar al cierre de la interacción.
+
