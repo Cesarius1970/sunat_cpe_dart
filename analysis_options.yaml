@@ -1,0 +1,8 @@
+# Configuración de análisis estático para sunat_cpe_dart
+include: package:lints/recommended.yaml
+
+analyzer:
+  errors:
+    # Regla del proyecto: Nomenclatura obligatoria con prefijos CPE_ y cpe_
+    camel_case_types: ignore
+    non_constant_identifier_names: ignore
