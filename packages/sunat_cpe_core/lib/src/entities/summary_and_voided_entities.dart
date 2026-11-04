@@ -2,7 +2,7 @@ part of 'cpe_entities.dart';
 
 /// Resumen Diario de Boletas de Venta y Notas Electrónicas (RC).
 final class DailySummaryDocument extends CpeDocument {
-  /// Date when the summarized Boletas/Notes were originally issued (`ReferenceDate`).
+  /// Fecha de emisión original de las Boletas/Notas incluidas en el resumen (`ReferenceDate`).
   final DateTime referenceDate;
   final List<DailySummaryLine> lines;
 
@@ -16,7 +16,7 @@ final class DailySummaryDocument extends CpeDocument {
   });
 }
 
-/// Individual line inside a `DailySummaryDocument` (`sac:SummaryDocumentsLine`).
+/// Línea individual dentro de un [DailySummaryDocument] (`sac:SummaryDocumentsLine`).
 final class DailySummaryLine {
   final int lineNumber;
   final CpeDocumentType documentType; // 03, 07, 08
@@ -76,7 +76,7 @@ final class DailySummaryLine {
 
 /// Comunicación de Baja (RA) o Resumen de Reversiones (RR).
 final class VoidedDocument extends CpeDocument {
-  /// Date when the voided documents were originally issued (`ReferenceDate`).
+  /// Fecha de emisión original de los documentos dados de baja (`ReferenceDate`).
   final DateTime referenceDate;
   final List<VoidedLine> lines;
 
@@ -90,7 +90,7 @@ final class VoidedDocument extends CpeDocument {
   });
 }
 
-/// Line item inside a `VoidedDocument` (`sac:VoidedDocumentsLine`).
+/// Línea de detalle dentro de un [VoidedDocument] (`sac:VoidedDocumentsLine`).
 final class VoidedLine {
   final int lineNumber;
   final CpeDocumentType documentType;

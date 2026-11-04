@@ -1,4 +1,4 @@
-/// Domain entities for SUNAT Electronic Invoicing (CPE) using Dart 3 sealed hierarchies.
+/// Entidades de dominio para Facturación Electrónica SUNAT (CPE) mediante jerarquías selladas de Dart 3.
 library;
 
 import 'package:decimal/decimal.dart';

@@ -7,11 +7,11 @@ import 'package:xml/xml.dart';
 import '../results/cpe_responses.dart';
 import '../results/cpe_result.dart';
 
-/// Compresses UBL XML documents into SUNAT-compliant `.zip` archives and parses CDR `.zip` responses.
+/// Comprime documentos XML UBL en archivos `.zip` conformes a SUNAT y decodifica respuestas CDR `.zip`.
 final class CpeZipCodec {
   const CpeZipCodec();
 
-  /// Compresses `{fileNameBase}.xml` into `{fileNameBase}.zip` and returns raw bytes + Base64.
+  /// Comprime `{fileNameBase}.xml` dentro de `{fileNameBase}.zip` y retorna los bytes puros junto con su Base64.
   ({Uint8List zipBytes, String base64Zip}) encodeXmlToZip({
     required String fileNameBase,
     required String xmlContent,
@@ -25,13 +25,13 @@ final class CpeZipCodec {
     return (zipBytes: zipBytes, base64Zip: base64.encode(zipBytes));
   }
 
-  /// Extracts and parses a SUNAT/OSE `<ApplicationResponse>` CDR from Base64 or raw ZIP bytes.
+  /// Extrae y analiza un CDR `<ApplicationResponse>` de SUNAT/OSE desde una cadena Base64 de un archivo ZIP.
   CdrData parseCdrFromBase64Zip(String base64Zip) {
     final zipBytes = base64.decode(base64Zip.replaceAll(RegExp(r'\s+'), ''));
     return parseCdrFromZipBytes(zipBytes);
   }
 
-  /// Extracts the `.xml` file inside `R-{RUC}-{TIPO}-{SERIE}-{NUM}.zip` and parses `<ApplicationResponse>`.
+  /// Extrae el archivo `.xml` dentro de `R-{RUC}-{TIPO}-{SERIE}-{NUM}.zip` y analiza el nodo `<ApplicationResponse>`.
   CdrData parseCdrFromZipBytes(List<int> zipBytes) {
     final archive = ZipDecoder().decodeBytes(zipBytes);
     ArchiveFile? xmlEntry;
@@ -56,7 +56,7 @@ final class CpeZipCodec {
     return parseCdrFromXmlString(xmlString, cdrZipBytes: zipBytes);
   }
 
-  /// Parses an unpacked `<ApplicationResponse>` XML string directly (also used by EFACT REST `/v1/cdr`).
+  /// Analiza directamente una cadena XML `<ApplicationResponse>` descomprimida (utilizado también por EFACT REST `/v1/cdr`).
   CdrData parseCdrFromXmlString(
     String cdrXmlContent, {
     List<int>? cdrZipBytes,

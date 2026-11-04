@@ -1,6 +1,6 @@
 part of 'cpe_entities.dart';
 
-/// Base sealed class for sales documents (01 Factura, 03 Boleta, 04 Liquidación, 07 NC, 08 ND).
+/// Clase base sellada para comprobantes de venta (01 Factura, 03 Boleta, 04 Liquidación, 07 NC, 08 ND).
 sealed class SalesCpeDocument extends CpeDocument {
   final CustomerParty customer;
   final CurrencyCode currency;
@@ -29,7 +29,7 @@ sealed class SalesCpeDocument extends CpeDocument {
   });
 }
 
-/// Factura (01) and Boleta de Venta (03).
+/// Factura Electrónica (01) y Boleta de Venta Electrónica (03).
 final class InvoiceDocument extends SalesCpeDocument {
   final OperationType operationType;
   final PaymentTerms paymentTerms;
@@ -137,7 +137,7 @@ final class PurchaseSettlementDocument extends SalesCpeDocument {
   });
 }
 
-/// Strict passthrough monetary totals for UBL 2.1 sales documents.
+/// Totales monetarios de traspaso directo (strict passthrough) para comprobantes de venta UBL 2.1.
 final class MonetaryTotals {
   final Decimal totalGravadas;
   final Decimal totalExoneradas;
@@ -212,7 +212,7 @@ final class MonetaryTotals {
        redondeo = redondeo ?? _zero;
 }
 
-/// Strict passthrough line item for UBL 2.1 sales documents.
+/// Ítem de detalle de traspaso directo (strict passthrough) para comprobantes de venta UBL 2.1.
 final class CpeLineItem {
   final int lineNumber;
   final String? internalCode;
@@ -276,7 +276,7 @@ final class CpeLineItem {
   });
 }
 
-/// Payment terms (Contado vs Crédito RS 000193-2020/SUNAT).
+/// Condiciones de pago de la operación (Contado vs Crédito según RS 000193-2020/SUNAT).
 sealed class PaymentTerms {
   const PaymentTerms();
 }
@@ -309,7 +309,7 @@ final class PaymentInstallment {
   String get formattedQuotaId => 'Cuota${number.toString().padLeft(3, '0')}';
 }
 
-/// SPOT Detraction information (Catálogo 54 & 59).
+/// Información de detracción SPOT (Catálogos 54 y 59).
 final class DetractionInfo {
   final String code;
   final String paymentMethodCode;
@@ -328,7 +328,7 @@ final class DetractionInfo {
   });
 }
 
-/// IGV Retention summary inside an Invoice (Code '62').
+/// Resumen de Retención del IGV dentro de una Factura (Código '62').
 final class RetentionSummary {
   final Decimal baseAmount;
   final Decimal percentage;
@@ -341,7 +341,7 @@ final class RetentionSummary {
   });
 }
 
-/// Perception summary inside an Invoice.
+/// Resumen de Percepción dentro de una Factura o Boleta.
 final class PerceptionSummary {
   final String regimeCode;
   final Decimal baseAmount;
@@ -358,7 +358,7 @@ final class PerceptionSummary {
   });
 }
 
-/// Prepaid advance deduction (Anticipo).
+/// Deducción por pago anticipado (Anticipo).
 final class PrepaidPayment {
   final CpeDocumentType documentType;
   final String seriesAndNumber;

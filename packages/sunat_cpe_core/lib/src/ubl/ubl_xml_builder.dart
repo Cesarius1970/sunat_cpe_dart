@@ -4,7 +4,7 @@ import 'package:xml/xml.dart';
 import '../catalogs/sunat_catalogs.dart';
 import '../entities/cpe_entities.dart';
 
-/// Generates official SUNAT UBL 2.1 and UBL 2.0 XML documents ready for XAdES-BES signing.
+/// Genera documentos XML oficiales SUNAT UBL 2.1 y UBL 2.0 listos para firma digital XAdES-BES.
 final class UblXmlBuilder {
   const UblXmlBuilder();
 
@@ -18,7 +18,7 @@ final class UblXmlBuilder {
   static const String _nsSac =
       'urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1';
 
-  /// Builds the unsigned UBL XML string with an empty `<ext:ExtensionContent/>` placeholder.
+  /// Construye la cadena XML UBL sin firmar con un contenedor vacío `<ext:ExtensionContent/>`.
   String buildUnsignedXml(CpeDocument document) {
     final builder = XmlBuilder();
     builder.processing('xml', 'version="1.0" encoding="UTF-8" standalone="no"');

@@ -113,7 +113,7 @@ final class DespatchLineItem {
   });
 }
 
-/// Base sealed class for Retention (20) and Perception (40) documents.
+/// Clase base sellada para Comprobantes de Retención (20) y Percepción (40).
 sealed class AgentCpeDocument extends CpeDocument {
   final CustomerParty partner;
   final CurrencyCode currency;
@@ -176,7 +176,7 @@ final class PerceptionDocument extends AgentCpeDocument {
   });
 }
 
-/// Line item inside a Retention or Perception document.
+/// Ítem de detalle dentro de un Comprobante de Retención o de Percepción.
 final class AgentDocumentLine {
   final CpeDocumentType relatedDocumentType;
   final String relatedSeriesAndNumber;

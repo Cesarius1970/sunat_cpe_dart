@@ -11,7 +11,7 @@ import '../transport/cpe_http_client.dart';
 import '../ubl/ubl_xml_builder.dart';
 import '../validation/cpe_math_validator.dart';
 
-/// Base Template Method implementation for all SOAP 1.1 UBL 2.1 OSE Providers
+/// Implementación base con patrón Template Method para todos los proveedores OSE SOAP 1.1 UBL 2.1
 /// (Bizlinks, Digiflow, TCI, Sovos, Cavali/Gosocket, EFACT SOAP).
 abstract base class BaseUblOseProvider
     with TicketPollingMixin
@@ -445,7 +445,7 @@ abstract base class BaseUblOseProvider
     }
   }
 
-  /// Builds the SOAP 1.1 Envelope with OASIS WS-Security `UsernameToken`.
+  /// Construye el sobre SOAP 1.1 con cabecera OASIS WS-Security `UsernameToken`.
   String buildSoapEnvelope({required String bodyXml}) {
     return '<?xml version="1.0" encoding="UTF-8"?>'
         '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" '
@@ -481,7 +481,7 @@ abstract base class BaseUblOseProvider
     );
   }
 
-  /// Extracts a typed [CpeException] if the SOAP response contains a `<Fault>` node.
+  /// Extrae una excepción tipada [CpeException] si la respuesta SOAP contiene un nodo `<Fault>`.
   CpeException? parseSoapFaultIfPresent(CpeHttpResponse response) {
     final body = response.bodyAsString;
     if (!body.contains('Fault')) {
@@ -578,7 +578,7 @@ abstract base class BaseUblOseProvider
     }
   }
 
-  /// Generates standard SUNAT QR text:
+  /// Genera la cadena estándar de texto QR de SUNAT:
   /// `{RUC}|{TIPO}|{SERIE}|{NUMERO}|{IGV}|{TOTAL}|{FECHA}|{TIPO_DOC_CLI}|{NUM_DOC_CLI}|{HASH}|`
   static String buildStandardSunatQr({
     required CpeDocument document,

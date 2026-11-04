@@ -1,6 +1,6 @@
 part of 'cpe_entities.dart';
 
-/// Base sealed hierarchy for all SUNAT CPE documents.
+/// Jerarquía sellada base para todos los Comprobantes de Pago Electrónicos (CPE) de SUNAT.
 sealed class CpeDocument {
   final DocumentId id;
   final CompanyParty issuer;
@@ -15,7 +15,7 @@ sealed class CpeDocument {
   });
 }
 
-/// Unique identifier for any SUNAT electronic document.
+/// Identificador único para cualquier documento electrónico de SUNAT.
 final class DocumentId {
   final String issuerRuc;
   final CpeDocumentType type;
@@ -29,8 +29,8 @@ final class DocumentId {
     required this.number,
   });
 
-  /// Standard SUNAT file name base: `{RUC}-{TIPO}-{SERIE}-{NUMERO}`
-  /// or `{RUC}-{TIPO}-{YYYYMMDD}-{NUMERO}` for RC/RA/RR when `series` is `RC-YYYYMMDD`.
+  /// Nombre base estándar de archivo SUNAT: `{RUC}-{TIPO}-{SERIE}-{NUMERO}`
+  /// o `{RUC}-{TIPO}-{YYYYMMDD}-{NUMERO}` para RC/RA/RR cuando `series` tiene el formato `RC-YYYYMMDD`.
   String get fileNameBase {
     if (type == CpeDocumentType.resumenDiario ||
         type == CpeDocumentType.comunicacionBaja ||
@@ -42,7 +42,7 @@ final class DocumentId {
     return '$issuerRuc-${type.code}-$series-$number';
   }
 
-  /// Formatted series and number inside the UBL `<cbc:ID>` tag (e.g. `F001-1`).
+  /// Serie y correlativo formateados dentro de la etiqueta UBL `<cbc:ID>` (ej. `F001-1`).
   String get ublId {
     if (type == CpeDocumentType.resumenDiario ||
         type == CpeDocumentType.comunicacionBaja ||
@@ -85,7 +85,7 @@ final class DocumentId {
   String toString() => fileNameBase;
 }
 
-/// Physical or fiscal address with INEI Ubigeo and SUNAT annex establishment code.
+/// Dirección física o domicilio fiscal con código de Ubigeo INEI y código de establecimiento anexo SUNAT.
 final class Address {
   final String? ubigeo;
   final String streetLine;
@@ -130,7 +130,7 @@ final class Address {
   }
 }
 
-/// Issuing company (Emisor electrónico).
+/// Empresa emisora (Emisor electrónico).
 final class CompanyParty {
   final String ruc;
   final String legalName;
@@ -149,7 +149,7 @@ final class CompanyParty {
   });
 }
 
-/// Customer / Receiver party (Adquirente o Usuario).
+/// Cliente o receptor del comprobante (Adquirente o Usuario).
 final class CustomerParty {
   final IdentityDocumentType documentType;
   final String documentNumber;
@@ -168,7 +168,7 @@ final class CustomerParty {
   });
 }
 
-/// Reference to a related or modified document (e.g. affected invoice in Credit/Debit Note, or Guide).
+/// Referencia a un documento relacionado o modificado (ej. factura afectada en Nota de Crédito/Débito o Guía de Remisión).
 final class DocumentReference {
   final CpeDocumentType documentType;
   final String series;
@@ -185,7 +185,7 @@ final class DocumentReference {
   String get formattedId => '$series-$number';
 }
 
-/// Allowance (discount) or Charge at item or global level (Catálogo 53).
+/// Descuento o cargo a nivel de ítem o global (Catálogo 53).
 final class AllowanceCharge {
   final bool isCharge;
   final String reasonCode; // '00', '01', '02', '03', etc.

@@ -1,5 +1,5 @@
-/// Core domain entities, SUNAT catalogs, passthrough math validator,
-/// UBL 2.1 XML generator, XAdES-BES pure Dart signer, and OSE/PSE contracts.
+/// Entidades de dominio, catálogos oficiales SUNAT, validador matemático passthrough,
+/// generador XML UBL 2.1, firmador digital XAdES-BES en Dart puro y contratos OSE/PSE.
 library;
 
 export 'package:decimal/decimal.dart' show Decimal;

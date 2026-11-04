@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 
 import '../results/cpe_result.dart';
 
-/// Holds RSA private key and X.509 certificate for XML-DSig / XAdES-BES signing.
+/// Contiene la clave privada RSA y el certificado X.509 para la firma XML-DSig / XAdES-BES.
 final class CpeCertificateCredentials {
   final RSAPrivateKey privateKey;
   final String base64X509Certificate;
@@ -18,7 +18,7 @@ final class CpeCertificateCredentials {
     required this.base64X509Certificate,
   });
 
-  /// Parses PEM-encoded RSA Private Key (PKCS#8 or PKCS#1) and X.509 Certificate.
+  /// Analiza una clave privada RSA (PKCS#8 o PKCS#1) y un certificado X.509 codificados en formato PEM.
   factory CpeCertificateCredentials.fromPem({
     required String privateKeyPem,
     required String certificatePem,
@@ -85,7 +85,7 @@ final class CpeCertificateCredentials {
   }
 }
 
-/// Result of signing a UBL XML document.
+/// Resultado de firmar digitalmente un documento XML UBL.
 final class SignedXmlOutput {
   final String signedXml;
   final String digestValue;
@@ -98,7 +98,7 @@ final class SignedXmlOutput {
   });
 }
 
-/// Pure Dart XML-DSig Enveloped (RSA-SHA256) signer compliant with SUNAT UBL 2.1.
+/// Firmador XML-DSig Enveloped (RSA-SHA256) en Dart puro compatible con SUNAT UBL 2.1.
 final class XadesBesSigner {
   const XadesBesSigner();
 
@@ -111,8 +111,8 @@ final class XadesBesSigner {
   static const String _sha256DigestAlgorithm =
       'http://www.w3.org/2001/04/xmlenc#sha256';
 
-  /// Signs an unsigned UBL XML document and injects `<ds:Signature Id="SignSUNAT">`
-  /// into the first `<ext:ExtensionContent>` element.
+  /// Firma un documento XML UBL sin firmar e inyecta `<ds:Signature Id="SignSUNAT">`
+  /// dentro del primer elemento `<ext:ExtensionContent>`.
   SignedXmlOutput signXml(
     String unsignedXml,
     CpeCertificateCredentials credentials,
@@ -204,10 +204,10 @@ final class XadesBesSigner {
     return sig.bytes;
   }
 
-  /// Deterministic Canonical XML 1.0 (C14N) serializer:
-  /// - Expands self-closing tags `<a/>` to `<a></a>`
-  /// - Sorts namespace declarations before regular attributes, both lexicographically
-  /// - Escapes special characters per W3C C14N specification
+  /// Serializador determinista de XML Canónico 1.0 (C14N):
+  /// - Expande etiquetas autocerradas `<a/>` a `<a></a>`
+  /// - Ordena las declaraciones de espacios de nombres antes que los atributos regulares, ambos lexicográficamente
+  /// - Escapa caracteres especiales según la especificación W3C C14N
   static String _canonicalizeElement(XmlElement element) {
     final buffer = StringBuffer();
     _writeCanonicalElement(element, buffer, const {});

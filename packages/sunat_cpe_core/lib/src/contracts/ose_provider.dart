@@ -2,7 +2,7 @@ import '../entities/cpe_entities.dart';
 import '../results/cpe_responses.dart';
 import '../results/cpe_result.dart';
 
-/// Capabilities supported by a given OSE or PSE adapter.
+/// Capacidades funcionales soportadas por un adaptador OSE o PSE específico.
 enum ProviderCapability {
   invoiceAndNotes,
   purchaseSettlement,
@@ -15,7 +15,7 @@ enum ProviderCapability {
   cavaliFactoring,
 }
 
-/// Exponential backoff configuration for asynchronous Ticket polling.
+/// Configuración de retroceso exponencial (exponential backoff) para el sondeo asíncrono de Tickets.
 final class PollingConfig {
   final Duration initialDelay;
   final Duration maxDelay;
@@ -32,57 +32,57 @@ final class PollingConfig {
   });
 }
 
-/// Unified contract implemented by all 9 OSE / PSE provider packages.
+/// Contrato unificado implementado por los 9 paquetes de proveedores OSE / PSE.
 abstract interface class OseProvider {
-  /// Unique identifier of the provider (e.g. 'nubefact', 'efact', 'bizlinks').
+  /// Identificador único del proveedor (ej. 'nubefact', 'efact', 'bizlinks').
   String get providerId;
 
-  /// Supported capabilities for this provider.
+  /// Conjunto de capacidades soportadas por este proveedor.
   Set<ProviderCapability> get capabilities;
 
-  /// Sends a Sales Document (01 Factura, 03 Boleta, 04 Liquidación, 07 NC, 08 ND).
+  /// Envía un Comprobante de Pago de Venta (01 Factura, 03 Boleta, 04 Liquidación, 07 NC, 08 ND).
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
     SalesCpeDocument document,
   );
 
-  /// Sends a Daily Summary of Boletas (RC). Returns a Ticket immediately.
+  /// Envía un Resumen Diario de Boletas (RC). Retorna un Ticket inmediatamente.
   Future<CpeResult<TicketResponse>> sendDailySummary(
     DailySummaryDocument summary,
   );
 
-  /// Sends a Voided Document Communication (RA) or Reversion (RR). Returns a Ticket.
+  /// Envía una Comunicación de Baja (RA) o Resumen de Reversiones (RR). Retorna un Ticket.
   Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided);
 
-  /// Sends a Despatch Advice / Guía de Remisión (09 Remitente, 31 Transportista).
+  /// Envía una Guía de Remisión Electrónica (09 Remitente, 31 Transportista).
   Future<CpeResult<TicketResponse>> sendDespatchAdvice(
     DespatchAdviceDocument guide,
   );
 
-  /// Sends a Retention (20) or Perception (40) document.
+  /// Envía un Comprobante de Retención (20) o de Percepción (40).
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
     AgentCpeDocument document,
   );
 
-  /// Checks the status of an asynchronous Ticket once (`98` in process, `0` accepted, `99` rejected).
+  /// Consulta una sola vez el estado de un Ticket asíncrono (`98` en proceso, `0` aceptado, `99` rechazado).
   Future<CpeResult<TicketStatusResponse>> checkTicket(
     String ticket, {
     DocumentId? referenceId,
   });
 
-  /// Polls [checkTicket] using exponential backoff until the ticket completes or times out.
+  /// Sondea [checkTicket] aplicando retroceso exponencial hasta que el ticket finalice o agote el tiempo de espera.
   Future<CpeResult<CdrData>> pollTicketUntilDone(
     String ticket, {
     DocumentId? referenceId,
     PollingConfig config = const PollingConfig(),
   });
 
-  /// Queries the status and retrieves the CDR of a previously issued document.
+  /// Consulta el estado y recupera el CDR de un comprobante emitido previamente.
   Future<CpeResult<CpeStatusQueryResponse>> queryDocumentStatus(
     DocumentStatusQuery query,
   );
 }
 
-/// Mixin providing the default implementation of [OseProvider.pollTicketUntilDone].
+/// Mixin que provee la implementación predeterminada de [OseProvider.pollTicketUntilDone].
 base mixin TicketPollingMixin implements OseProvider {
   @override
   Future<CpeResult<CdrData>> pollTicketUntilDone(

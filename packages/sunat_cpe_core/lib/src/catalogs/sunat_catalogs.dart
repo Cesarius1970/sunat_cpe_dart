@@ -1,4 +1,4 @@
-/// Official SUNAT Catalogs (Anexo N° 8) for Electronic Invoicing (CPE).
+/// Catálogos Oficiales de SUNAT (Anexo N° 8) para Facturación Electrónica (CPE).
 library;
 
 /// Catálogo 01: Código de Tipo de Documento.

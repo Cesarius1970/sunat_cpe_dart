@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../results/cpe_result.dart';
 
-/// Immutable HTTP request representation for REST and SOAP calls.
+/// Representación inmutable de una solicitud HTTP para llamadas REST y SOAP.
 final class CpeHttpRequest {
   final String method;
   final Uri uri;
@@ -39,7 +39,7 @@ final class CpeHttpRequest {
   }
 }
 
-/// Immutable HTTP response representation.
+/// Representación inmutable de una respuesta HTTP.
 final class CpeHttpResponse {
   final int statusCode;
   final Map<String, String> headers;
@@ -54,7 +54,7 @@ final class CpeHttpResponse {
   String get bodyAsString => utf8.decode(bodyBytes, allowMalformed: true);
 }
 
-/// Interceptor interface for authentication, SOAP headers, logging, and retries.
+/// Interfaz de interceptor para autenticación, cabeceras SOAP, registro de trazas y reintentos.
 abstract interface class CpeHttpInterceptor {
   Future<CpeHttpRequest> onRequest(CpeHttpRequest request);
   Future<CpeHttpResponse> onResponse(
@@ -63,13 +63,13 @@ abstract interface class CpeHttpInterceptor {
   );
 }
 
-/// Transport abstraction decoupling Core and Providers from specific HTTP packages.
+/// Abstracción de transporte que desacopla el núcleo y los proveedores de paquetes HTTP específicos.
 abstract interface class CpeHttpClient {
   Future<CpeHttpResponse> send(CpeHttpRequest request);
   void close();
 }
 
-/// Default implementation of [CpeHttpClient] backed by `package:http`.
+/// Implementación predeterminada de [CpeHttpClient] respaldada por `package:http`.
 final class DefaultCpeHttpClient implements CpeHttpClient {
   final http.Client _inner;
   final List<CpeHttpInterceptor> _interceptors;

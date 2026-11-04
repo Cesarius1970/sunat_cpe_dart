@@ -4,15 +4,15 @@ import '../catalogs/sunat_catalogs.dart';
 import '../entities/cpe_entities.dart';
 import '../results/cpe_result.dart';
 
-/// Strict Passthrough Mathematical and Business Rule Validator for SUNAT CPE.
+/// Validador de reglas matemáticas y de negocio de traspaso directo (strict passthrough) para CPE SUNAT.
 ///
-/// Does not mutate or calculate missing amounts; verifies that the caller-supplied
-/// amounts satisfy UBL 2.1 SUNAT equations within the allowed rounding tolerances.
+/// No muta ni recalcula montos faltantes; verifica que los importes proporcionados por el llamador
+/// cumplan las ecuaciones UBL 2.1 de SUNAT dentro de las tolerancias de redondeo permitidas.
 final class CpeMathValidator {
-  /// Default tolerance for direct summation (line subtotals to header totals).
+  /// Tolerancia predeterminada para sumatorias directas (subtotales de línea hacia totales de cabecera).
   final Decimal sumTolerance;
 
-  /// Default tolerance for percentage-based tax calculations (SUNAT allows up to ±1.00 per line).
+  /// Tolerancia predeterminada para cálculos de impuestos porcentuales (SUNAT permite hasta ±1.00 por línea).
   final Decimal taxCalculationTolerance;
 
   static final Decimal _hundred = Decimal.fromInt(100);
@@ -23,7 +23,7 @@ final class CpeMathValidator {
       taxCalculationTolerance =
           taxCalculationTolerance ?? Decimal.parse('1.00');
 
-  /// Validates any [CpeDocument] and returns a [CpeResult<void>].
+  /// Valida cualquier [CpeDocument] y retorna un [CpeResult<void>].
   CpeResult<void> validate(CpeDocument document) {
     final issues = <ValidationIssue>[];
 

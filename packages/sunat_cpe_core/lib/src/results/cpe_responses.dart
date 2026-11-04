@@ -1,7 +1,7 @@
 import '../catalogs/sunat_catalogs.dart';
 import '../entities/cpe_entities.dart';
 
-/// Processing status of a CPE document or Ticket.
+/// Estado de procesamiento de un comprobante CPE o Ticket.
 enum CpeProcessStatus {
   accepted,
   acceptedWithWarnings,
@@ -10,7 +10,7 @@ enum CpeProcessStatus {
   voided,
 }
 
-/// Non-blocking observation returned by SUNAT/OSE (Codes 4000+).
+/// Observación no bloqueante devuelta por SUNAT/OSE (Códigos 4000+).
 final class SunatWarning {
   final String code;
   final String description;
@@ -21,7 +21,7 @@ final class SunatWarning {
   String toString() => '[$code] $description';
 }
 
-/// Constancia de Recepción (CDR) parsed from `R-{RUC}-{TIPO}-{SERIE}-{NUM}.zip` or PSE JSON.
+/// Constancia de Recepción (CDR) extraída de `R-{RUC}-{TIPO}-{SERIE}-{NUM}.zip` o JSON de un PSE.
 final class CdrData {
   final String id;
   final String responseCode;
@@ -48,7 +48,7 @@ final class CdrData {
   bool get isAccepted => responseCode == '0' || responseCode == '0000';
 }
 
-/// Unified emission response for synchronous and deferred CPE operations.
+/// Respuesta de emisión unificada para operaciones CPE síncronas y diferidas.
 final class CpeEmissionResponse {
   final DocumentId documentId;
   final CpeProcessStatus status;
@@ -75,7 +75,7 @@ final class CpeEmissionResponse {
   });
 }
 
-/// Immediate response for asynchronous operations (RC, RA, RR, GRE, EFACT REST).
+/// Respuesta inmediata para operaciones asíncronas (RC, RA, RR, GRE, EFACT REST).
 final class TicketResponse {
   final String ticket;
   final DocumentId? referenceId;
@@ -90,7 +90,7 @@ final class TicketResponse {
   });
 }
 
-/// Status response when checking an asynchronous Ticket (`checkTicket`).
+/// Respuesta de estado al consultar un Ticket asíncrono (`checkTicket`).
 final class TicketStatusResponse {
   final String ticket;
   final CpeProcessStatus status;
@@ -107,7 +107,7 @@ final class TicketStatusResponse {
   });
 }
 
-/// Query parameters to check the status/CDR of a previously issued CPE.
+/// Parámetros de consulta para verificar el estado y obtener el CDR de un CPE emitido previamente.
 final class DocumentStatusQuery {
   final String issuerRuc;
   final CpeDocumentType documentType;
@@ -122,7 +122,7 @@ final class DocumentStatusQuery {
   });
 }
 
-/// Result of querying a previously issued document (`queryDocumentStatus`).
+/// Resultado de consultar el estado de un comprobante emitido previamente (`queryDocumentStatus`).
 final class CpeStatusQueryResponse {
   final CpeProcessStatus status;
   final String statusCode;

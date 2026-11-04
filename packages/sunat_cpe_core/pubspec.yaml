@@ -1,6 +1,6 @@
 name: sunat_cpe_core
-description: Core domain entities, SUNAT catalogs, math validator, UBL 2.1 XML builder, XAdES-BES signer, and OSE/PSE contracts for Peru.
-version: 0.1.1
+description: Entidades de dominio, catálogos SUNAT, validador matemático, generador XML UBL 2.1, firmador XAdES-BES y contratos OSE/PSE en Dart puro.
+version: 0.1.2
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_core
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_core
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
