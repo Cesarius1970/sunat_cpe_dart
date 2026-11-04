@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Maps FacturaloPeru / Facturador PRO JSON responses (`state_type_id` `01..13`, `cdr_response`, `links`) to Core results.
+/// Transforma las respuestas JSON de FacturaloPeru / Facturador PRO (`state_type_id` `01..13`, `cdr_response`, `links`) a resultados del núcleo.
 final class FacturaloResponseMapper {
+  /// Crea una instancia constante de [FacturaloResponseMapper].
   const FacturaloResponseMapper();
 
+  /// Mapea la respuesta HTTP de emisión síncrona a [CpeResult<CpeEmissionResponse>].
   CpeResult<CpeEmissionResponse> mapEmissionResponse({
     required DocumentId documentId,
     required CpeHttpResponse response,
@@ -107,6 +109,7 @@ final class FacturaloResponseMapper {
     }
   }
 
+  /// Mapea la respuesta HTTP de envío asíncrono (resúmenes, bajas y guías) a [CpeResult<TicketResponse>].
   CpeResult<TicketResponse> mapTicketResponse({
     required DocumentId referenceId,
     required CpeHttpResponse response,
@@ -139,6 +142,7 @@ final class FacturaloResponseMapper {
     }
   }
 
+  /// Mapea la respuesta HTTP de consulta de estado de ticket a [CpeResult<TicketStatusResponse>].
   CpeResult<TicketStatusResponse> mapTicketStatusResponse({
     required String ticket,
     required CpeHttpResponse response,

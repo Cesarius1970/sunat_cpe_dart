@@ -2,10 +2,12 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 import 'facturalo_document_mapper.dart';
 
-/// Maps [DespatchAdviceDocument] to FacturaloPeru `/api/dispatches` JSON.
+/// Transforma un [DespatchAdviceDocument] al formato JSON requerido por `/api/dispatches` en FacturaloPeru.
 final class FacturaloDispatchMapper {
+  /// Crea una instancia constante de [FacturaloDispatchMapper].
   const FacturaloDispatchMapper();
 
+  /// Convierte [guide] en el mapa JSON esperado por el endpoint `/api/dispatches`.
   Map<String, dynamic> mapDespatchAdvice(DespatchAdviceDocument guide) {
     return {
       'serie_documento': guide.id.series,

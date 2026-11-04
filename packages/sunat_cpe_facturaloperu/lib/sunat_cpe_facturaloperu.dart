@@ -1,4 +1,4 @@
-/// FacturaloPeru / Facturador PRO (Smart / APIPeru) adapter for Peruvian Electronic Invoicing (SUNAT CPE).
+/// Adaptador de FacturaloPeru / Facturador PRO (Smart / APIPeru) para Facturación Electrónica SUNAT (CPE).
 library;
 
 export 'src/facturalo_config.dart';

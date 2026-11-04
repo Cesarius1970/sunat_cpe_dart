@@ -2,10 +2,12 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 import '../facturalo_config.dart';
 
-/// Maps [SalesCpeDocument] and [AgentCpeDocument] to FacturaloPeru `/api/documents` and `/api/retentions` JSON.
+/// Transforma [SalesCpeDocument] y [AgentCpeDocument] al formato JSON de `/api/documents` y `/api/retentions` en FacturaloPeru.
 final class FacturaloDocumentMapper {
+  /// Crea una instancia constante de [FacturaloDocumentMapper].
   const FacturaloDocumentMapper();
 
+  /// Convierte un comprobante de venta ([doc]) al payload JSON anidado de `/api/documents`.
   Map<String, dynamic> mapSalesDocument(
     SalesCpeDocument doc,
     FacturaloConfig config,
@@ -117,6 +119,7 @@ final class FacturaloDocumentMapper {
     return map;
   }
 
+  /// Convierte un comprobante de retención o percepción ([doc]) al payload JSON de `/api/retentions`.
   Map<String, dynamic> mapAgentDocument(AgentCpeDocument doc) {
     final (regimeCode, ratePercent) = switch (doc) {
       final RetentionDocument ret => (ret.regime.code, ret.ratePercentage),
@@ -142,6 +145,7 @@ final class FacturaloDocumentMapper {
 
   static double _toDouble(Decimal value) => double.parse(value.toString());
 
+  /// Formatea un [DateTime] como fecha ISO-8601 (`YYYY-MM-DD`).
   static String formatIsoDate(DateTime dt) {
     final y = dt.year.toString().padLeft(4, '0');
     final m = dt.month.toString().padLeft(2, '0');

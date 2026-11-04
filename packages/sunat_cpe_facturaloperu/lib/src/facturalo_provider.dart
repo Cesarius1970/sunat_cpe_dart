@@ -9,15 +9,27 @@ import 'mappers/facturalo_response_mapper.dart';
 import 'mappers/facturalo_summary_mapper.dart';
 import 'mappers/facturalo_voided_mapper.dart';
 
-/// Taxpayer information returned by `/api/service/ruc/{ruc}` or `/api/service/dni/{dni}`.
+/// Información de contribuyente o ciudadano devuelta por `/api/service/ruc/{ruc}` o `/api/service/dni/{dni}`.
 final class FacturaloTaxpayerInfo {
+  /// Número de RUC (11 dígitos) o DNI (8 dígitos).
   final String documentNumber;
+
+  /// Nombre completo o razón social registrada en SUNAT / RENIEC.
   final String nameOrLegalName;
+
+  /// Estado del contribuyente en SUNAT (p. ej. `ACTIVO`).
   final String? status;
+
+  /// Condición domiciliaria del contribuyente en SUNAT (p. ej. `HABIDO`).
   final String? condition;
+
+  /// Dirección fiscal completa.
   final String? address;
+
+  /// Código de ubigeo INEI de 6 dígitos.
   final String? ubigeo;
 
+  /// Crea un registro inmutable con los datos del contribuyente o ciudadano.
   const FacturaloTaxpayerInfo({
     required this.documentNumber,
     required this.nameOrLegalName,
@@ -28,17 +40,33 @@ final class FacturaloTaxpayerInfo {
   });
 }
 
-/// FacturaloPeru / Facturador PRO (Smart / APIPeru) Provider implementing [OseProvider].
+/// Proveedor de FacturaloPeru / Facturador PRO (Smart / APIPeru) que implementa [OseProvider].
 final class FacturaloProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración de endpoints y credenciales del proveedor.
   final FacturaloConfig config;
+
+  /// Cliente HTTP subyacente para la comunicación con la API REST.
   final CpeHttpClient httpClient;
+
+  /// Validador aritmético pre-envío.
   final CpeMathValidator validator;
+
+  /// Mapeador de comprobantes de venta y agentes a JSON.
   final FacturaloDocumentMapper documentMapper;
+
+  /// Mapeador de resúmenes diarios a JSON.
   final FacturaloSummaryMapper summaryMapper;
+
+  /// Mapeador de comunicaciones de baja a JSON.
   final FacturaloVoidedMapper voidedMapper;
+
+  /// Mapeador de guías de remisión a JSON.
   final FacturaloDispatchMapper dispatchMapper;
+
+  /// Mapeador de respuestas JSON de FacturaloPeru a entidades del núcleo.
   final FacturaloResponseMapper responseMapper;
 
+  /// Crea una instancia de [FacturaloProvider].
   FacturaloProvider({
     required this.config,
     CpeHttpClient? httpClient,
@@ -277,7 +305,7 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
     }
   }
 
-  /// Auxiliary RUC/DNI lookup (`/api/service/ruc/{number}` or `/api/service/dni/{number}`).
+  /// Consulta auxiliar de padrón RUC o DNI (`/api/service/ruc/{number}` o `/api/service/dni/{number}`).
   Future<CpeResult<FacturaloTaxpayerInfo>> lookupTaxpayer({
     required String documentNumber,
     bool isRuc = true,
