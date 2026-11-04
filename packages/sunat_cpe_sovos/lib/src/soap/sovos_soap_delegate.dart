@@ -2,12 +2,16 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 import '../ubl/sovos_ubl_extension_builder.dart';
 
-/// Custom [CpeZipCodec] wrapper that injects Sovos/Paperless print extensions into XML if needed,
-/// or delegates directly to [BaseUblOseProvider].
+/// Delegado SOAP 1.1 para Sovos / Paperless que extiende [BaseUblOseProvider]
+/// gestionando extensiones personalizadas de impresión.
 final class SovosSoapDelegate extends BaseUblOseProvider {
+  /// Constructor de extensiones UBL personalizadas para Paperless.
   final SovosUblExtensionBuilder extensionBuilder;
+
+  /// Mapa de campos personalizados de impresión configurados para Sovos / Paperless.
   final Map<String, String> customPrintFields;
 
+  /// Crea una instancia de [SovosSoapDelegate].
   SovosSoapDelegate({
     required super.endpointUri,
     required super.wsseUsername,

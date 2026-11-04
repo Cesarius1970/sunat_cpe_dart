@@ -1,6 +1,6 @@
 name: sunat_cpe_sovos
-description: Sovos / Paperless OSE/PSE adapter for SUNAT Electronic Invoicing (CPE) in pure Dart, implementing sunat_cpe_core contracts.
-version: 0.1.1
+description: Adaptador OSE/PSE de Sovos Paperless para Facturación Electrónica SUNAT (CPE) en Dart puro con recuperación idempotente de CDR.
+version: 0.1.2
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_sovos
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_sovos
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
@@ -17,7 +17,7 @@ environment:
   sdk: ">=3.13.5 <4.0.0"
 
 dependencies:
-  sunat_cpe_core: ^0.1.1
+  sunat_cpe_core: ^0.1.2
   xml: ^7.0.0
 
 dev_dependencies:

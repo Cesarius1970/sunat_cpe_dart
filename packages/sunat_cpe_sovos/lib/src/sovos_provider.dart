@@ -4,11 +4,13 @@ import 'soap/sovos_soap_delegate.dart';
 import 'sovos_config.dart';
 import 'ubl/sovos_ubl_extension_builder.dart';
 
-/// Sovos / Paperless OSE & PSE Provider implementing [OseProvider] with idempotent CDR recovery.
+/// Proveedor OSE y PSE de Sovos / Paperless que implementa [OseProvider] con recuperación idempotente de CDR.
 final class SovosProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración de endpoint, credenciales WS-Security, campos de impresión y recuperación automática.
   final SovosConfig config;
   final SovosSoapDelegate _delegate;
 
+  /// Inicializa el proveedor [SovosProvider] configurando su delegado SOAP 1.1 y extensiones UBL.
   SovosProvider({
     required this.config,
     CpeHttpClient? httpClient,
@@ -76,6 +78,7 @@ final class SovosProvider with TicketPollingMixin implements OseProvider {
                 digestValue: data.cdr!.digestValue ?? '',
               ),
             ),
+            providerRawMetadata: const {'recoveredFromDuplicate': true},
           );
         }
       }

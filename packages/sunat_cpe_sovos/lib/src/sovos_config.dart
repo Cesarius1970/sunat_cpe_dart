@@ -1,34 +1,48 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Integration mode for Sovos / Paperless.
+/// Modo de integración con la plataforma Sovos / Paperless.
 enum SovosIntegrationMode {
-  /// Standard OSE SOAP 1.1 `billService` with locally signed UBL 2.1 XML.
+  /// Servicio estándar OSE SOAP 1.1 `billService` con XML UBL 2.1 firmado localmente con XAdES-BES.
   oseUblSigned,
 
-  /// PSE Cloud HSM signing mode (`OnlineGeneration`).
+  /// Modo PSE con firma HSM en la nube de Sovos (`OnlineGeneration`).
   pseCloudSign,
 }
 
-/// Configuration for [SovosProvider].
+/// Configuración de conexión, modo de firma, campos personalizados de impresión e idempotencia para [SovosProvider].
 final class SovosConfig {
-  /// Production Sovos OSE SOAP endpoint.
+  /// Endpoint oficial SOAP 1.1 de Sovos OSE en producción.
   static final Uri productionEndpoint = Uri.parse(
     'https://ose.sovos.com.pe/ol-ti-itcpe/billService',
   );
 
-  /// Certification / QA Sovos OSE SOAP endpoint.
+  /// Endpoint oficial SOAP 1.1 de Sovos OSE en certificación / QA.
   static final Uri certificationEndpoint = Uri.parse(
     'https://ose-cert.sovos.com.pe/ol-ti-itcpe/billService',
   );
 
+  /// URI del servicio SOAP 1.1 de Sovos / Paperless.
   final Uri endpointUri;
+
+  /// Usuario de autenticación WS-Security (`UsernameToken`) asignado por Sovos.
   final String username;
+
+  /// Contraseña de autenticación WS-Security (`PasswordText`) asignada por Sovos.
   final String password;
+
+  /// Credenciales del certificado digital X.509 y llave privada RSA para firma XAdES-BES.
   final CpeCertificateCredentials certificate;
+
+  /// Modalidad de integración (`oseUblSigned` o `pseCloudSign`).
   final SovosIntegrationMode mode;
+
+  /// Si es `true`, recupera automáticamente el CDR original vía `getStatusCdr` cuando un reintento devuelve código de duplicado (`1033` o `2017`).
   final bool autoRecoverCdrOnDuplicate;
+
+  /// Campos adicionales personalizados para la representación impresa PDF de Paperless.
   final Map<String, String> customPrintFields;
 
+  /// Crea una configuración inmutable [SovosConfig].
   const SovosConfig({
     required this.endpointUri,
     required this.username,

@@ -1,11 +1,12 @@
 import 'package:xml/xml.dart';
 
-/// Injects Paperless / Sovos custom print parameters (`<AdditionalInformation>`)
-/// into `<ext:UBLExtensions>` before XAdES-BES signing.
+/// Inyecta parámetros personalizados de impresión de Paperless / Sovos (`<SovosCustomPrintFields>`)
+/// dentro de `<ext:UBLExtensions>` antes de ejecutar la firma digital XAdES-BES.
 final class SovosUblExtensionBuilder {
+  /// Crea una instancia constante de [SovosUblExtensionBuilder].
   const SovosUblExtensionBuilder();
 
-  /// Returns a modified UBL XML string containing the custom print fields inside `<ext:UBLExtensions>`.
+  /// Retorna una cadena XML UBL modificada que incluye los campos personalizados de impresión dentro de `<ext:UBLExtensions>`.
   String injectCustomPrintFields(
     String unsignedXml,
     Map<String, String> customPrintFields,
