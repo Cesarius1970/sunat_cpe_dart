@@ -9,6 +9,7 @@ environment:
 workspace:
   - packages/sunat_cpe_core
   - packages/sunat_cpe_nubefact
+  - packages/sunat_cpe_efact
 
 dev_dependencies:
   melos: ^8.9.0
