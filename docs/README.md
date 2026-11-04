@@ -19,7 +19,8 @@ updated: 2026-11-04
 # Arquitectura y Análisis de Proveedores OSE / PSE (SUNAT CPE)
 
 > [!NOTE] Map of Content (MOC) — Navegación Rápida
-> - **Núcleo (`sunat_cpe_core`)**: [[core/01_architecture_and_patterns|01. Arquitectura y Patrones]] · [[core/02_domain_entities_and_types|02. Entidades y Catálogos]] · [[core/03_validation_and_ubl_signing|03. Validación, UBL 2.1 y Firma XAdES-BES]]
+> - **Núcleo y Enrutador (`sunat_cpe_core` / `sunat_cpe_main`)**: [[core/01_architecture_and_patterns|01. Arquitectura y Patrones]] · [[core/02_domain_entities_and_types|02. Entidades y Catálogos]] · [[core/03_validation_and_ubl_signing|03. Validación, UBL 2.1 y Firma XAdES-BES]] · [[core/04_main_router_and_orchestration|04. Router Principal (`sunat_cpe_main`)]]
+> - **Envío Directo SUNAT**: [[providers/10_sunat_direct|10. SUNAT Directo (`sunat_cpe_direct`)]]
 > - **Proveedores JSON REST (PSE/OSE)**: [[providers/01_nubefact|01. Nubefact]] · [[providers/03_mifact|03. Mifact]] · [[providers/07_facturaloperu|07. FacturaloPeru / PRO]]
 > - **Proveedores Híbridos (REST + SOAP UBL)**: [[providers/02_efact|02. EFACT]] · [[providers/06_sovos_paperless|06. Sovos / Paperless]] · [[providers/09_cavali_gosocket|09. Cavali / Gosocket]]
 > - **Proveedores SOAP UBL 2.1 Puros (OSE)**: [[providers/04_bizlinks|04. Bizlinks]] · [[providers/05_digiflow|05. Digiflow]] · [[providers/08_tci|08. TCI / Efacturación]]
@@ -107,6 +108,7 @@ sunat_cpe/
 | 7 | **FacturaloPeru (PRO)** | PSE / OSE | REST HTTP POST | JSON anidado semántico | En servidor (PSE) | Header `Authorization: Bearer <api_token>` | Síncrono (con envío directo o a cola OSE) | [[providers/07_facturaloperu\|07_facturaloperu]] |
 | 8 | **TCI (Efacturación)** | OSE / PSE | SOAP 1.1 / REST | ZIP con XML UBL 2.1 | Local (XAdES-BES) o Servidor | WS-Security (`UsernameToken`) / Token JWT | Síncrono (`sendBill`) y Asíncrono (`sendSummary`) | [[providers/08_tci\|08_tci]] |
 | 9 | **Cavali / Gosocket** | OSE + Cavali | SOAP 1.1 / REST | ZIP con XML UBL 2.1 / JSON | Local (XAdES-BES) o Servidor | WS-Security / OAuth2 (`client_credentials`) | Síncrono (`sendBill`) + Eventos Factoring (Acuse/Conformidad) | [[providers/09_cavali_gosocket\|09_cavali_gosocket]] |
+| 10 | **SUNAT Directo** | SUNAT SOL | SOAP 1.1 (`e-factura` / `otroscpe`) + REST GRE | ZIP con XML UBL 2.1 + SHA-256 | Local (XAdES-BES) o Mock en `beta` | WS-Security (`RUC+SOL`) / OAuth2 (`api-seguridad`) | Síncrono (`sendBill`) y Asíncrono (`sendSummary` / GRE REST) | [[providers/10_sunat_direct\|10_sunat_direct]] |
 
 ---
 
@@ -115,6 +117,7 @@ sunat_cpe/
 1. [[core/01_architecture_and_patterns|01. Arquitectura, Patrones e Interfaces]]: Capas del paquete `sunat_cpe_core`, contratos `OseProvider`, `CpeResult<T>`, manejo de Tickets asíncronos, `CpeHttpClient` e interceptores.
 2. [[core/02_domain_entities_and_types|02. Entidades de Dominio, Tipos y Catálogos SUNAT]]: Especificación completa de entidades Dart 3 (`CpeDocument`, `InvoiceDocument`, `CreditNoteDocument`, `DebitNoteDocument`, `VoidedDocument`, `DailySummaryDocument`, `DespatchAdviceDocument`, `RetentionDocument`, `PerceptionDocument`, `PurchaseSettlementDocument`) y Catálogos SUNAT.
 3. [[core/03_validation_and_ubl_signing|03. Validación Matemática, Motor UBL 2.1 y Firma XAdES-BES]]: Motor de validación matemática Passthrough (`CpeMathValidator`), arquitectura del generador XML UBL 2.1, empaquetado ZIP y firma digital XAdES-BES en Dart puro.
+4. [[core/04_main_router_and_orchestration|04. Paquete Principal y Enrutador Inteligente (`sunat_cpe_main`)]]: Orquestador `SunatCpeRouter`, enrutamiento por tipo de CPE entre `sunat_cpe_direct` y los 9 OSE/PSE, y estrategia de fallback seguro.
 
 ---
 
@@ -132,3 +135,5 @@ sunat_cpe/
 | `sunat_cpe_facturaloperu` | [[providers/07_facturaloperu\|07_facturaloperu]] | [`lib/sunat_cpe_facturaloperu.dart`](../packages/sunat_cpe_facturaloperu/lib/sunat_cpe_facturaloperu.dart) | [packages/sunat_cpe_facturaloperu](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_facturaloperu) | Completado |
 | `sunat_cpe_tci` | [[providers/08_tci\|08_tci]] | [`lib/sunat_cpe_tci.dart`](../packages/sunat_cpe_tci/lib/sunat_cpe_tci.dart) | [packages/sunat_cpe_tci](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_tci) | Completado |
 | `sunat_cpe_cavali` | [[providers/09_cavali_gosocket\|09_cavali_gosocket]] | [`lib/sunat_cpe_cavali.dart`](../packages/sunat_cpe_cavali/lib/sunat_cpe_cavali.dart) | [packages/sunat_cpe_cavali](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_cavali) | Completado |
+| `sunat_cpe_direct` | [[providers/10_sunat_direct\|10_sunat_direct]] | [`lib/sunat_cpe_direct.dart`](../packages/sunat_cpe_direct/lib/sunat_cpe_direct.dart) | [packages/sunat_cpe_direct](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_direct) | Completado |
+| `sunat_cpe_main` | [[core/04_main_router_and_orchestration\|04_main_router]] | [`lib/sunat_cpe_main.dart`](../packages/sunat_cpe_main/lib/sunat_cpe_main.dart) | [packages/sunat_cpe_main](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_main) | Completado |
