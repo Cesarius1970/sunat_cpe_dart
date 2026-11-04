@@ -1,10 +1,12 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:xml/xml.dart';
 
-/// Extracts SUNAT exception and rejection codes from TCI `<soap-env:Fault>` (`Client.XXXX` / `Server.XXXX`).
+/// Extrae códigos de excepción y rechazo SUNAT desde bloques `<soap-env:Fault>` de TCI (`Client.XXXX` / `Server.XXXX`).
 final class TciSoapFaultParser {
+  /// Crea una instancia constante de [TciSoapFaultParser].
   const TciSoapFaultParser();
 
+  /// Analiza la respuesta HTTP SOAP y devuelve un subtipo tipado de [CpeException] si contiene un `<Fault>`.
   CpeException? parseFault(CpeHttpResponse response) {
     final body = response.bodyAsString;
     if (!body.contains('Fault')) {
