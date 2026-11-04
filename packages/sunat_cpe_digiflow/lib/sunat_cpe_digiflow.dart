@@ -1,4 +1,4 @@
-/// Digiflow OSE SOAP 1.1 WS-Security adapter for Peruvian Electronic Invoicing (SUNAT CPE).
+/// Adaptador OSE de Digiflow sobre SOAP 1.1 con WS-Security para Facturación Electrónica (SUNAT CPE).
 library;
 
 export 'src/digiflow_config.dart';

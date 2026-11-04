@@ -1,7 +1,9 @@
-/// Helper to construct Digiflow-compliant SOAP 1.1 envelopes with WS-Security `UsernameToken`.
+/// Constructor de sobres SOAP 1.1 compatibles con Digiflow OSE incluyendo `UsernameToken` WS-Security y `soapenv:mustUnderstand="1"`.
 final class DigiflowSoapEnvelope {
+  /// Crea una instancia constante de [DigiflowSoapEnvelope].
   const DigiflowSoapEnvelope();
 
+  /// Construye el sobre XML SOAP 1.1 completo con cabeceras WS-Security y el cuerpo [bodyXml].
   String build({
     required String wsseUsername,
     required String wssePassword,

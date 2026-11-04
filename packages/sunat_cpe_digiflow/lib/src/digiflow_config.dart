@@ -1,35 +1,51 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Environment for Digiflow OSE endpoints.
-enum DigiflowEnvironment { production, testing }
+/// Entorno de operación para los endpoints OSE de Digiflow.
+enum DigiflowEnvironment {
+  /// Entorno de producción oficial de Digiflow OSE.
+  production,
 
-/// Submission mode for Despatch Advice (`09` / `31`) in Digiflow OSE.
+  /// Entorno de pruebas / homologación de Digiflow OSE.
+  testing,
+}
+
+/// Modo de envío para Guías de Remisión Electrónicas (`09` / `31`) en Digiflow OSE.
 enum DigiflowDespatchMode {
-  /// Sends GRE via `urn:sendSummary` returning a Ticket immediately.
+  /// Envía la GRE mediante `urn:sendSummary` retornando un Ticket asíncrono inmediatamente.
   asyncTicket,
 
-  /// Sends GRE via `urn:sendBill` receiving the CDR synchronously and wrapping it in a synthetic Ticket.
+  /// Envía la GRE mediante `urn:sendBill` recibiendo el CDR de forma síncrona y envolviéndolo en un Ticket sintético en caché.
   syncSendBill,
 }
 
-/// Configuration for [DigiflowProvider].
+/// Configuración de conexión, credenciales WS-Security y modo GRE para [DigiflowProvider].
 final class DigiflowConfig {
-  /// Production SOAP 1.1 OSE endpoint.
+  /// Endpoint oficial SOAP 1.1 de Digiflow OSE en producción.
   static final Uri productionEndpoint = Uri.parse(
     'https://ose.digiflow.pe/ol-ti-itcpe/billService',
   );
 
-  /// Testing / Homologation SOAP 1.1 OSE endpoint.
+  /// Endpoint oficial SOAP 1.1 de Digiflow OSE en homologación / pruebas.
   static final Uri testingEndpoint = Uri.parse(
     'https://osetest.digiflow.pe/ol-ti-itcpe/billService',
   );
 
+  /// URI del servicio SOAP 1.1 `billService` de Digiflow.
   final Uri endpointUri;
+
+  /// Usuario de autenticación WS-Security (`UsernameToken`) asignado por Digiflow.
   final String username;
+
+  /// Contraseña de autenticación WS-Security (`PasswordText`) asignada por Digiflow.
   final String password;
+
+  /// Credenciales del certificado digital X.509 y llave privada RSA para firma XAdES-BES.
   final CpeCertificateCredentials certificate;
+
+  /// Modo de transmisión para Guías de Remisión (`asyncTicket` o `syncSendBill`).
   final DigiflowDespatchMode despatchMode;
 
+  /// Crea una configuración de [DigiflowConfig] especificando un [endpointUri] explícito.
   const DigiflowConfig({
     required this.endpointUri,
     required this.username,
@@ -38,6 +54,7 @@ final class DigiflowConfig {
     this.despatchMode = DigiflowDespatchMode.asyncTicket,
   });
 
+  /// Construye una instancia de [DigiflowConfig] seleccionando automáticamente la URL oficial según [environment].
   factory DigiflowConfig.forEnvironment({
     required DigiflowEnvironment environment,
     required String username,

@@ -4,12 +4,16 @@ import 'package:xml/xml.dart';
 import 'digiflow_config.dart';
 import 'soap/digiflow_soap_envelope.dart';
 
-/// Digiflow OSE Provider extending [BaseUblOseProvider] with strict `SOAPAction` and GRE modes.
+/// Proveedor OSE de Digiflow que extiende [BaseUblOseProvider] con cabecera `SOAPAction` estricta y modos duales para GRE.
 final class DigiflowProvider extends BaseUblOseProvider {
+  /// Configuración de endpoint, credenciales WS-Security y modo de despacho GRE de Digiflow.
   final DigiflowConfig config;
+
+  /// Constructor de sobres SOAP 1.1 con atributo `soapenv:mustUnderstand="1"`.
   final DigiflowSoapEnvelope envelopeBuilder;
   final Map<String, CdrData> _syncDespatchCdrCache = {};
 
+  /// Inicializa el proveedor [DigiflowProvider] con la configuración y dependencias opcionales.
   DigiflowProvider({
     required this.config,
     super.httpClient,

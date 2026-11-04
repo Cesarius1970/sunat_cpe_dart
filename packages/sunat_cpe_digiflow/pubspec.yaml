@@ -1,6 +1,6 @@
 name: sunat_cpe_digiflow
-description: Digiflow OSE SOAP 1.1 WS-Security adapter for SUNAT Electronic Invoicing (CPE) in pure Dart, implementing sunat_cpe_core contracts.
-version: 0.1.1
+description: Adaptador OSE de Digiflow sobre SOAP 1.1 WS-Security para Facturación Electrónica SUNAT (CPE) en Dart puro con soporte GRE dual.
+version: 0.1.2
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_digiflow
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_digiflow
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
@@ -17,7 +17,7 @@ environment:
   sdk: ">=3.13.5 <4.0.0"
 
 dependencies:
-  sunat_cpe_core: ^0.1.1
+  sunat_cpe_core: ^0.1.2
   xml: ^7.0.0
 
 dev_dependencies:
