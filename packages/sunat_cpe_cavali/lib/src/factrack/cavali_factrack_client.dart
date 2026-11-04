@@ -2,29 +2,39 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Conformity status of a credit invoice in Cavali Factrack (DU 013-2020 8-day window).
+/// Estado de conformidad de una factura comercial al crédito en Cavali Factrack (plazo de 8 días según DU 013-2020).
 enum InvoiceConformityStatus {
-  /// Within the 8 calendar day review window.
+  /// Dentro de la ventana de revisión de 8 días calendario.
   pending,
 
-  /// Express conformity granted by the buyer/acquirer.
+  /// Conformidad expresa otorgada por el adquirente o comprador.
   expressConformity,
 
-  /// Presumed conformity due to expiration of the 8-day window.
+  /// Conformidad presunta por vencimiento del plazo legal de 8 días.
   presumedConformity,
 
-  /// Disconformity registered by the buyer.
+  /// Disconformidad registrada por el adquirente.
   disconformity,
 }
 
-/// Cavali Factrack status for a negotiable invoice.
+/// Estado en Cavali Factrack para una factura comercial negociable.
 final class CavaliInvoiceStatus {
+  /// Identificador de la factura consultada.
   final DocumentId documentId;
+
+  /// Estado actual de conformidad de la factura.
   final InvoiceConformityStatus conformityStatus;
+
+  /// Indica si la factura ya se encuentra anotada en cuenta en Cavali ICLV.
   final bool isRegisteredInCavali;
+
+  /// Identificador de proceso o lote asignado por Cavali Factrack.
   final String? cavaliProcessId;
+
+  /// Fecha y hora en que se registró la conformidad.
   final DateTime? conformityDate;
 
+  /// Crea un registro inmutable de estado de factura negociable en Cavali.
   const CavaliInvoiceStatus({
     required this.documentId,
     required this.conformityStatus,
@@ -34,25 +44,31 @@ final class CavaliInvoiceStatus {
   });
 }
 
-/// Extended capability interface for Cavali Factrack factoring operations.
+/// Interfaz de capacidad extendida para operaciones de Factoring en Cavali Factrack.
 abstract interface class CavaliFactoringCapability {
-  /// Sends a batch of accepted credit invoices (XML + CDR) to Cavali Factrack (`POST /invoice/xml`).
+  /// Envía un lote de facturas al crédito aceptadas (XML + CDR) a Cavali Factrack (`POST /invoice/xml`).
   Future<CpeResult<String>> registerInvoicesForFactoring(
     List<CpeEmissionResponse> acceptedInvoices,
   );
 
-  /// Queries the conformity and book-entry status of a credit invoice in Cavali.
+  /// Consulta el estado de conformidad y anotación en cuenta de una factura al crédito en Cavali.
   Future<CpeResult<CavaliInvoiceStatus>> checkConformityStatus(
     DocumentId documentId,
   );
 }
 
-/// REST client for Cavali Factrack v2 (`/invoice/xml` and `/invoice/status`).
+/// Cliente REST para Cavali Factrack v2 (`/invoice/xml` y `/invoice/status`).
 final class CavaliFactrackClient implements CavaliFactoringCapability {
+  /// URL base del servicio REST Cavali Factrack v2.
   final Uri baseUri;
+
+  /// Cliente HTTP subyacente (usualmente configurado con [CavaliOAuth2Interceptor]).
   final CpeHttpClient httpClient;
+
+  /// Tiempo máximo de espera por petición HTTP.
   final Duration timeout;
 
+  /// Crea una instancia constante de [CavaliFactrackClient].
   const CavaliFactrackClient({
     required this.baseUri,
     required this.httpClient,

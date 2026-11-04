@@ -5,15 +5,17 @@ import 'factrack/cavali_factrack_client.dart';
 import 'factrack/cavali_oauth2_interceptor.dart';
 import 'ose/gosocket_soap_delegate.dart';
 
-/// Cavali / Gosocket / Carvajal Provider implementing both [OseProvider]
-/// (SOAP 1.1 UBL 2.1 validation) and [CavaliFactoringCapability] (Cavali Factrack v2).
+/// Proveedor Cavali / Gosocket / Carvajal que implementa tanto [OseProvider]
+/// (validación SOAP 1.1 UBL 2.1) como [CavaliFactoringCapability] (Cavali Factrack v2).
 final class CavaliProvider
     with TicketPollingMixin
     implements OseProvider, CavaliFactoringCapability {
+  /// Configuración de endpoints y credenciales para OSE y Factrack.
   final CavaliConfig config;
   final GosocketSoapDelegate _oseDelegate;
   final CavaliFactrackClient _factrackClient;
 
+  /// Crea una instancia de [CavaliProvider].
   CavaliProvider({
     required this.config,
     CpeHttpClient? oseHttpClient,

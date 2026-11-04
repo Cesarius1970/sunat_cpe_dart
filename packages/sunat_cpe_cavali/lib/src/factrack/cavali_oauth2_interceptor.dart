@@ -2,18 +2,30 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// OAuth2 `client_credentials` + `x-api-key` interceptor for Cavali Factrack v2 REST API.
+/// Interceptor OAuth2 `client_credentials` + `x-api-key` para la API REST Cavali Factrack v2.
 final class CavaliOAuth2Interceptor implements CpeHttpInterceptor {
+  /// Endpoint OAuth2 para la obtención del token (`/oauth/token`).
   final Uri tokenEndpoint;
+
+  /// Identificador de cliente OAuth2 (`client_id`).
   final String clientId;
+
+  /// Secreto de cliente OAuth2 (`client_secret`).
   final String clientSecret;
+
+  /// Llave opcional de API Gateway (`x-api-key`).
   final String? apiKey;
+
+  /// Cliente HTTP dedicado a la autenticación OAuth2.
   final CpeHttpClient authHttpClient;
+
+  /// Margen de seguridad previo a la expiración para refrescar el token en caché.
   final Duration refreshBuffer;
 
   String? _cachedToken;
   DateTime? _expiresAt;
 
+  /// Crea una instancia de [CavaliOAuth2Interceptor].
   CavaliOAuth2Interceptor({
     required this.tokenEndpoint,
     required this.clientId,
@@ -23,6 +35,7 @@ final class CavaliOAuth2Interceptor implements CpeHttpInterceptor {
     this.refreshBuffer = const Duration(seconds: 60),
   }) : authHttpClient = authHttpClient ?? DefaultCpeHttpClient();
 
+  /// Obtiene un token de acceso OAuth2 vigente (desde caché o solicitando uno nuevo).
   Future<String> getValidAccessToken() async {
     final now = DateTime.now();
     if (_cachedToken != null &&

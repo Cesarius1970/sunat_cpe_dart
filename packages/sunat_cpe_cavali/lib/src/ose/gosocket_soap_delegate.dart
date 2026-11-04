@@ -1,7 +1,8 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Internal SOAP 1.1 delegate for Gosocket / Carvajal OSE validation.
+/// Delegado interno SOAP 1.1 para la validación OSE en Gosocket / Carvajal.
 final class GosocketSoapDelegate extends BaseUblOseProvider {
+  /// Crea una instancia de [GosocketSoapDelegate].
   GosocketSoapDelegate({
     required super.endpointUri,
     required super.wsseUsername,

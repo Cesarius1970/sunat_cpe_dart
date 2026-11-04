@@ -1,4 +1,4 @@
-/// Cavali / Gosocket / Carvajal OSE SOAP 1.1 and Factrack Factoring REST OAuth2 adapter for SUNAT CPE.
+/// Adaptador OSE SOAP 1.1 (Cavali / Gosocket / Carvajal) y API REST OAuth2 de Factoring (Factrack v2) para SUNAT CPE.
 library;
 
 export 'src/cavali_config.dart';
