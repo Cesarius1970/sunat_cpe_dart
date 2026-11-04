@@ -1,6 +1,6 @@
 name: sunat_cpe_direct
-description: Direct SUNAT SOL (SOAP billService + REST OAuth2 GRE) adapter for Peruvian Electronic Invoicing (CPE) in pure Dart, implementing sunat_cpe_core contracts.
-version: 0.1.1
+description: Adaptador de emisión directa a SUNAT Operaciones en Línea (SOAP billService y API REST OAuth2 GRE) para facturación electrónica peruana en Dart puro.
+version: 0.1.2
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_direct
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_direct
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
@@ -19,7 +19,7 @@ environment:
 dependencies:
   crypto: ^3.0.6
   pointycastle: ^4.0.0
-  sunat_cpe_core: ^0.1.1
+  sunat_cpe_core: ^0.1.2
 
 dev_dependencies:
   lints: ^6.0.0

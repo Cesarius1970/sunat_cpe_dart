@@ -1,9 +1,11 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Internal SOAP 1.1 delegate extending [BaseUblOseProvider] for direct SUNAT `billService` endpoints.
+/// Delegado interno SOAP 1.1 que extiende [BaseUblOseProvider] para los endpoints `billService` directos de SUNAT.
 final class SunatDirectSoapDelegate extends BaseUblOseProvider {
+  /// Identificador interno del canal SOAP (`sunat_direct_soap_factura`, `sunat_direct_soap_otroscpe`, etc.).
   final String channelId;
 
+  /// Crea una instancia de [SunatDirectSoapDelegate].
   SunatDirectSoapDelegate({
     required this.channelId,
     required super.endpointUri,

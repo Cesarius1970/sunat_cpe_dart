@@ -3,13 +3,21 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// REST client for SUNAT `api-cpe.sunat.gob.pe/v1/contribuyente/gem` (Guías de Remisión 09/31).
+/// Cliente REST para `api-cpe.sunat.gob.pe/v1/contribuyente/gem` de SUNAT (Guías de Remisión 09/31).
 final class SunatDirectGreRestClient {
+  /// URL base del servicio REST GRE de SUNAT.
   final Uri baseUri;
+
+  /// Cliente HTTP subyacente (configurado con [SunatDirectOAuth2Interceptor]).
   final CpeHttpClient httpClient;
+
+  /// Codificador ZIP para empaquetar el XML firmado y desempaquetar el CDR.
   final CpeZipCodec zipCodec;
+
+  /// Tiempo máximo de espera por petición HTTP.
   final Duration timeout;
 
+  /// Crea una instancia constante de [SunatDirectGreRestClient].
   const SunatDirectGreRestClient({
     required this.baseUri,
     required this.httpClient,
@@ -17,7 +25,7 @@ final class SunatDirectGreRestClient {
     this.timeout = const Duration(seconds: 30),
   });
 
-  /// Sends a signed GRE `.zip` archive with its SHA-256 hex digest (`arcGreZip` + `hashZip`).
+  /// Envía un archivo `.zip` de Guía de Remisión firmada junto con su resumen SHA-256 en hexadecimal (`arcGreZip` + `hashZip`).
   Future<CpeResult<TicketResponse>> sendDespatchZip({
     required DocumentId documentId,
     required String signedXmlContent,
@@ -100,7 +108,7 @@ final class SunatDirectGreRestClient {
     }
   }
 
-  /// Queries a GRE ticket at `GET /comprobantes/envios/{ticket}`.
+  /// Consulta el estado de un ticket GRE en `GET /comprobantes/envios/{ticket}`.
   Future<CpeResult<TicketStatusResponse>> checkGreTicket(String ticket) async {
     try {
       final baseStr = baseUri.toString().replaceAll(RegExp(r'/+$'), '');

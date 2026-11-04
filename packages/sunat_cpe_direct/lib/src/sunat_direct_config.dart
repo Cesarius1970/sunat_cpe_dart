@@ -2,18 +2,18 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 import 'sunat_direct_mock_certificate.dart';
 
-/// Operating environments for direct SUNAT Web Services (SOAP & REST GRE).
+/// Entornos operativos para los Web Services directos de SUNAT (SOAP y API REST GRE).
 enum SunatDirectEnvironment {
-  /// SUNAT Beta testing environment (`e-beta.sunat.gob.pe`).
+  /// Ambiente de pruebas Beta de SUNAT (`e-beta.sunat.gob.pe`).
   beta,
 
-  /// SUNAT Homologation / SQA environment.
+  /// Ambiente de Homologación / SQA de SUNAT.
   homologacion,
 
-  /// SUNAT Production environment (`e-factura.sunat.gob.pe`).
+  /// Ambiente de Producción de SUNAT (`e-factura.sunat.gob.pe`).
   produccion;
 
-  /// SOAP endpoint for Invoices (01), Boletas (03), Settlements (04), Notes (07/08), RC, and RA.
+  /// Endpoint SOAP para Facturas (01), Boletas (03), Liquidaciones (04), Notas (07/08), RC y RA.
   Uri get soapInvoiceUri => Uri.parse(switch (this) {
     SunatDirectEnvironment.beta =>
       'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService',
@@ -23,7 +23,7 @@ enum SunatDirectEnvironment {
       'https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService',
   });
 
-  /// SOAP endpoint for Retentions (20), Perceptions (40), and Reversions (RR).
+  /// Endpoint SOAP para Retenciones (20), Percepciones (40) y Reversiones (RR).
   Uri get soapOtrosCpeUri => Uri.parse(switch (this) {
     SunatDirectEnvironment.beta => 'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService',
     SunatDirectEnvironment.homologacion =>
@@ -32,7 +32,7 @@ enum SunatDirectEnvironment {
       'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService',
   });
 
-  /// Legacy SOAP endpoint for Despatch Advice (09/31) when `useRestForGre` is false.
+  /// Endpoint SOAP heredado para Guías de Remisión (09/31) cuando `useRestForGre` es `false`.
   Uri get soapGuiaRemisionUri => Uri.parse(switch (this) {
     SunatDirectEnvironment.beta =>
       'https://e-beta.sunat.gob.pe/ol-ti-itemision-guia-gem-beta/billService',
@@ -41,47 +41,49 @@ enum SunatDirectEnvironment {
     SunatDirectEnvironment.produccion => 'https://e-guiaremision.sunat.gob.pe/ol-ti-itemision-guia-gem/billService',
   });
 
-  /// OAuth2 token endpoint for SUNAT REST API (`api-seguridad.sunat.gob.pe`).
+  /// Endpoint OAuth2 para la obtención de tokens en la API REST de SUNAT (`api-seguridad.sunat.gob.pe`).
   Uri restOAuthTokenUri(String clientId) => Uri.parse(
     'https://api-seguridad.sunat.gob.pe/v1/clientessol/$clientId/oauth2/token',
   );
 
-  /// Base URL for SUNAT REST GRE API (`api-cpe.sunat.gob.pe`).
+  /// URL base para la API REST de Guías de Remisión Electrónicas de SUNAT (`api-cpe.sunat.gob.pe`).
   Uri get restGreBaseUri =>
       Uri.parse('https://api-cpe.sunat.gob.pe/v1/contribuyente/gem');
 }
 
-/// Configuration and SOL / OAuth2 credentials for [SunatDirectProvider].
+/// Configuración y credenciales SOL / OAuth2 para [SunatDirectProvider].
 final class SunatDirectConfig {
-  /// 11-digit RUC of the issuing taxpayer.
+  /// RUC de 11 dígitos del contribuyente emisor.
   final String ruc;
 
-  /// Secondary SOL username (e.g. `MODDATOS` in beta).
+  /// Usuario secundario SOL (p. ej. `MODDATOS` en el ambiente Beta).
   final String usuarioSol;
 
-  /// SOL password.
+  /// Contraseña de la Clave SOL.
   final String claveSol;
 
-  /// OAuth2 Client ID for SUNAT REST GRE API (`09`/`31`).
+  /// Client ID OAuth2 para la API REST GRE de SUNAT (`09`/`31`).
   final String? clientId;
 
-  /// OAuth2 Client Secret for SUNAT REST GRE API (`09`/`31`).
+  /// Client Secret OAuth2 para la API REST GRE de SUNAT (`09`/`31`).
   final String? clientSecret;
 
-  /// Target SUNAT environment.
+  /// Entorno objetivo de SUNAT.
   final SunatDirectEnvironment environment;
 
-  /// Digital certificate used for XAdES-BES signing.
+  /// Certificado digital utilizado para la firma XAdES-BES.
   final CpeCertificateCredentials certificate;
 
-  /// Whether [certificate] is a synthetic mock certificate (only allowed in [SunatDirectEnvironment.beta]).
+  /// Indica si [certificate] es un certificado simulado de prueba (permitido únicamente en [SunatDirectEnvironment.beta]).
   final bool isMockCertificate;
 
-  /// Uses SUNAT REST OAuth2 API (`api-cpe.sunat.gob.pe`) for Despatch Advice (`09`/`31`) when true.
+  /// Utiliza la API REST OAuth2 de SUNAT (`api-cpe.sunat.gob.pe`) para Guías de Remisión (`09`/`31`) cuando es `true`.
   final bool useRestForGre;
 
+  /// Tiempo máximo de espera por petición HTTP.
   final Duration timeout;
 
+  /// Crea una configuración validada para [SunatDirectProvider].
   SunatDirectConfig({
     required this.ruc,
     required this.usuarioSol,
@@ -99,7 +101,7 @@ final class SunatDirectConfig {
          isMockCertificate: isMockCertificate,
        );
 
-  /// Convenience factory for SUNAT Beta (`20100066603` / `MODDATOS` / `moddatos`).
+  /// Constructor de fábrica para el ambiente Beta de SUNAT (`20100066603` / `MODDATOS` / `moddatos`).
   factory SunatDirectConfig.beta({
     String ruc = '20100066603',
     String usuarioSol = 'MODDATOS',
@@ -122,11 +124,11 @@ final class SunatDirectConfig {
     );
   }
 
-  /// Composite WS-Security and OAuth2 username (`{RUC}{USUARIO_SOL}`).
+  /// Nombre de usuario compuesto para WS-Security y OAuth2 (`{RUC}{USUARIO_SOL}`).
   String get wsseUsername =>
       usuarioSol.startsWith(ruc) ? usuarioSol : '$ruc$usuarioSol';
 
-  /// True if `clientId` and `clientSecret` are configured for SUNAT REST GRE OAuth2.
+  /// Devuelve `true` si `clientId` y `clientSecret` están configurados para OAuth2 en la API REST GRE de SUNAT.
   bool get hasRestCredentials =>
       clientId != null &&
       clientId!.trim().isNotEmpty &&

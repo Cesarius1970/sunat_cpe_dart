@@ -4,13 +4,13 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Generates a deterministic mock RSA keypair exclusively for `SunatDirectEnvironment.beta` testing.
+/// Genera un par de llaves RSA determinista de prueba exclusivamente para el ambiente `SunatDirectEnvironment.beta`.
 final class SunatDirectMockCertificateFactory {
   static CpeCertificateCredentials? _cachedMock;
 
   const SunatDirectMockCertificateFactory._();
 
-  /// Returns a valid 1024-bit RSA test certificate for SUNAT Beta environment.
+  /// Devuelve un certificado RSA de 1024 bits de prueba válido para el ambiente Beta de SUNAT.
   static CpeCertificateCredentials createBetaMockCertificate() {
     if (_cachedMock != null) {
       return _cachedMock!;

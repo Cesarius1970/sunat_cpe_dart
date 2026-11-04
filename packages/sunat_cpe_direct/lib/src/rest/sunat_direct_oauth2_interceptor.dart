@@ -2,19 +2,33 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Acquires and caches OAuth2 Bearer tokens from `api-seguridad.sunat.gob.pe` for SUNAT REST GRE.
+/// Obtiene y almacena en caché tokens OAuth2 Bearer desde `api-seguridad.sunat.gob.pe` para la API REST GRE de SUNAT.
 final class SunatDirectOAuth2Interceptor implements CpeHttpInterceptor {
+  /// Endpoint OAuth2 de seguridad de SUNAT.
   final Uri tokenEndpoint;
+
+  /// Client ID OAuth2 asignado en SUNAT Operaciones en Línea.
   final String clientId;
+
+  /// Client Secret OAuth2 asignado en SUNAT Operaciones en Línea.
   final String clientSecret;
+
+  /// Usuario compuesto `{RUC}{USUARIO_SOL}`.
   final String usernameOAuth2;
+
+  /// Contraseña de la Clave SOL.
   final String claveSol;
+
+  /// Cliente HTTP dedicado a la solicitud del token OAuth2.
   final CpeHttpClient authHttpClient;
+
+  /// Margen de seguridad previo a la expiración para renovar el token en caché.
   final Duration refreshBuffer;
 
   String? _cachedToken;
   DateTime? _expiresAt;
 
+  /// Crea una instancia de [SunatDirectOAuth2Interceptor].
   SunatDirectOAuth2Interceptor({
     required this.tokenEndpoint,
     required this.clientId,
@@ -25,6 +39,7 @@ final class SunatDirectOAuth2Interceptor implements CpeHttpInterceptor {
     this.refreshBuffer = const Duration(seconds: 60),
   }) : authHttpClient = authHttpClient ?? DefaultCpeHttpClient();
 
+  /// Devuelve un token de acceso OAuth2 válido (desde caché o solicitando uno nuevo a SUNAT).
   Future<String> getValidAccessToken() async {
     final now = DateTime.now();
     if (_cachedToken != null &&

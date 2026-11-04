@@ -5,15 +5,24 @@ import 'rest/sunat_direct_oauth2_interceptor.dart';
 import 'soap/sunat_direct_soap_delegate.dart';
 import 'sunat_direct_config.dart';
 
-/// Direct SUNAT SOL Provider implementing [OseProvider] with intelligent channel routing:
-/// - `soapInvoiceDelegate`: Facturas (01), Boletas (03), Liquidaciones (04), Notas (07/08), RC, RA.
-/// - `soapOtrosCpeDelegate`: Retenciones (20), Percepciones (40), Reversiones (RR).
-/// - `greRestClient` (or `soapGreDelegate`): Guías de Remisión (09/31) via OAuth2 REST (`arcGreZip` + `hashZip`).
+/// Proveedor de emisión directa a SUNAT SOL que implementa [OseProvider] con enrutamiento inteligente de canales:
+/// - `_soapInvoiceDelegate`: Facturas (01), Boletas (03), Liquidaciones (04), Notas (07/08), RC y RA.
+/// - `_soapOtrosCpeDelegate`: Retenciones (20), Percepciones (40) y Reversiones (RR).
+/// - `_greRestClient` (o `_soapGreDelegate`): Guías de Remisión (09/31) vía API REST OAuth2 (`arcGreZip` + `hashZip`).
 final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración de entorno, credenciales SOL/OAuth2 y certificado digital.
   final SunatDirectConfig config;
+
+  /// Motor de validación matemática pre-envío.
   final CpeMathValidator validator;
+
+  /// Generador de documentos XML UBL 2.1 / 2.0.
   final UblXmlBuilder xmlBuilder;
+
+  /// Firmador digital XAdES-BES en Dart puro.
   final XadesBesSigner signer;
+
+  /// Codificador ZIP y lector de CDR.
   final CpeZipCodec zipCodec;
 
   late final SunatDirectSoapDelegate _soapInvoiceDelegate;
@@ -21,9 +30,10 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
   late final SunatDirectSoapDelegate _soapGreDelegate;
   SunatDirectGreRestClient? _greRestClient;
 
-  /// Tracks which internal channel issued a given ticket (`'rest_gre'`, `'soap_otros'`, `'soap_invoice'`).
+  /// Registra qué canal interno emitió cada ticket (`'rest_gre'`, `'soap_otros'`, `'soap_invoice'`).
   final Map<String, String> _ticketChannelRegistry = {};
 
+  /// Crea una instancia de [SunatDirectProvider].
   SunatDirectProvider({
     required this.config,
     CpeHttpClient? soapHttpClient,

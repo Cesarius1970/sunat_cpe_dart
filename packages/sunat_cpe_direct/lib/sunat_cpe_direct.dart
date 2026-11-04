@@ -1,4 +1,4 @@
-/// Direct SUNAT SOL (SOAP billService + REST OAuth2 GRE) adapter for Peruvian Electronic Invoicing (CPE).
+/// Adaptador de emisión directa a SUNAT Operaciones en Línea (SOAP billService + API REST OAuth2 GRE) para Facturación Electrónica (CPE).
 library;
 
 export 'src/rest/sunat_direct_gre_rest_client.dart';
