@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'mappers/mifact_guide_mapper.dart';
 import 'mappers/mifact_invoice_mapper.dart';
 import 'mappers/mifact_response_mapper.dart';
@@ -24,21 +26,21 @@ final class MifactProvider with TicketPollingMixin implements OseProvider {
     this.guideMapper = const MifactGuideMapper(),
     this.summaryMapper = const MifactSummaryMapper(),
     this.responseMapper = const MifactResponseMapper(),
-  })  : httpClient = httpClient ?? DefaultCpeHttpClient(),
-        validator = validator ?? CpeMathValidator();
+  }) : httpClient = httpClient ?? DefaultCpeHttpClient(),
+       validator = validator ?? CpeMathValidator();
 
   @override
   String get providerId => 'mifact';
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
@@ -201,14 +203,14 @@ final class MifactProvider with TicketPollingMixin implements OseProvider {
       return switch (queryRes) {
         CpeFailure<CpeStatusQueryResponse>(:final error) => CpeFailure(error),
         CpeSuccess<CpeStatusQueryResponse>(:final data) => CpeSuccess(
-            TicketStatusResponse(
-              ticket: ticket,
-              status: data.status,
-              cdr: data.cdr,
-              statusCode: data.statusCode,
-              statusMessage: data.statusMessage,
-            ),
+          TicketStatusResponse(
+            ticket: ticket,
+            status: data.status,
+            cdr: data.cdr,
+            statusCode: data.statusCode,
+            statusMessage: data.statusMessage,
           ),
+        ),
       };
     } on CpeException catch (e) {
       return CpeFailure(e);
@@ -244,10 +246,7 @@ final class MifactProvider with TicketPollingMixin implements OseProvider {
     }
   }
 
-  Future<CpeHttpResponse> _postJson(
-    String path,
-    Map<String, dynamic> payload,
-  ) {
+  Future<CpeHttpResponse> _postJson(String path, Map<String, dynamic> payload) {
     final baseStr = config.baseUri.toString().replaceAll(RegExp(r'/+$'), '');
     final cleanPath = path.startsWith('/') ? path : '/$path';
     return httpClient.send(

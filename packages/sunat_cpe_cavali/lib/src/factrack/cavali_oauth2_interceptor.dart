@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// OAuth2 `client_credentials` + `x-api-key` interceptor for Cavali Factrack v2 REST API.
@@ -30,7 +31,8 @@ final class CavaliOAuth2Interceptor implements CpeHttpInterceptor {
       return _cachedToken!;
     }
 
-    final formBody = 'grant_type=client_credentials'
+    final formBody =
+        'grant_type=client_credentials'
         '&client_id=${Uri.encodeQueryComponent(clientId)}'
         '&client_secret=${Uri.encodeQueryComponent(clientSecret)}';
 
@@ -49,7 +51,8 @@ final class CavaliOAuth2Interceptor implements CpeHttpInterceptor {
 
     if (response.statusCode != 200) {
       throw OseAuthException(
-        message: 'Cavali Factrack OAuth2 failed (HTTP ${response.statusCode}): ${response.bodyAsString}',
+        message:
+            'Cavali Factrack OAuth2 failed (HTTP ${response.statusCode}): ${response.bodyAsString}',
         code: response.statusCode.toString(),
         rawResponse: response.bodyAsString,
       );

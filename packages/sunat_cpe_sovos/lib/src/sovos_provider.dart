@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'soap/sovos_soap_delegate.dart';
 import 'sovos_config.dart';
 import 'ubl/sovos_ubl_extension_builder.dart';
@@ -13,22 +14,23 @@ final class SovosProvider with TicketPollingMixin implements OseProvider {
     CpeHttpClient? httpClient,
     CpeMathValidator? validator,
     UblXmlBuilder xmlBuilder = const UblXmlBuilder(),
-    SovosUblExtensionBuilder extensionBuilder = const SovosUblExtensionBuilder(),
+    SovosUblExtensionBuilder extensionBuilder =
+        const SovosUblExtensionBuilder(),
     XadesBesSigner signer = const XadesBesSigner(),
     CpeZipCodec zipCodec = const CpeZipCodec(),
   }) : _delegate = SovosSoapDelegate(
-          endpointUri: config.endpointUri,
-          wsseUsername: config.username,
-          wssePassword: config.password,
-          certificate: config.certificate,
-          httpClient: httpClient,
-          validator: validator,
-          xmlBuilder: xmlBuilder,
-          extensionBuilder: extensionBuilder,
-          customPrintFields: config.customPrintFields,
-          signer: signer,
-          zipCodec: zipCodec,
-        );
+         endpointUri: config.endpointUri,
+         wsseUsername: config.username,
+         wssePassword: config.password,
+         certificate: config.certificate,
+         httpClient: httpClient,
+         validator: validator,
+         xmlBuilder: xmlBuilder,
+         extensionBuilder: extensionBuilder,
+         customPrintFields: config.customPrintFields,
+         signer: signer,
+         zipCodec: zipCodec,
+       );
 
   @override
   String get providerId => 'sovos';
@@ -41,7 +43,8 @@ final class SovosProvider with TicketPollingMixin implements OseProvider {
     SalesCpeDocument document,
   ) async {
     final result = await _delegate.sendDocument(document);
-    if (!config.autoRecoverCdrOnDuplicate || result is CpeSuccess<CpeEmissionResponse>) {
+    if (!config.autoRecoverCdrOnDuplicate ||
+        result is CpeSuccess<CpeEmissionResponse>) {
       return result;
     }
 
@@ -84,39 +87,32 @@ final class SovosProvider with TicketPollingMixin implements OseProvider {
   @override
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
     AgentCpeDocument document,
-  ) =>
-      _delegate.sendRetentionOrPerception(document);
+  ) => _delegate.sendRetentionOrPerception(document);
 
   @override
   Future<CpeResult<TicketResponse>> sendDailySummary(
     DailySummaryDocument summary,
-  ) =>
-      _delegate.sendDailySummary(summary);
+  ) => _delegate.sendDailySummary(summary);
 
   @override
-  Future<CpeResult<TicketResponse>> sendVoidedDocument(
-    VoidedDocument voided,
-  ) =>
+  Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided) =>
       _delegate.sendVoidedDocument(voided);
 
   @override
   Future<CpeResult<TicketResponse>> sendDespatchAdvice(
     DespatchAdviceDocument guide,
-  ) =>
-      _delegate.sendDespatchAdvice(guide);
+  ) => _delegate.sendDespatchAdvice(guide);
 
   @override
   Future<CpeResult<TicketStatusResponse>> checkTicket(
     String ticket, {
     DocumentId? referenceId,
-  }) =>
-      _delegate.checkTicket(ticket, referenceId: referenceId);
+  }) => _delegate.checkTicket(ticket, referenceId: referenceId);
 
   @override
   Future<CpeResult<CpeStatusQueryResponse>> queryDocumentStatus(
     DocumentStatusQuery query,
-  ) =>
-      _delegate.queryDocumentStatus(query);
+  ) => _delegate.queryDocumentStatus(query);
 
   static bool _isDuplicateSubmissionError(CpeException error) {
     return switch (error) {

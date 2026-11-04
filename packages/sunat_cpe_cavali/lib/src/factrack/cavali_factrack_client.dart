@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Conformity status of a credit invoice in Cavali Factrack (DU 013-2020 8-day window).
@@ -74,9 +75,7 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
       }).toList();
 
       final payload = {
-        'invoiceXMLDetail': {
-          'invoiceXML': invoiceEntries,
-        },
+        'invoiceXMLDetail': {'invoiceXML': invoiceEntries},
       };
 
       final baseStr = baseUri.toString().replaceAll(RegExp(r'/+$'), '');
@@ -96,7 +95,8 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
       if (response.statusCode != 200 && response.statusCode != 201) {
         return CpeFailure(
           OseTransportException(
-            message: 'Cavali Factrack /invoice/xml error (HTTP ${response.statusCode}): ${response.bodyAsString}',
+            message:
+                'Cavali Factrack /invoice/xml error (HTTP ${response.statusCode}): ${response.bodyAsString}',
             httpStatusCode: response.statusCode,
             rawResponse: response.bodyAsString,
           ),
@@ -104,7 +104,8 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
       }
 
       final decoded = jsonDecode(response.bodyAsString) as Map<String, dynamic>;
-      final processId = decoded['idProceso']?.toString() ??
+      final processId =
+          decoded['idProceso']?.toString() ??
           decoded['processId']?.toString() ??
           'CAVALI-PROC';
       return CpeSuccess(processId);
@@ -113,7 +114,8 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
     } catch (e, st) {
       return CpeFailure(
         OseTransportException(
-          message: 'Unexpected error registering invoices in Cavali Factrack: $e',
+          message:
+              'Unexpected error registering invoices in Cavali Factrack: $e',
           rawResponse: e,
           stackTrace: st,
         ),
@@ -148,7 +150,8 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
       if (response.statusCode != 200) {
         return CpeFailure(
           OseTransportException(
-            message: 'Cavali Factrack /invoice/status error (HTTP ${response.statusCode})',
+            message:
+                'Cavali Factrack /invoice/status error (HTTP ${response.statusCode})',
             httpStatusCode: response.statusCode,
             rawResponse: response.bodyAsString,
           ),
@@ -156,11 +159,18 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
       }
 
       final decoded = jsonDecode(response.bodyAsString) as Map<String, dynamic>;
-      final stateCode = decoded['estadoConformidad']?.toString().toUpperCase() ?? 'PENDIENTE';
+      final stateCode =
+          decoded['estadoConformidad']?.toString().toUpperCase() ?? 'PENDIENTE';
       final conformity = switch (stateCode) {
-        'EXPRESA' || 'EXPRESS' || '01' => InvoiceConformityStatus.expressConformity,
-        'PRESUNTA' || 'PRESUMED' || '02' => InvoiceConformityStatus.presumedConformity,
-        'DISCONFORME' || 'DISCONFORMITY' || '03' => InvoiceConformityStatus.disconformity,
+        'EXPRESA' ||
+        'EXPRESS' ||
+        '01' => InvoiceConformityStatus.expressConformity,
+        'PRESUNTA' ||
+        'PRESUMED' ||
+        '02' => InvoiceConformityStatus.presumedConformity,
+        'DISCONFORME' ||
+        'DISCONFORMITY' ||
+        '03' => InvoiceConformityStatus.disconformity,
         _ => InvoiceConformityStatus.pending,
       };
 
@@ -168,7 +178,8 @@ final class CavaliFactrackClient implements CavaliFactoringCapability {
         CavaliInvoiceStatus(
           documentId: documentId,
           conformityStatus: conformity,
-          isRegisteredInCavali: decoded['anotadaEnCuenta'] == true ||
+          isRegisteredInCavali:
+              decoded['anotadaEnCuenta'] == true ||
               decoded['registered'] == true ||
               conformity != InvoiceConformityStatus.pending,
           cavaliProcessId: decoded['idProceso']?.toString(),

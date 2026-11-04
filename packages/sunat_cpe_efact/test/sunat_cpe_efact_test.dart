@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:sunat_cpe_efact/sunat_cpe_efact.dart';
 import 'package:test/test.dart';
@@ -28,10 +29,7 @@ InvoiceDocument _sampleInvoice() {
     issuer: const CompanyParty(
       ruc: '20100066603',
       legalName: 'EMPRESA DEMO S.A.C.',
-      address: Address(
-        ubigeo: '150101',
-        streetLine: 'AV. CENTRAL 123',
-      ),
+      address: Address(ubigeo: '150101', streetLine: 'AV. CENTRAL 123'),
     ),
     customer: const CustomerParty(
       documentType: IdentityDocumentType.ruc,
@@ -100,7 +98,9 @@ void main() {
       });
 
       final interceptor = EfactOAuth2Interceptor(
-        tokenEndpoint: Uri.parse('https://ose.efact.pe/api-efact-ose/oauth/token'),
+        tokenEndpoint: Uri.parse(
+          'https://ose.efact.pe/api-efact-ose/oauth/token',
+        ),
         username: '20100066603',
         password: 'secret-password',
         authHttpClient: authClient,
@@ -128,16 +128,23 @@ void main() {
       var cdrPollAttempts = 0;
       final mockHttp = _MockHttpClient((req) async {
         if (req.uri.path.endsWith('/v1/document')) {
-          expect(req.headers['Content-Type'], startsWith('multipart/form-data'));
+          expect(
+            req.headers['Content-Type'],
+            startsWith('multipart/form-data'),
+          );
           return CpeHttpResponse(
             statusCode: 200,
             headers: const {'content-type': 'application/json'},
             bodyBytes: Uint8List.fromList(
-              utf8.encode('{"code":"0","description":"550e8400-e29b-41d4-a716-446655440000"}'),
+              utf8.encode(
+                '{"code":"0","description":"550e8400-e29b-41d4-a716-446655440000"}',
+              ),
             ),
           );
         }
-        if (req.uri.path.endsWith('/v1/cdr/550e8400-e29b-41d4-a716-446655440000')) {
+        if (req.uri.path.endsWith(
+          '/v1/cdr/550e8400-e29b-41d4-a716-446655440000',
+        )) {
           cdrPollAttempts++;
           if (cdrPollAttempts == 1) {
             return CpeHttpResponse(
@@ -202,7 +209,8 @@ void main() {
         httpClient: mockHttp,
       );
 
-      final emission = (await provider.sendDocument(_sampleInvoice())).getOrThrow();
+      final emission = (await provider.sendDocument(_sampleInvoice()))
+          .getOrThrow();
       expect(emission.status, CpeProcessStatus.inProcess);
       expect(emission.ticket, 'ticket-deferred-999');
       expect(emission.cdr, isNull);

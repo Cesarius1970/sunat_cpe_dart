@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'auth/efact_oauth2_interceptor.dart';
 import 'efact_config.dart';
 import 'rest/efact_json_mapper.dart';
@@ -31,7 +33,9 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
     if (config.mode == EfactIntegrationMode.soapUbl) {
       final cert = config.certificate;
       if (cert == null) {
-        throw ArgumentError('EfactConfig.certificate is required for EfactIntegrationMode.soapUbl');
+        throw ArgumentError(
+          'EfactConfig.certificate is required for EfactIntegrationMode.soapUbl',
+        );
       }
       _httpClient = httpClient ?? DefaultCpeHttpClient();
       _soapDelegate = EfactSoapDelegate(
@@ -46,12 +50,16 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
         zipCodec: zipCodec,
       );
     } else {
-      if (config.mode == EfactIntegrationMode.restXml && config.certificate == null) {
-        throw ArgumentError('EfactConfig.certificate is required for EfactIntegrationMode.restXml');
+      if (config.mode == EfactIntegrationMode.restXml &&
+          config.certificate == null) {
+        throw ArgumentError(
+          'EfactConfig.certificate is required for EfactIntegrationMode.restXml',
+        );
       }
       final baseStr = config.baseUri.toString().replaceAll(RegExp(r'/+$'), '');
       final tokenUri = Uri.parse('$baseStr/oauth/token');
-      _httpClient = httpClient ??
+      _httpClient =
+          httpClient ??
           DefaultCpeHttpClient(
             interceptors: [
               EfactOAuth2Interceptor(
@@ -77,14 +85,14 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.purchaseSettlement,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.purchaseSettlement,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
@@ -127,9 +135,7 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
   }
 
   @override
-  Future<CpeResult<TicketResponse>> sendVoidedDocument(
-    VoidedDocument voided,
-  ) {
+  Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided) {
     if (_soapDelegate != null) {
       return _soapDelegate!.sendVoidedDocument(voided);
     }
@@ -171,16 +177,16 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
     return switch (ticketResult) {
       CpeFailure<TicketStatusResponse>(:final error) => CpeFailure(error),
       CpeSuccess<TicketStatusResponse>(:final data) => CpeSuccess(
-          CpeStatusQueryResponse(
-            status: data.status,
-            statusCode: data.statusCode ?? '0',
-            statusMessage: data.statusMessage ?? '',
-            cdr: data.cdr,
-            cdrDownloadUrl: _restClient!.cdrDownloadUrl(ticketIdentifier),
-            xmlDownloadUrl: _restClient!.xmlDownloadUrl(ticketIdentifier),
-            pdfDownloadUrl: _restClient!.pdfDownloadUrl(ticketIdentifier),
-          ),
+        CpeStatusQueryResponse(
+          status: data.status,
+          statusCode: data.statusCode ?? '0',
+          statusMessage: data.statusMessage ?? '',
+          cdr: data.cdr,
+          cdrDownloadUrl: _restClient!.cdrDownloadUrl(ticketIdentifier),
+          xmlDownloadUrl: _restClient!.xmlDownloadUrl(ticketIdentifier),
+          pdfDownloadUrl: _restClient!.pdfDownloadUrl(ticketIdentifier),
         ),
+      ),
     };
   }
 
@@ -233,27 +239,27 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
           return switch (cdrResult) {
             CpeFailure<CdrData>(:final error) => CpeFailure(error),
             CpeSuccess<CdrData>(:final data) => CpeSuccess(
-                CpeEmissionResponse(
-                  documentId: document.id,
-                  status: data.warnings.isEmpty
-                      ? CpeProcessStatus.accepted
-                      : CpeProcessStatus.acceptedWithWarnings,
-                  cdr: data,
-                  ticket: ticket,
-                  signedXmlContent: prepared.signedXml,
-                  digestValue: prepared.digestValue ?? data.digestValue,
-                  qrContent: BaseUblOseProvider.buildStandardSunatQr(
-                    document: document,
-                    igvAmount: igvAmountForQr,
-                    totalAmount: totalAmountForQr,
-                    customer: customerForQr,
-                    digestValue: prepared.digestValue ?? data.digestValue ?? '',
-                  ),
-                  cdrDownloadUrl: _restClient!.cdrDownloadUrl(ticket),
-                  xmlDownloadUrl: _restClient!.xmlDownloadUrl(ticket),
-                  pdfDownloadUrl: _restClient!.pdfDownloadUrl(ticket),
+              CpeEmissionResponse(
+                documentId: document.id,
+                status: data.warnings.isEmpty
+                    ? CpeProcessStatus.accepted
+                    : CpeProcessStatus.acceptedWithWarnings,
+                cdr: data,
+                ticket: ticket,
+                signedXmlContent: prepared.signedXml,
+                digestValue: prepared.digestValue ?? data.digestValue,
+                qrContent: BaseUblOseProvider.buildStandardSunatQr(
+                  document: document,
+                  igvAmount: igvAmountForQr,
+                  totalAmount: totalAmountForQr,
+                  customer: customerForQr,
+                  digestValue: prepared.digestValue ?? data.digestValue ?? '',
                 ),
+                cdrDownloadUrl: _restClient!.cdrDownloadUrl(ticket),
+                xmlDownloadUrl: _restClient!.xmlDownloadUrl(ticket),
+                pdfDownloadUrl: _restClient!.pdfDownloadUrl(ticket),
               ),
+            ),
           };
       }
     } on CpeException catch (e) {
@@ -288,13 +294,13 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
       return switch (ticketRes) {
         CpeFailure<String>(:final error) => CpeFailure(error),
         CpeSuccess<String>(:final data) => CpeSuccess(
-            TicketResponse(
-              ticket: data,
-              referenceId: document.id,
-              receivedAt: DateTime.now(),
-              signedXmlContent: prepared.signedXml,
-            ),
+          TicketResponse(
+            ticket: data,
+            referenceId: document.id,
+            receivedAt: DateTime.now(),
+            signedXmlContent: prepared.signedXml,
           ),
+        ),
       };
     } on CpeException catch (e) {
       return CpeFailure(e);
@@ -315,7 +321,8 @@ final class EfactProvider with TicketPollingMixin implements OseProvider {
     String content,
     String? signedXml,
     String? digestValue,
-  }) _prepareMultipartPayload(CpeDocument document) {
+  })
+  _prepareMultipartPayload(CpeDocument document) {
     if (config.mode == EfactIntegrationMode.restXml) {
       final unsignedXml = xmlBuilder.buildUnsignedXml(document);
       final signed = signer.signXml(unsignedXml, config.certificate!);

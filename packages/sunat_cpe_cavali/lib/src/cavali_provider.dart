@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'cavali_config.dart';
 import 'factrack/cavali_factrack_client.dart';
 import 'factrack/cavali_oauth2_interceptor.dart';
@@ -21,98 +22,89 @@ final class CavaliProvider
     UblXmlBuilder xmlBuilder = const UblXmlBuilder(),
     XadesBesSigner signer = const XadesBesSigner(),
     CpeZipCodec zipCodec = const CpeZipCodec(),
-  })  : _oseDelegate = GosocketSoapDelegate(
-          endpointUri: config.oseSoapEndpoint,
-          wsseUsername: config.wsseUsername,
-          wssePassword: config.wssePassword,
-          certificate: config.certificate,
-          httpClient: oseHttpClient,
-          validator: validator,
-          xmlBuilder: xmlBuilder,
-          signer: signer,
-          zipCodec: zipCodec,
-        ),
-        _factrackClient = CavaliFactrackClient(
-          baseUri: config.factrackBaseUri,
-          timeout: config.timeout,
-          httpClient: factrackHttpClient ??
-              DefaultCpeHttpClient(
-                interceptors: [
-                  if (config.factrackClientId != null &&
-                      config.factrackClientSecret != null)
-                    CavaliOAuth2Interceptor(
-                      tokenEndpoint: Uri.parse(
-                        '${config.factrackBaseUri.toString().replaceAll(RegExp(r'/+$'), '')}/oauth/token',
-                      ),
-                      clientId: config.factrackClientId!,
-                      clientSecret: config.factrackClientSecret!,
-                      apiKey: config.factrackApiKey,
-                    ),
-                ],
-              ),
-        );
+  }) : _oseDelegate = GosocketSoapDelegate(
+         endpointUri: config.oseSoapEndpoint,
+         wsseUsername: config.wsseUsername,
+         wssePassword: config.wssePassword,
+         certificate: config.certificate,
+         httpClient: oseHttpClient,
+         validator: validator,
+         xmlBuilder: xmlBuilder,
+         signer: signer,
+         zipCodec: zipCodec,
+       ),
+       _factrackClient = CavaliFactrackClient(
+         baseUri: config.factrackBaseUri,
+         timeout: config.timeout,
+         httpClient:
+             factrackHttpClient ??
+             DefaultCpeHttpClient(
+               interceptors: [
+                 if (config.factrackClientId != null &&
+                     config.factrackClientSecret != null)
+                   CavaliOAuth2Interceptor(
+                     tokenEndpoint: Uri.parse(
+                       '${config.factrackBaseUri.toString().replaceAll(RegExp(r'/+$'), '')}/oauth/token',
+                     ),
+                     clientId: config.factrackClientId!,
+                     clientSecret: config.factrackClientSecret!,
+                     apiKey: config.factrackApiKey,
+                   ),
+               ],
+             ),
+       );
 
   @override
   String get providerId => 'cavali';
 
   @override
   Set<ProviderCapability> get capabilities => {
-        ..._oseDelegate.capabilities,
-        ProviderCapability.cavaliFactoring,
-      };
+    ..._oseDelegate.capabilities,
+    ProviderCapability.cavaliFactoring,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
     SalesCpeDocument document,
-  ) =>
-      _oseDelegate.sendDocument(document);
+  ) => _oseDelegate.sendDocument(document);
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
     AgentCpeDocument document,
-  ) =>
-      _oseDelegate.sendRetentionOrPerception(document);
+  ) => _oseDelegate.sendRetentionOrPerception(document);
 
   @override
   Future<CpeResult<TicketResponse>> sendDailySummary(
     DailySummaryDocument summary,
-  ) =>
-      _oseDelegate.sendDailySummary(summary);
+  ) => _oseDelegate.sendDailySummary(summary);
 
   @override
-  Future<CpeResult<TicketResponse>> sendVoidedDocument(
-    VoidedDocument voided,
-  ) =>
+  Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided) =>
       _oseDelegate.sendVoidedDocument(voided);
 
   @override
   Future<CpeResult<TicketResponse>> sendDespatchAdvice(
     DespatchAdviceDocument guide,
-  ) =>
-      _oseDelegate.sendDespatchAdvice(guide);
+  ) => _oseDelegate.sendDespatchAdvice(guide);
 
   @override
   Future<CpeResult<TicketStatusResponse>> checkTicket(
     String ticket, {
     DocumentId? referenceId,
-  }) =>
-      _oseDelegate.checkTicket(ticket, referenceId: referenceId);
+  }) => _oseDelegate.checkTicket(ticket, referenceId: referenceId);
 
   @override
   Future<CpeResult<CpeStatusQueryResponse>> queryDocumentStatus(
     DocumentStatusQuery query,
-  ) =>
-      _oseDelegate.queryDocumentStatus(query);
+  ) => _oseDelegate.queryDocumentStatus(query);
 
   @override
   Future<CpeResult<String>> registerInvoicesForFactoring(
     List<CpeEmissionResponse> acceptedInvoices,
-  ) =>
-      _factrackClient.registerInvoicesForFactoring(acceptedInvoices);
+  ) => _factrackClient.registerInvoicesForFactoring(acceptedInvoices);
 
   @override
   Future<CpeResult<CavaliInvoiceStatus>> checkConformityStatus(
     DocumentId documentId,
-  ) =>
-      _factrackClient.checkConformityStatus(documentId);
+  ) => _factrackClient.checkConformityStatus(documentId);
 }

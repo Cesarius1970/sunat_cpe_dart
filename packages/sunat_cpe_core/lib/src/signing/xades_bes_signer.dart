@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/asn1.dart';
 import 'package:pointycastle/export.dart';
 import 'package:xml/xml.dart';
+
 import '../results/cpe_result.dart';
 
 /// Holds RSA private key and X.509 certificate for XML-DSig / XAdES-BES signing.
@@ -44,7 +46,10 @@ final class CpeCertificateCredentials {
       throw const CpeValidationException(
         message: 'Empty PEM private key provided',
         issues: [
-          ValidationIssue(field: 'privateKeyPem', message: 'PEM content is empty'),
+          ValidationIssue(
+            field: 'privateKeyPem',
+            message: 'PEM content is empty',
+          ),
         ],
       );
     }
@@ -57,7 +62,9 @@ final class CpeCertificateCredentials {
     final elements = topSeq.elements!;
 
     // PKCS#8 PrivateKeyInfo has 3 elements (version, AlgorithmIdentifier, PrivateKey OctetString)
-    if (elements.length >= 3 && elements[1] is ASN1Sequence && elements[2] is ASN1OctetString) {
+    if (elements.length >= 3 &&
+        elements[1] is ASN1Sequence &&
+        elements[2] is ASN1OctetString) {
       final octetString = elements[2] as ASN1OctetString;
       final pkcs1Parser = ASN1Parser(octetString.octets!);
       final pkcs1Seq = pkcs1Parser.nextObject() as ASN1Sequence;
@@ -113,7 +120,9 @@ final class XadesBesSigner {
     final doc = XmlDocument.parse(unsignedXml);
 
     // 1. Canonicalize the unsigned document (enveloped-signature transform)
-    final canonicalDocBytes = utf8.encode(_canonicalizeElement(doc.rootElement));
+    final canonicalDocBytes = utf8.encode(
+      _canonicalizeElement(doc.rootElement),
+    );
     final digestBytes = sha256.convert(canonicalDocBytes).bytes;
     final digestBase64 = base64.encode(digestBytes);
 
@@ -163,7 +172,7 @@ final class XadesBesSigner {
 
     // 5. Find <ext:ExtensionContent> and inject signature
     final extContent = doc
-        .findAllElements('ExtensionContent', namespace: '*')
+        .findAllElements('ExtensionContent', namespaceUri: '*')
         .firstOrNull;
     if (extContent == null) {
       throw const CpeValidationException(

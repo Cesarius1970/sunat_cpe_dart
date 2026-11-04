@@ -30,18 +30,19 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
     bool enableFallbackOnSunatExceptions = true,
     bool prefixTicketsWithProviderId = false,
   }) : config = SunatCpeRouterConfig(
-          primaryProvider: primaryProvider,
-          routesByDocumentType: routesByDocumentType,
-          fallbackProvider: fallbackProvider,
-          enableFallbackOnSunatExceptions: enableFallbackOnSunatExceptions,
-          prefixTicketsWithProviderId: prefixTicketsWithProviderId,
-        );
+         primaryProvider: primaryProvider,
+         routesByDocumentType: routesByDocumentType,
+         fallbackProvider: fallbackProvider,
+         enableFallbackOnSunatExceptions: enableFallbackOnSunatExceptions,
+         prefixTicketsWithProviderId: prefixTicketsWithProviderId,
+       );
 
   /// Declarative factory constructor that builds providers from [SunatProviderDescriptor]s.
   factory SunatCpeRouter.fromDescriptors({
     required SunatProviderDescriptor primaryDescriptor,
     Map<CpeDocumentType, SunatProviderDescriptor>
-        routeDescriptorsByDocumentType = const {},
+        routeDescriptorsByDocumentType =
+        const {},
     SunatProviderDescriptor? fallbackDescriptor,
     bool enableFallbackOnSunatExceptions = true,
     bool prefixTicketsWithProviderId = false,
@@ -71,9 +72,7 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
 
   @override
   Set<ProviderCapability> get capabilities {
-    final merged = <ProviderCapability>{
-      ...config.primaryProvider.capabilities,
-    };
+    final merged = <ProviderCapability>{...config.primaryProvider.capabilities};
     for (final provider in config.routesByDocumentType.values) {
       merged.addAll(provider.capabilities);
     }
@@ -113,7 +112,9 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
   Future<CpeResult<TicketResponse>> sendDailySummary(
     DailySummaryDocument summary,
   ) {
-    final target = resolveProviderForDocumentType(CpeDocumentType.resumenDiario);
+    final target = resolveProviderForDocumentType(
+      CpeDocumentType.resumenDiario,
+    );
     return _executeTicketOperationWithFallback(
       target: target,
       action: (provider) => provider.sendDailySummary(summary),
@@ -121,9 +122,7 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
   }
 
   @override
-  Future<CpeResult<TicketResponse>> sendVoidedDocument(
-    VoidedDocument voided,
-  ) {
+  Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided) {
     final target = resolveProviderForDocumentType(voided.id.type);
     return _executeTicketOperationWithFallback(
       target: target,
@@ -166,10 +165,8 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
     );
     return _executeWithFallback<TicketStatusResponse>(
       target: targetProvider,
-      action: (provider) => provider.checkTicket(
-        rawTicket,
-        referenceId: referenceId,
-      ),
+      action: (provider) =>
+          provider.checkTicket(rawTicket, referenceId: referenceId),
     );
   }
 
@@ -246,22 +243,20 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
   Future<CpeResult<TicketResponse>> _executeTicketOperationWithFallback({
     required OseProvider target,
     required Future<CpeResult<TicketResponse>> Function(OseProvider provider)
-        action,
+    action,
   }) async {
     final result = await _executeWithFallback<TicketResponse>(
       target: target,
       action: action,
     );
 
-    if (result
-        case CpeSuccess<TicketResponse>(
-          :final data,
-          :final providerRawMetadata,
-        )) {
+    if (result case CpeSuccess<TicketResponse>(
+      :final data,
+      :final providerRawMetadata,
+    )) {
       final winningProviderId =
           providerRawMetadata['routedProviderId'] as String?;
-      final winningProvider =
-          _findProviderById(winningProviderId) ?? target;
+      final winningProvider = _findProviderById(winningProviderId) ?? target;
 
       _ticketProviderRegistry[data.ticket] = winningProvider;
 

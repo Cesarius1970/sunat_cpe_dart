@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'bizlinks_config.dart';
 import 'soap/bizlinks_soap_fault_parser.dart';
 
@@ -16,11 +17,11 @@ final class BizlinksProvider extends BaseUblOseProvider {
     super.zipCodec,
     this.faultParser = const BizlinksSoapFaultParser(),
   }) : super(
-          endpointUri: config.endpointUri,
-          wsseUsername: config.username,
-          wssePassword: config.password,
-          certificate: config.certificate,
-        );
+         endpointUri: config.endpointUri,
+         wsseUsername: config.username,
+         wssePassword: config.password,
+         certificate: config.certificate,
+       );
 
   @override
   String get providerId => 'bizlinks';

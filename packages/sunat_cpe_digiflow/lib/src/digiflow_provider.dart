@@ -1,5 +1,6 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:xml/xml.dart';
+
 import 'digiflow_config.dart';
 import 'soap/digiflow_soap_envelope.dart';
 
@@ -18,12 +19,12 @@ final class DigiflowProvider extends BaseUblOseProvider {
     super.zipCodec,
     this.envelopeBuilder = const DigiflowSoapEnvelope(),
   }) : super(
-          endpointUri: config.endpointUri,
-          wsseUsername: config.username,
-          wssePassword: config.password,
-          certificate: config.certificate,
-          includeSoapActionHeader: true,
-        );
+         endpointUri: config.endpointUri,
+         wsseUsername: config.username,
+         wssePassword: config.password,
+         certificate: config.certificate,
+         includeSoapActionHeader: true,
+       );
 
   @override
   String get providerId => 'digiflow';
@@ -60,7 +61,8 @@ final class DigiflowProvider extends BaseUblOseProvider {
       );
 
       final soapEnvelope = buildSoapEnvelope(
-        bodyXml: '<ser:sendBill>'
+        bodyXml:
+            '<ser:sendBill>'
             '<fileName>${guide.id.fileNameBase}.zip</fileName>'
             '<contentFile>${encodedZip.base64Zip}</contentFile>'
             '</ser:sendBill>',
@@ -85,7 +87,7 @@ final class DigiflowProvider extends BaseUblOseProvider {
 
       final xmlDoc = XmlDocument.parse(response.bodyAsString);
       final appResponseBase64 = xmlDoc
-          .findAllElements('applicationResponse', namespace: '*')
+          .findAllElements('applicationResponse', namespaceUri: '*')
           .firstOrNull
           ?.innerText
           .trim();
@@ -134,8 +136,8 @@ final class DigiflowProvider extends BaseUblOseProvider {
     if (cachedCdr != null) {
       final status = cachedCdr.isAccepted
           ? (cachedCdr.warnings.isEmpty
-              ? CpeProcessStatus.accepted
-              : CpeProcessStatus.acceptedWithWarnings)
+                ? CpeProcessStatus.accepted
+                : CpeProcessStatus.acceptedWithWarnings)
           : CpeProcessStatus.rejected;
       return CpeSuccess(
         TicketStatusResponse(

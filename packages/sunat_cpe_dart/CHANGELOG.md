@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Add executable package example (`example/main.dart`) for pub.dev Pana 160/160 score.
+- Upgrade internal adapter constraints to `^0.1.1` (`xml: ^7.0.0`).
+
 ## 1.0.0
 
 - Major architectural evolution into a modular pure-Dart monorepo:

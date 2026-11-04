@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// REST client for EFACT `api-efact-ose` (`/v1/document`, `/v1/cdr/{ticket}`, `/v1/xml/{ticket}`, `/v1/pdf/{ticket}`).
@@ -24,7 +25,9 @@ final class EfactRestClient {
     const boundary = '----SunatCpeEfactBoundary7MA4YWxkTrZu0gW';
     final multipartBody = StringBuffer()
       ..write('--$boundary\r\n')
-      ..write('Content-Disposition: form-data; name="file"; filename="$fileName"\r\n')
+      ..write(
+        'Content-Disposition: form-data; name="file"; filename="$fileName"\r\n',
+      )
       ..write('Content-Type: $contentType\r\n\r\n')
       ..write(fileContent)
       ..write('\r\n--$boundary--\r\n');
@@ -72,7 +75,8 @@ final class EfactRestClient {
         return _mapEfactError(code, description, response.statusCode, bodyText);
       }
 
-      final errCode = decoded?['code']?.toString() ?? response.statusCode.toString();
+      final errCode =
+          decoded?['code']?.toString() ?? response.statusCode.toString();
       final errDesc = decoded?['description']?.toString() ?? bodyText;
       return _mapEfactError(errCode, errDesc, response.statusCode, bodyText);
     } on CpeException catch (e) {
@@ -175,7 +179,8 @@ final class EfactRestClient {
 
       return CpeFailure(
         OseTransportException(
-          message: 'Unexpected response from EFACT /v1/cdr/$ticket (HTTP ${response.statusCode})',
+          message:
+              'Unexpected response from EFACT /v1/cdr/$ticket (HTTP ${response.statusCode})',
           httpStatusCode: response.statusCode,
           rawResponse: bodyText,
         ),
@@ -193,13 +198,18 @@ final class EfactRestClient {
     }
   }
 
-  String cdrDownloadUrl(String ticket) => _resolveEndpoint('/v1/cdr/$ticket').toString();
-  String xmlDownloadUrl(String ticket) => _resolveEndpoint('/v1/xml/$ticket').toString();
-  String pdfDownloadUrl(String ticket) => _resolveEndpoint('/v1/pdf/$ticket').toString();
+  String cdrDownloadUrl(String ticket) =>
+      _resolveEndpoint('/v1/cdr/$ticket').toString();
+  String xmlDownloadUrl(String ticket) =>
+      _resolveEndpoint('/v1/xml/$ticket').toString();
+  String pdfDownloadUrl(String ticket) =>
+      _resolveEndpoint('/v1/pdf/$ticket').toString();
 
   Uri _resolveEndpoint(String relativePath) {
     final baseStr = baseUri.toString().replaceAll(RegExp(r'/+$'), '');
-    final cleanRel = relativePath.startsWith('/') ? relativePath : '/$relativePath';
+    final cleanRel = relativePath.startsWith('/')
+        ? relativePath
+        : '/$relativePath';
     return Uri.parse('$baseStr$cleanRel');
   }
 

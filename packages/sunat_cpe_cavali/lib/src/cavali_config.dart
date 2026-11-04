@@ -43,6 +43,6 @@ final class CavaliConfig {
     this.factrackClientSecret,
     this.factrackApiKey,
     this.timeout = const Duration(seconds: 30),
-  })  : oseSoapEndpoint = oseSoapEndpoint ?? productionOseSoapUri,
-        factrackBaseUri = factrackBaseUri ?? productionFactrackUri;
+  }) : oseSoapEndpoint = oseSoapEndpoint ?? productionOseSoapUri,
+       factrackBaseUri = factrackBaseUri ?? productionFactrackUri;
 }

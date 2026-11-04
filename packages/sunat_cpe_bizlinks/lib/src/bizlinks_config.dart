@@ -1,10 +1,7 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Environment for Bizlinks OSE endpoints.
-enum BizlinksEnvironment {
-  production,
-  testing,
-}
+enum BizlinksEnvironment { production, testing }
 
 /// Configuration for [BizlinksProvider].
 final class BizlinksConfig {

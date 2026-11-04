@@ -25,7 +25,8 @@ final class DailySummaryLine {
   final SummaryLineStatus status; // 1=Add, 2=Modify, 3=Void
   final IdentityDocumentType? customerDocumentType;
   final String? customerDocumentNumber;
-  final DocumentReference? affectedDocument; // Required when documentType is 07 or 08
+  final DocumentReference?
+  affectedDocument; // Required when documentType is 07 or 08
   final CurrencyCode currency;
 
   final Decimal totalGravadas;
@@ -62,15 +63,15 @@ final class DailySummaryLine {
     Decimal? totalIcbper,
     Decimal? totalOtrosTributos,
     required this.totalSaleAmount,
-  })  : totalGravadas = totalGravadas ?? _zero,
-        totalExoneradas = totalExoneradas ?? _zero,
-        totalInafectas = totalInafectas ?? _zero,
-        totalGratuitas = totalGratuitas ?? _zero,
-        totalOtrosCargos = totalOtrosCargos ?? _zero,
-        totalIgv = totalIgv ?? _zero,
-        totalIsc = totalIsc ?? _zero,
-        totalIcbper = totalIcbper ?? _zero,
-        totalOtrosTributos = totalOtrosTributos ?? _zero;
+  }) : totalGravadas = totalGravadas ?? _zero,
+       totalExoneradas = totalExoneradas ?? _zero,
+       totalInafectas = totalInafectas ?? _zero,
+       totalGratuitas = totalGratuitas ?? _zero,
+       totalOtrosCargos = totalOtrosCargos ?? _zero,
+       totalIgv = totalIgv ?? _zero,
+       totalIsc = totalIsc ?? _zero,
+       totalIcbper = totalIcbper ?? _zero,
+       totalOtrosTributos = totalOtrosTributos ?? _zero;
 }
 
 /// Comunicación de Baja (RA) o Resumen de Reversiones (RR).

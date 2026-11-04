@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:http/http.dart' as http;
+
 import '../results/cpe_result.dart';
 
 /// Immutable HTTP request representation for REST and SOAP calls.
@@ -76,9 +78,9 @@ final class DefaultCpeHttpClient implements CpeHttpClient {
   DefaultCpeHttpClient({
     http.Client? client,
     List<CpeHttpInterceptor> interceptors = const [],
-  })  : _inner = client ?? http.Client(),
-        _interceptors = List.unmodifiable(interceptors),
-        _ownsInnerClient = client == null;
+  }) : _inner = client ?? http.Client(),
+       _interceptors = List.unmodifiable(interceptors),
+       _ownsInnerClient = client == null;
 
   @override
   Future<CpeHttpResponse> send(CpeHttpRequest request) async {
@@ -100,7 +102,9 @@ final class DefaultCpeHttpClient implements CpeHttpClient {
     }
 
     try {
-      final streamedResponse = await _inner.send(httpReq).timeout(currentReq.timeout);
+      final streamedResponse = await _inner
+          .send(httpReq)
+          .timeout(currentReq.timeout);
       final bytes = await streamedResponse.stream.toBytes();
       var currentRes = CpeHttpResponse(
         statusCode: streamedResponse.statusCode,
@@ -114,7 +118,8 @@ final class DefaultCpeHttpClient implements CpeHttpClient {
       return currentRes;
     } on TimeoutException catch (e, st) {
       throw OseTransportException(
-        message: 'HTTP request timed out after ${currentReq.timeout.inSeconds}s: ${currentReq.uri}',
+        message:
+            'HTTP request timed out after ${currentReq.timeout.inSeconds}s: ${currentReq.uri}',
         isRetryable: true,
         rawResponse: e,
         stackTrace: st,

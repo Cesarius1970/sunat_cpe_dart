@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
@@ -61,7 +62,8 @@ final class SunatDirectGreRestClient {
         if (numTicket == null || numTicket.isEmpty) {
           return CpeFailure(
             OseTransportException(
-              message: 'API REST GRE SUNAT no devolvió numTicket: ${response.bodyAsString}',
+              message:
+                  'API REST GRE SUNAT no devolvió numTicket: ${response.bodyAsString}',
               httpStatusCode: response.statusCode,
               rawResponse: data,
             ),
@@ -79,7 +81,8 @@ final class SunatDirectGreRestClient {
 
       return CpeFailure(
         OseTransportException(
-          message: 'Error en API REST GRE SUNAT (HTTP ${response.statusCode}): ${response.bodyAsString}',
+          message:
+              'Error en API REST GRE SUNAT (HTTP ${response.statusCode}): ${response.bodyAsString}',
           httpStatusCode: response.statusCode,
           rawResponse: response.bodyAsString,
         ),
@@ -118,7 +121,8 @@ final class SunatDirectGreRestClient {
       if (response.statusCode != 200) {
         return CpeFailure(
           OseTransportException(
-            message: 'Error al consultar ticket REST GRE (${response.statusCode}): ${response.bodyAsString}',
+            message:
+                'Error al consultar ticket REST GRE (${response.statusCode}): ${response.bodyAsString}',
             httpStatusCode: response.statusCode,
             rawResponse: response.bodyAsString,
           ),
@@ -158,13 +162,15 @@ final class SunatDirectGreRestClient {
             status: status,
             cdr: cdr,
             statusCode: '0',
-            statusMessage: cdr?.description ?? 'Guía de Remisión aceptada por SUNAT',
+            statusMessage:
+                cdr?.description ?? 'Guía de Remisión aceptada por SUNAT',
           ),
         );
       }
 
       final errorObj = data['error'];
-      String errorMsg = 'Ticket GRE rechazado (codRespuesta $codRespuesta, indCdr $indCdrGenerado)';
+      String errorMsg =
+          'Ticket GRE rechazado (codRespuesta $codRespuesta, indCdr $indCdrGenerado)';
       String statusCode = codRespuesta;
       if (errorObj is Map<String, dynamic>) {
         statusCode = errorObj['numError']?.toString() ?? codRespuesta;

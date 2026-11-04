@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+
 import '../catalogs/sunat_catalogs.dart';
 import '../entities/cpe_entities.dart';
 import '../results/cpe_result.dart';
@@ -17,11 +18,10 @@ final class CpeMathValidator {
   static final Decimal _hundred = Decimal.fromInt(100);
   static final RegExp _rucRegex = RegExp(r'^(10|15|17|20)\d{9}$');
 
-  CpeMathValidator({
-    Decimal? sumTolerance,
-    Decimal? taxCalculationTolerance,
-  })  : sumTolerance = sumTolerance ?? Decimal.parse('0.02'),
-        taxCalculationTolerance = taxCalculationTolerance ?? Decimal.parse('1.00');
+  CpeMathValidator({Decimal? sumTolerance, Decimal? taxCalculationTolerance})
+    : sumTolerance = sumTolerance ?? Decimal.parse('0.02'),
+      taxCalculationTolerance =
+          taxCalculationTolerance ?? Decimal.parse('1.00');
 
   /// Validates any [CpeDocument] and returns a [CpeResult<void>].
   CpeResult<void> validate(CpeDocument document) {
@@ -71,7 +71,8 @@ final class CpeMathValidator {
     if (issues.isNotEmpty) {
       return CpeFailure(
         CpeValidationException(
-          message: 'Document ${document.id.fileNameBase} failed validation (${issues.length} issues)',
+          message:
+              'Document ${document.id.fileNameBase} failed validation (${issues.length} issues)',
           issues: List.unmodifiable(issues),
         ),
       );
@@ -79,7 +80,10 @@ final class CpeMathValidator {
     return const CpeSuccess(null);
   }
 
-  void _validateSalesDocument(SalesCpeDocument doc, List<ValidationIssue> issues) {
+  void _validateSalesDocument(
+    SalesCpeDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     if (doc.items.isEmpty) {
       issues.add(
         const ValidationIssue(
@@ -151,7 +155,11 @@ final class CpeMathValidator {
     final expectedGravadas =
         sumGravadas - totals.descuentoGlobalAfectaBase - totals.totalAnticipos;
     if (sumGravadas > Decimal.zero &&
-        !_withinTolerance(totals.totalGravadas, expectedGravadas, sumTolerance)) {
+        !_withinTolerance(
+          totals.totalGravadas,
+          expectedGravadas,
+          sumTolerance,
+        )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalGravadas',
@@ -161,11 +169,16 @@ final class CpeMathValidator {
       );
     }
 
-    if (!_withinTolerance(totals.totalExoneradas, sumExoneradas, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalExoneradas,
+      sumExoneradas,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalExoneradas',
-          message: 'Expected $sumExoneradas from line items, but got ${totals.totalExoneradas}',
+          message:
+              'Expected $sumExoneradas from line items, but got ${totals.totalExoneradas}',
         ),
       );
     }
@@ -174,16 +187,22 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalInafectas',
-          message: 'Expected $sumInafectas from line items, but got ${totals.totalInafectas}',
+          message:
+              'Expected $sumInafectas from line items, but got ${totals.totalInafectas}',
         ),
       );
     }
 
-    if (!_withinTolerance(totals.totalExportacion, sumExportacion, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalExportacion,
+      sumExportacion,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalExportacion',
-          message: 'Expected $sumExportacion from line items, but got ${totals.totalExportacion}',
+          message:
+              'Expected $sumExportacion from line items, but got ${totals.totalExportacion}',
         ),
       );
     }
@@ -192,7 +211,8 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalGratuitas',
-          message: 'Expected $sumGratuitas from free line items, but got ${totals.totalGratuitas}',
+          message:
+              'Expected $sumGratuitas from free line items, but got ${totals.totalGratuitas}',
         ),
       );
     }
@@ -201,7 +221,8 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalIvapBase',
-          message: 'Expected $sumIvapBase from IVAP line items, but got ${totals.totalIvapBase}',
+          message:
+              'Expected $sumIvapBase from IVAP line items, but got ${totals.totalIvapBase}',
         ),
       );
     }
@@ -210,7 +231,8 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalIvap',
-          message: 'Expected $sumIvap from IVAP line items, but got ${totals.totalIvap}',
+          message:
+              'Expected $sumIvap from IVAP line items, but got ${totals.totalIvap}',
         ),
       );
     }
@@ -219,7 +241,8 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalIsc',
-          message: 'Expected $sumIsc from line items, but got ${totals.totalIsc}',
+          message:
+              'Expected $sumIsc from line items, but got ${totals.totalIsc}',
         ),
       );
     }
@@ -228,7 +251,8 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalIcbper',
-          message: 'Expected $sumIcbper from line items, but got ${totals.totalIcbper}',
+          message:
+              'Expected $sumIcbper from line items, but got ${totals.totalIcbper}',
         ),
       );
     }
@@ -239,12 +263,17 @@ final class CpeMathValidator {
       issues.add(
         ValidationIssue(
           field: 'totals.totalIgv',
-          message: 'Expected $sumIgv from line items, but got ${totals.totalIgv}',
+          message:
+              'Expected $sumIgv from line items, but got ${totals.totalIgv}',
         ),
       );
     }
 
-    if (!_withinTolerance(totals.totalImpuestosGratuitas, sumFreeTaxes, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalImpuestosGratuitas,
+      sumFreeTaxes,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalImpuestosGratuitas',
@@ -255,12 +284,17 @@ final class CpeMathValidator {
     }
 
     // Header total equations
-    final expectedValorVenta = totals.totalGravadas +
+    final expectedValorVenta =
+        totals.totalGravadas +
         totals.totalExoneradas +
         totals.totalInafectas +
         totals.totalExportacion +
         totals.totalIvapBase;
-    if (!_withinTolerance(totals.totalValorVenta, expectedValorVenta, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalValorVenta,
+      expectedValorVenta,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalValorVenta',
@@ -270,12 +304,17 @@ final class CpeMathValidator {
       );
     }
 
-    final expectedTotalImpuestos = totals.totalIgv +
+    final expectedTotalImpuestos =
+        totals.totalIgv +
         totals.totalIvap +
         totals.totalIsc +
         totals.totalIcbper +
         totals.totalOtrosTributos;
-    if (!_withinTolerance(totals.totalImpuestos, expectedTotalImpuestos, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalImpuestos,
+      expectedTotalImpuestos,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalImpuestos',
@@ -286,7 +325,11 @@ final class CpeMathValidator {
     }
 
     final expectedPrecioVenta = totals.totalValorVenta + totals.totalImpuestos;
-    if (!_withinTolerance(totals.totalPrecioVenta, expectedPrecioVenta, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.totalPrecioVenta,
+      expectedPrecioVenta,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.totalPrecioVenta',
@@ -296,12 +339,17 @@ final class CpeMathValidator {
       );
     }
 
-    final expectedPayable = totals.totalPrecioVenta -
+    final expectedPayable =
+        totals.totalPrecioVenta -
         totals.descuentoGlobalNoAfectaBase +
         totals.totalOtrosCargos -
         totals.totalAnticipos +
         totals.redondeo;
-    if (!_withinTolerance(totals.importeTotalPagar, expectedPayable, sumTolerance)) {
+    if (!_withinTolerance(
+      totals.importeTotalPagar,
+      expectedPayable,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totals.importeTotalPagar',
@@ -335,7 +383,8 @@ final class CpeMathValidator {
           ValidationIssue(
             field: 'isReferencePrice',
             lineNumber: item.lineNumber,
-            message: 'Free item (${item.igvAffectation.code}) must have isReferencePrice = true',
+            message:
+                'Free item (${item.igvAffectation.code}) must have isReferencePrice = true',
           ),
         );
       }
@@ -348,8 +397,13 @@ final class CpeMathValidator {
           ),
         );
       }
-      final expectedRefExtension = (item.quantity * item.unitPrice) - discountAmount;
-      if (!_withinTolerance(item.lineExtensionAmount, expectedRefExtension, sumTolerance)) {
+      final expectedRefExtension =
+          (item.quantity * item.unitPrice) - discountAmount;
+      if (!_withinTolerance(
+        item.lineExtensionAmount,
+        expectedRefExtension,
+        sumTolerance,
+      )) {
         issues.add(
           ValidationIssue(
             field: 'lineExtensionAmount',
@@ -364,7 +418,11 @@ final class CpeMathValidator {
 
     // Onerous operation
     final expectedExtension = (item.quantity * item.unitValue) - discountAmount;
-    if (!_withinTolerance(item.lineExtensionAmount, expectedExtension, sumTolerance)) {
+    if (!_withinTolerance(
+      item.lineExtensionAmount,
+      expectedExtension,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'lineExtensionAmount',
@@ -379,22 +437,30 @@ final class CpeMathValidator {
     final icbper = item.icbperAmount ?? Decimal.zero;
 
     if (item.icbperQuantity != null && item.icbperUnitTax != null) {
-      final expectedIcbper = Decimal.fromInt(item.icbperQuantity!) * item.icbperUnitTax!;
+      final expectedIcbper =
+          Decimal.fromInt(item.icbperQuantity!) * item.icbperUnitTax!;
       if (!_withinTolerance(icbper, expectedIcbper, sumTolerance)) {
         issues.add(
           ValidationIssue(
             field: 'icbperAmount',
             lineNumber: item.lineNumber,
-            message: 'icbperAmount ($icbper) does not match quantity * unitTax ($expectedIcbper)',
+            message:
+                'icbperAmount ($icbper) does not match quantity * unitTax ($expectedIcbper)',
           ),
         );
       }
     }
 
     if (item.igvAffectation.isGravadoOneroso || item.igvAffectation.isIvap) {
-      final igvRate = (item.igvPercentage / _hundred).toDecimal(scaleOnInfinitePrecision: 10);
+      final igvRate = (item.igvPercentage / _hundred).toDecimal(
+        scaleOnInfinitePrecision: 10,
+      );
       final expectedIgv = (item.taxableBaseAmount + isc) * igvRate;
-      if (!_withinTolerance(item.igvAmount, expectedIgv, taxCalculationTolerance)) {
+      if (!_withinTolerance(
+        item.igvAmount,
+        expectedIgv,
+        taxCalculationTolerance,
+      )) {
         issues.add(
           ValidationIssue(
             field: 'igvAmount',
@@ -418,7 +484,11 @@ final class CpeMathValidator {
     }
 
     final expectedLineTaxes = item.igvAmount + isc + icbper;
-    if (!_withinTolerance(item.totalLineTaxAmount, expectedLineTaxes, sumTolerance)) {
+    if (!_withinTolerance(
+      item.totalLineTaxAmount,
+      expectedLineTaxes,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totalLineTaxAmount',
@@ -430,7 +500,11 @@ final class CpeMathValidator {
     }
 
     final expectedTotalLine = item.lineExtensionAmount + expectedLineTaxes;
-    if (!_withinTolerance(item.totalLineAmount, expectedTotalLine, sumTolerance)) {
+    if (!_withinTolerance(
+      item.totalLineAmount,
+      expectedTotalLine,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totalLineAmount',
@@ -442,7 +516,10 @@ final class CpeMathValidator {
     }
   }
 
-  void _validatePaymentTerms(InvoiceDocument doc, List<ValidationIssue> issues) {
+  void _validatePaymentTerms(
+    InvoiceDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     final terms = doc.paymentTerms;
     if (terms is CreditPaymentTerms) {
       if (terms.installments.isEmpty) {
@@ -460,7 +537,11 @@ final class CpeMathValidator {
         installmentSum += quota.amount;
       }
 
-      if (!_withinTolerance(installmentSum, terms.netPendingAmount, sumTolerance)) {
+      if (!_withinTolerance(
+        installmentSum,
+        terms.netPendingAmount,
+        sumTolerance,
+      )) {
         issues.add(
           ValidationIssue(
             field: 'paymentTerms.netPendingAmount',
@@ -472,15 +553,24 @@ final class CpeMathValidator {
 
       final detractionDeduction = doc.detraction != null
           ? (doc.detraction!.amountInDocumentCurrency ??
-              (doc.currency == CurrencyCode.pen ? doc.detraction!.amountInPen : Decimal.zero))
+                (doc.currency == CurrencyCode.pen
+                    ? doc.detraction!.amountInPen
+                    : Decimal.zero))
           : Decimal.zero;
       final retentionDeduction = doc.retention?.amount ?? Decimal.zero;
 
-      if (detractionDeduction > Decimal.zero || retentionDeduction > Decimal.zero) {
+      if (detractionDeduction > Decimal.zero ||
+          retentionDeduction > Decimal.zero) {
         final expectedNetPending =
-            doc.totals.importeTotalPagar - detractionDeduction - retentionDeduction;
+            doc.totals.importeTotalPagar -
+            detractionDeduction -
+            retentionDeduction;
         if (expectedNetPending > Decimal.zero &&
-            !_withinTolerance(terms.netPendingAmount, expectedNetPending, taxCalculationTolerance)) {
+            !_withinTolerance(
+              terms.netPendingAmount,
+              expectedNetPending,
+              taxCalculationTolerance,
+            )) {
           issues.add(
             ValidationIssue(
               field: 'paymentTerms.netPendingAmount',
@@ -493,7 +583,10 @@ final class CpeMathValidator {
     }
   }
 
-  void _validateDailySummary(DailySummaryDocument doc, List<ValidationIssue> issues) {
+  void _validateDailySummary(
+    DailySummaryDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     if (doc.lines.isEmpty) {
       issues.add(
         const ValidationIssue(
@@ -504,7 +597,10 @@ final class CpeMathValidator {
     }
   }
 
-  void _validateVoidedDocument(VoidedDocument doc, List<ValidationIssue> issues) {
+  void _validateVoidedDocument(
+    VoidedDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     if (doc.lines.isEmpty) {
       issues.add(
         const ValidationIssue(
@@ -526,7 +622,10 @@ final class CpeMathValidator {
     }
   }
 
-  void _validateDespatchAdvice(DespatchAdviceDocument doc, List<ValidationIssue> issues) {
+  void _validateDespatchAdvice(
+    DespatchAdviceDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     if (doc.items.isEmpty) {
       issues.add(
         const ValidationIssue(
@@ -545,7 +644,10 @@ final class CpeMathValidator {
     }
   }
 
-  void _validateAgentDocument(AgentCpeDocument doc, List<ValidationIssue> issues) {
+  void _validateAgentDocument(
+    AgentCpeDocument doc,
+    List<ValidationIssue> issues,
+  ) {
     if (doc.lines.isEmpty) {
       issues.add(
         const ValidationIssue(
@@ -558,7 +660,11 @@ final class CpeMathValidator {
     for (final line in doc.lines) {
       sumRetainedOrPerceived += line.retainedOrPerceivedAmountInPen;
     }
-    if (!_withinTolerance(doc.totalAmountInPen, sumRetainedOrPerceived, sumTolerance)) {
+    if (!_withinTolerance(
+      doc.totalAmountInPen,
+      sumRetainedOrPerceived,
+      sumTolerance,
+    )) {
       issues.add(
         ValidationIssue(
           field: 'totalAmountInPen',
@@ -569,7 +675,11 @@ final class CpeMathValidator {
     }
   }
 
-  static bool _withinTolerance(Decimal actual, Decimal expected, Decimal tolerance) {
+  static bool _withinTolerance(
+    Decimal actual,
+    Decimal expected,
+    Decimal tolerance,
+  ) {
     final diff = (actual - expected).abs();
     return diff <= tolerance;
   }

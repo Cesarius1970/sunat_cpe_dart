@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:archive/archive.dart';
 import 'package:xml/xml.dart';
+
 import '../results/cpe_responses.dart';
 import '../results/cpe_result.dart';
 
@@ -20,10 +22,7 @@ final class CpeZipCodec {
 
     final encoded = ZipEncoder().encode(archive);
     final zipBytes = Uint8List.fromList(encoded);
-    return (
-      zipBytes: zipBytes,
-      base64Zip: base64.encode(zipBytes),
-    );
+    return (zipBytes: zipBytes, base64Zip: base64.encode(zipBytes));
   }
 
   /// Extracts and parses a SUNAT/OSE `<ApplicationResponse>` CDR from Base64 or raw ZIP bytes.
@@ -69,15 +68,19 @@ final class CpeZipCodec {
     final responseDateStr = _firstElementText(root, 'ResponseDate');
     final responseTimeStr = _firstElementText(root, 'ResponseTime');
 
-    final docResponse = root.findAllElements('DocumentResponse', namespace: '*').firstOrNull;
-    final responseNode = docResponse?.findElements('Response', namespace: '*').firstOrNull ?? root;
+    final docResponse = root
+        .findAllElements('DocumentResponse', namespaceUri: '*')
+        .firstOrNull;
+    final responseNode =
+        docResponse?.findElements('Response', namespaceUri: '*').firstOrNull ??
+        root;
 
     final responseCode = _firstElementText(responseNode, 'ResponseCode') ?? '0';
     final description = _firstElementText(responseNode, 'Description') ?? '';
     final digestValue = _firstElementText(root, 'DigestValue');
 
     final warnings = <SunatWarning>[];
-    for (final noteEl in root.findAllElements('Note', namespace: '*')) {
+    for (final noteEl in root.findAllElements('Note', namespaceUri: '*')) {
       final rawNote = noteEl.innerText.trim();
       if (rawNote.isEmpty) continue;
       final parts = rawNote.split(' - ');
@@ -118,7 +121,7 @@ final class CpeZipCodec {
   }
 
   static String? _firstElementText(XmlElement parent, String localName) {
-    final el = parent.findAllElements(localName, namespace: '*').firstOrNull;
+    final el = parent.findAllElements(localName, namespaceUri: '*').firstOrNull;
     return el?.innerText;
   }
 }

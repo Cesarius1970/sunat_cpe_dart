@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'rest/sunat_direct_gre_rest_client.dart';
 import 'rest/sunat_direct_oauth2_interceptor.dart';
 import 'soap/sunat_direct_soap_delegate.dart';
@@ -74,7 +75,8 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
     );
 
     if (config.useRestForGre) {
-      final effectiveRestClient = restHttpClient ??
+      final effectiveRestClient =
+          restHttpClient ??
           (config.hasRestCredentials
               ? DefaultCpeHttpClient(
                   interceptors: [
@@ -105,26 +107,24 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.purchaseSettlement,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.purchaseSettlement,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
     SalesCpeDocument document,
-  ) =>
-      _soapInvoiceDelegate.sendDocument(document);
+  ) => _soapInvoiceDelegate.sendDocument(document);
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
     AgentCpeDocument document,
-  ) =>
-      _soapOtrosCpeDelegate.sendRetentionOrPerception(document);
+  ) => _soapOtrosCpeDelegate.sendRetentionOrPerception(document);
 
   @override
   Future<CpeResult<TicketResponse>> sendDailySummary(
@@ -175,8 +175,7 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
     if (!config.hasRestCredentials) {
       return const CpeFailure(
         OseAuthException(
-          message:
-              'Se requieren clientId y clientSecret en SunatDirectConfig para enviar Guías de Remisión por la API REST de SUNAT.',
+          message: 'Se requieren clientId y clientSecret en SunatDirectConfig para enviar Guías de Remisión por la API REST de SUNAT.',
         ),
       );
     }
@@ -197,7 +196,8 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
     } catch (e, st) {
       return CpeFailure(
         OseTransportException(
-          message: 'Error firmando o enviando Guía de Remisión en SunatDirectProvider: $e',
+          message:
+              'Error firmando o enviando Guía de Remisión en SunatDirectProvider: $e',
           rawResponse: e,
           stackTrace: st,
         ),
@@ -233,7 +233,10 @@ final class SunatDirectProvider with TicketPollingMixin implements OseProvider {
         refType == CpeDocumentType.reversion ||
         refType == CpeDocumentType.comprobanteRetencion ||
         refType == CpeDocumentType.comprobantePercepcion) {
-      return _soapOtrosCpeDelegate.checkTicket(ticket, referenceId: referenceId);
+      return _soapOtrosCpeDelegate.checkTicket(
+        ticket,
+        referenceId: referenceId,
+      );
     }
 
     return _soapInvoiceDelegate.checkTicket(ticket, referenceId: referenceId);

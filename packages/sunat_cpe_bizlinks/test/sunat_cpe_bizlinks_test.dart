@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:sunat_cpe_bizlinks/sunat_cpe_bizlinks.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:test/test.dart';
@@ -36,8 +37,10 @@ void main() {
       expect(rejection.message, contains('informado anteriormente'));
     });
 
-    test('extracts SUNAT exception code (0100-1999) from Client.0151 faultcode', () {
-      const faultXml = '''<?xml version="1.0" encoding="UTF-8"?>
+    test(
+      'extracts SUNAT exception code (0100-1999) from Client.0151 faultcode',
+      () {
+        const faultXml = '''<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
   <soapenv:Body>
     <soapenv:Fault>
@@ -47,17 +50,18 @@ void main() {
   </soapenv:Body>
 </soapenv:Envelope>''';
 
-      final ex = parser.parseFault(
-        CpeHttpResponse(
-          statusCode: 500,
-          headers: const {},
-          bodyBytes: Uint8List.fromList(utf8.encode(faultXml)),
-        ),
-      );
+        final ex = parser.parseFault(
+          CpeHttpResponse(
+            statusCode: 500,
+            headers: const {},
+            bodyBytes: Uint8List.fromList(utf8.encode(faultXml)),
+          ),
+        );
 
-      expect(ex, isA<SunatExceptionError>());
-      expect((ex as SunatExceptionError).sunatCode, 151);
-    });
+        expect(ex, isA<SunatExceptionError>());
+        expect((ex as SunatExceptionError).sunatCode, 151);
+      },
+    );
 
     test('BizlinksConfig.forEnvironment selects official production and testing URLs', () {
       expect(

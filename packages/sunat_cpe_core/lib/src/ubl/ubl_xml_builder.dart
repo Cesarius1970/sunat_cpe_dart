@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:xml/xml.dart';
+
 import '../catalogs/sunat_catalogs.dart';
 import '../entities/cpe_entities.dart';
 
@@ -49,12 +50,12 @@ final class UblXmlBuilder {
     final rootNs = 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2';
     b.element(
       'Invoice',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -159,12 +160,12 @@ final class UblXmlBuilder {
     final rootNs = 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2';
     b.element(
       'CreditNote',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -178,7 +179,10 @@ final class UblXmlBuilder {
         b.element(
           'cac:DiscrepancyResponse',
           nest: () {
-            b.element('cbc:ReferenceID', nest: doc.affectedDocument.formattedId);
+            b.element(
+              'cbc:ReferenceID',
+              nest: doc.affectedDocument.formattedId,
+            );
             b.element('cbc:ResponseCode', nest: doc.reasonCode.code);
             b.element('cbc:Description', nest: doc.reasonDescription);
           },
@@ -228,12 +232,12 @@ final class UblXmlBuilder {
     final rootNs = 'urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2';
     b.element(
       'DebitNote',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -247,7 +251,10 @@ final class UblXmlBuilder {
         b.element(
           'cac:DiscrepancyResponse',
           nest: () {
-            b.element('cbc:ReferenceID', nest: doc.affectedDocument.formattedId);
+            b.element(
+              'cbc:ReferenceID',
+              nest: doc.affectedDocument.formattedId,
+            );
             b.element('cbc:ResponseCode', nest: doc.reasonCode.code);
             b.element('cbc:Description', nest: doc.reasonDescription);
           },
@@ -298,13 +305,13 @@ final class UblXmlBuilder {
         'urn:sunat:names:specification:ubl:peru:schema:xsd:SummaryDocuments-1';
     b.element(
       'SummaryDocuments',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
-        _nsSac: 'sac',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
+        'sac': _nsSac,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -341,7 +348,8 @@ final class UblXmlBuilder {
               }
               b.element(
                 'cac:Status',
-                nest: () => b.element('cbc:ConditionCode', nest: line.status.code),
+                nest: () =>
+                    b.element('cbc:ConditionCode', nest: line.status.code),
               );
               b.element(
                 'sac:TotalAmount',
@@ -360,13 +368,13 @@ final class UblXmlBuilder {
         'urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1';
     b.element(
       'VoidedDocuments',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
-        _nsSac: 'sac',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
+        'sac': _nsSac,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -399,12 +407,12 @@ final class UblXmlBuilder {
         'urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2';
     b.element(
       'DespatchAdvice',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -444,7 +452,10 @@ final class UblXmlBuilder {
             b.element('cbc:ID', nest: 'SUNAT_Envio');
             b.element('cbc:HandlingCode', nest: doc.transferReason.code);
             if (doc.transferDescription != null) {
-              b.element('cbc:HandlingInstructions', nest: doc.transferDescription);
+              b.element(
+                'cbc:HandlingInstructions',
+                nest: doc.transferDescription,
+              );
             }
             b.element(
               'cbc:GrossWeightMeasure',
@@ -454,7 +465,10 @@ final class UblXmlBuilder {
             b.element(
               'cac:ShipmentStage',
               nest: () {
-                b.element('cbc:TransportModeCode', nest: doc.transportMode.code);
+                b.element(
+                  'cbc:TransportModeCode',
+                  nest: doc.transportMode.code,
+                );
                 b.element(
                   'cac:TransitPeriod',
                   nest: () => b.element(
@@ -519,7 +533,8 @@ final class UblXmlBuilder {
               );
               b.element(
                 'cac:OrderLineReference',
-                nest: () => b.element('cbc:LineID', nest: item.lineNumber.toString()),
+                nest: () =>
+                    b.element('cbc:LineID', nest: item.lineNumber.toString()),
               );
               b.element(
                 'cac:Item',
@@ -541,16 +556,17 @@ final class UblXmlBuilder {
   }
 
   void _buildRetention(XmlBuilder b, RetentionDocument doc) {
-    final rootNs = 'urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1';
+    final rootNs =
+        'urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1';
     b.element(
       'Retention',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
-        _nsSac: 'sac',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
+        'sac': _nsSac,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -582,13 +598,13 @@ final class UblXmlBuilder {
         'urn:sunat:names:specification:ubl:peru:schema:xsd:Perception-1';
     b.element(
       'Perception',
-      namespaces: {
-        rootNs: null,
-        _nsCac: 'cac',
-        _nsCbc: 'cbc',
-        _nsDs: 'ds',
-        _nsExt: 'ext',
-        _nsSac: 'sac',
+      namespaceUris: {
+        null: rootNs,
+        'cac': _nsCac,
+        'cbc': _nsCbc,
+        'ds': _nsDs,
+        'ext': _nsExt,
+        'sac': _nsSac,
       },
       nest: () {
         _buildUblExtensionsPlaceholder(b);
@@ -600,7 +616,10 @@ final class UblXmlBuilder {
         _buildSupplierParty(b, doc.issuer, wrapperTag: 'cac:AgentParty');
         _buildCustomerParty(b, doc.partner, wrapperTag: 'cac:ReceiverParty');
         b.element('sac:SUNATPerceptionSystemCode', nest: doc.regime.code);
-        b.element('sac:SUNATPerceptionPercent', nest: _fmt2(doc.ratePercentage));
+        b.element(
+          'sac:SUNATPerceptionPercent',
+          nest: _fmt2(doc.ratePercentage),
+        );
         b.element(
           'cbc:TotalInvoiceAmount',
           attributes: {'currencyID': 'PEN'},
@@ -715,7 +734,8 @@ final class UblXmlBuilder {
                 'schemeID': docTypeCode,
                 'schemeName': 'Documento de Identidad',
                 'schemeAgencyName': 'PE:SUNAT',
-                'schemeURI': 'urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06',
+                'schemeURI':
+                    'urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06',
               },
               nest: docNumber,
             );
@@ -738,7 +758,10 @@ final class UblXmlBuilder {
                   if (address.ubigeo != null) {
                     b.element('cbc:ID', nest: address.ubigeo);
                   }
-                  b.element('cbc:AddressTypeCode', nest: address.establishmentCode);
+                  b.element(
+                    'cbc:AddressTypeCode',
+                    nest: address.establishmentCode,
+                  );
                   b.element(
                     'cac:AddressLine',
                     nest: () => b.element('cbc:Line', nest: address.streetLine),
@@ -818,7 +841,8 @@ final class UblXmlBuilder {
           nest: _fmt2(totals.totalImpuestos),
         );
 
-        if (totals.totalGravadas > Decimal.zero || totals.totalIgv > Decimal.zero) {
+        if (totals.totalGravadas > Decimal.zero ||
+            totals.totalIgv > Decimal.zero) {
           _buildTaxSubtotal(
             b,
             currency,
@@ -1035,10 +1059,7 @@ final class UblXmlBuilder {
                       'cbc:ID',
                       nest: item.igvAffectation.taxCategory.categoryId,
                     );
-                    b.element(
-                      'cbc:Percent',
-                      nest: _fmt2(item.igvPercentage),
-                    );
+                    b.element('cbc:Percent', nest: _fmt2(item.igvPercentage));
                     b.element(
                       'cbc:TaxExemptionReasonCode',
                       nest: item.igvAffectation.code,

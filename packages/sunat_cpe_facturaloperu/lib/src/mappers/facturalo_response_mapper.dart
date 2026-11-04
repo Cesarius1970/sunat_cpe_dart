@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Maps FacturaloPeru / Facturador PRO JSON responses (`state_type_id` `01..13`, `cdr_response`, `links`) to Core results.
@@ -16,7 +17,8 @@ final class FacturaloResponseMapper {
       case CpeSuccess<Map<String, dynamic>>(:final data):
         final success = data['success'] == true;
         if (!success) {
-          final msg = data['message']?.toString() ?? 'Error en FacturaloPeru API';
+          final msg =
+              data['message']?.toString() ?? 'Error en FacturaloPeru API';
           return _buildFailureFromMessage(msg, data);
         }
 
@@ -54,7 +56,9 @@ final class FacturaloResponseMapper {
           return CpeFailure(
             SunatRejectionException(
               sunatCode: parsedCode,
-              message: cdrDesc.isNotEmpty ? cdrDesc : 'Rechazado por SUNAT (state_type_id 09)',
+              message: cdrDesc.isNotEmpty
+                  ? cdrDesc
+                  : 'Rechazado por SUNAT (state_type_id 09)',
               rawResponse: data,
             ),
           );
@@ -62,18 +66,22 @@ final class FacturaloResponseMapper {
 
         final status = switch (stateTypeId) {
           '01' || '03' || '13' => CpeProcessStatus.inProcess,
-          '05' => warnings.isEmpty
-              ? CpeProcessStatus.accepted
-              : CpeProcessStatus.acceptedWithWarnings,
+          '05' =>
+            warnings.isEmpty
+                ? CpeProcessStatus.accepted
+                : CpeProcessStatus.acceptedWithWarnings,
           '07' => CpeProcessStatus.acceptedWithWarnings,
           '11' => CpeProcessStatus.voided,
           _ => CpeProcessStatus.accepted,
         };
 
-        final cdr = (status == CpeProcessStatus.accepted ||
+        final cdr =
+            (status == CpeProcessStatus.accepted ||
                 status == CpeProcessStatus.acceptedWithWarnings)
             ? CdrData(
-                id: innerData['filename']?.toString() ?? 'R-${documentId.fileNameBase}',
+                id:
+                    innerData['filename']?.toString() ??
+                    'R-${documentId.fileNameBase}',
                 responseCode: cdrCode,
                 description: cdrDesc,
                 responseDateTime: DateTime.now(),
@@ -109,13 +117,16 @@ final class FacturaloResponseMapper {
         return CpeFailure(error);
       case CpeSuccess<Map<String, dynamic>>(:final data):
         if (data['success'] != true) {
-          final msg = data['message']?.toString() ?? 'Error al registrar ticket en FacturaloPeru';
+          final msg =
+              data['message']?.toString() ??
+              'Error al registrar ticket en FacturaloPeru';
           return _buildFailureFromMessage(msg, data);
         }
         final innerData = (data['data'] is Map<String, dynamic>)
             ? data['data'] as Map<String, dynamic>
             : <String, dynamic>{};
-        final ticket = innerData['ticket']?.toString() ??
+        final ticket =
+            innerData['ticket']?.toString() ??
             innerData['external_id']?.toString() ??
             referenceId.ublId;
         return CpeSuccess(
@@ -138,7 +149,9 @@ final class FacturaloResponseMapper {
         return CpeFailure(error);
       case CpeSuccess<Map<String, dynamic>>(:final data):
         if (data['success'] != true) {
-          final msg = data['message']?.toString() ?? 'Error al consultar ticket en FacturaloPeru';
+          final msg =
+              data['message']?.toString() ??
+              'Error al consultar ticket en FacturaloPeru';
           return CpeSuccess(
             TicketStatusResponse(
               ticket: ticket,
@@ -156,7 +169,8 @@ final class FacturaloResponseMapper {
         final cdrResponse = (innerData['cdr_response'] is Map<String, dynamic>)
             ? innerData['cdr_response'] as Map<String, dynamic>
             : null;
-        final cdrDesc = cdrResponse?['description']?.toString() ??
+        final cdrDesc =
+            cdrResponse?['description']?.toString() ??
             innerData['state_type_description']?.toString() ??
             'Aceptado';
 
@@ -168,7 +182,8 @@ final class FacturaloResponseMapper {
           _ => CpeProcessStatus.accepted,
         };
 
-        final cdr = (status == CpeProcessStatus.accepted ||
+        final cdr =
+            (status == CpeProcessStatus.accepted ||
                 status == CpeProcessStatus.acceptedWithWarnings)
             ? CdrData(
                 id: innerData['filename']?.toString() ?? ticket,
@@ -194,7 +209,8 @@ final class FacturaloResponseMapper {
     if (response.statusCode == 401 || response.statusCode == 403) {
       return CpeFailure(
         OseAuthException(
-          message: 'FacturaloPeru Bearer Token unauthorized (HTTP ${response.statusCode})',
+          message:
+              'FacturaloPeru Bearer Token unauthorized (HTTP ${response.statusCode})',
           rawResponse: response.bodyAsString,
         ),
       );
@@ -206,7 +222,8 @@ final class FacturaloResponseMapper {
       }
       return CpeFailure(
         OseTransportException(
-          message: 'Unexpected FacturaloPeru JSON structure: ${response.bodyAsString}',
+          message:
+              'Unexpected FacturaloPeru JSON structure: ${response.bodyAsString}',
           httpStatusCode: response.statusCode,
           rawResponse: response.bodyAsString,
         ),
@@ -214,7 +231,8 @@ final class FacturaloResponseMapper {
     } catch (e) {
       return CpeFailure(
         OseTransportException(
-          message: 'Invalid JSON from FacturaloPeru (HTTP ${response.statusCode}): $e',
+          message:
+              'Invalid JSON from FacturaloPeru (HTTP ${response.statusCode}): $e',
           httpStatusCode: response.statusCode,
           rawResponse: response.bodyAsString,
         ),
@@ -223,7 +241,8 @@ final class FacturaloResponseMapper {
   }
 
   CpeFailure<T> _buildFailureFromMessage<T>(String message, Object raw) {
-    final codeMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b').firstMatch(message);
+    final codeMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b')
+        .firstMatch(message);
     if (codeMatch != null) {
       final code = int.parse(codeMatch.group(1)!);
       if (code >= 100 && code < 2000) {

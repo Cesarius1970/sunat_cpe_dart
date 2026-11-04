@@ -1,13 +1,12 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Maps Mifact JSON responses (`estado_documento` `101..105`, `cdr_bytes`, `errors`) to Core results.
 final class MifactResponseMapper {
   final CpeZipCodec zipCodec;
 
-  const MifactResponseMapper({
-    this.zipCodec = const CpeZipCodec(),
-  });
+  const MifactResponseMapper({this.zipCodec = const CpeZipCodec()});
 
   CpeResult<CpeEmissionResponse> mapEmissionResponse({
     required DocumentId documentId,
@@ -31,7 +30,10 @@ final class MifactResponseMapper {
         String? signedXml;
         if (xmlBase64 != null && xmlBase64.isNotEmpty) {
           try {
-            signedXml = utf8.decode(base64.decode(xmlBase64), allowMalformed: true);
+            signedXml = utf8.decode(
+              base64.decode(xmlBase64),
+              allowMalformed: true,
+            );
           } catch (_) {}
         }
 
@@ -42,14 +44,19 @@ final class MifactResponseMapper {
           } catch (_) {}
         }
 
-        if (estado == '104' || (errors.isNotEmpty && estado != '102' && estado != '103')) {
+        if (estado == '104' ||
+            (errors.isNotEmpty && estado != '102' && estado != '103')) {
           final msg = errors.isNotEmpty ? errors : sunatDesc;
           final codeMatch = RegExp(r'\b([2-3]\d{3})\b').firstMatch(msg);
-          final sunatCode = codeMatch != null ? int.parse(codeMatch.group(1)!) : 2000;
+          final sunatCode = codeMatch != null
+              ? int.parse(codeMatch.group(1)!)
+              : 2000;
           return CpeFailure(
             SunatRejectionException(
               sunatCode: sunatCode,
-              message: msg.isNotEmpty ? msg : 'Rechazado en Mifact (estado $estado)',
+              message: msg.isNotEmpty
+                  ? msg
+                  : 'Rechazado en Mifact (estado $estado)',
               rejectionCdr: cdr,
               rawResponse: data,
             ),
@@ -59,7 +66,9 @@ final class MifactResponseMapper {
         if (estado == '100') {
           return CpeFailure(
             CpeValidationException(
-              message: errors.isNotEmpty ? errors : 'Error de validación en Mifact (100)',
+              message: errors.isNotEmpty
+                  ? errors
+                  : 'Error de validación en Mifact (100)',
               issues: [
                 if (errors.isNotEmpty)
                   ValidationIssue(field: 'mifact', message: errors),
@@ -76,7 +85,8 @@ final class MifactResponseMapper {
           _ => CpeProcessStatus.accepted,
         };
 
-        final effectiveCdr = cdr ??
+        final effectiveCdr =
+            cdr ??
             (status == CpeProcessStatus.accepted ||
                     status == CpeProcessStatus.acceptedWithWarnings
                 ? CdrData(
@@ -125,7 +135,8 @@ final class MifactResponseMapper {
             ),
           );
         }
-        final ticket = data['ticket']?.toString().trim() ??
+        final ticket =
+            data['ticket']?.toString().trim() ??
             data['num_ticket']?.toString().trim() ??
             referenceId.ublId;
         return CpeSuccess(

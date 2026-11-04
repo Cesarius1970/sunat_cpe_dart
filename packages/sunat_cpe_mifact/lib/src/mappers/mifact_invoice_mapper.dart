@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import '../mifact_config.dart';
 
 /// Maps [SalesCpeDocument] and [AgentCpeDocument] to Mifact `UPPER_SNAKE_CASE` JSON payloads.
@@ -82,15 +83,19 @@ final class MifactInvoiceMapper {
       map['TXT_SUST_NC'] = doc.reasonDescription;
       map['COD_TIP_DOCU_REF'] = doc.affectedDocument.documentType.code;
       map['NUM_SERIE_CPE_REF'] = doc.affectedDocument.series;
-      map['NUM_CORRE_CPE_REF'] =
-          doc.affectedDocument.number.toString().padLeft(8, '0');
+      map['NUM_CORRE_CPE_REF'] = doc.affectedDocument.number.toString().padLeft(
+        8,
+        '0',
+      );
     } else if (doc is DebitNoteDocument) {
       map['COD_TIP_ND'] = doc.reasonCode.code;
       map['TXT_SUST_ND'] = doc.reasonDescription;
       map['COD_TIP_DOCU_REF'] = doc.affectedDocument.documentType.code;
       map['NUM_SERIE_CPE_REF'] = doc.affectedDocument.series;
-      map['NUM_CORRE_CPE_REF'] =
-          doc.affectedDocument.number.toString().padLeft(8, '0');
+      map['NUM_CORRE_CPE_REF'] = doc.affectedDocument.number.toString().padLeft(
+        8,
+        '0',
+      );
     }
 
     return map;

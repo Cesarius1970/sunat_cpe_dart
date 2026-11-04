@@ -121,11 +121,7 @@ enum IgvAffectationType {
   final TaxCategoryCode taxCategory;
   final bool isFree;
 
-  const IgvAffectationType(
-    this.code,
-    this.taxCategory, {
-    required this.isFree,
-  });
+  const IgvAffectationType(this.code, this.taxCategory, {required this.isFree});
 
   bool get isGravadoOneroso => this == gravadoOperacionOnerosa;
   bool get isIvap => this == gravadoIvap;
@@ -208,7 +204,10 @@ enum DespatchReasonCode {
   venta('01', 'Venta'),
   compra('02', 'Compra'),
   ventaConEntregaATerceros('03', 'Venta con entrega a terceros'),
-  trasladoEntreEstablecimientos('04', 'Traslado entre establecimientos de la misma empresa'),
+  trasladoEntreEstablecimientos(
+    '04',
+    'Traslado entre establecimientos de la misma empresa',
+  ),
   consignacion('05', 'Consignación'),
   devolucion('06', 'Devolución'),
   recojoBienesTransformados('07', 'Recojo de bienes transformados'),
@@ -228,8 +227,14 @@ enum DespatchReasonCode {
 /// Catálogo 22: Régimen de Percepción.
 enum PerceptionRegimeCode {
   ventaInterna('01', 'Percepción Venta Interna - Tasa 2%'),
-  adquisicionCombustible('02', 'Percepción a la adquisición de combustible - Tasa 1%'),
-  tasaEspecial('03', 'Percepción realizada al agente de percepción con tasa especial - Tasa 0.5%');
+  adquisicionCombustible(
+    '02',
+    'Percepción a la adquisición de combustible - Tasa 1%',
+  ),
+  tasaEspecial(
+    '03',
+    'Percepción realizada al agente de percepción con tasa especial - Tasa 0.5%',
+  );
 
   final String code;
   final String description;

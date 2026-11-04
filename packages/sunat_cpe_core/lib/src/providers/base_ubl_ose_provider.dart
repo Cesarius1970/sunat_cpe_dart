@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 import 'package:xml/xml.dart';
+
 import '../contracts/ose_provider.dart';
 import '../entities/cpe_entities.dart';
 import '../results/cpe_responses.dart';
@@ -12,7 +13,9 @@ import '../validation/cpe_math_validator.dart';
 
 /// Base Template Method implementation for all SOAP 1.1 UBL 2.1 OSE Providers
 /// (Bizlinks, Digiflow, TCI, Sovos, Cavali/Gosocket, EFACT SOAP).
-abstract base class BaseUblOseProvider with TicketPollingMixin implements OseProvider {
+abstract base class BaseUblOseProvider
+    with TicketPollingMixin
+    implements OseProvider {
   final Uri endpointUri;
   final String wsseUsername;
   final String wssePassword;
@@ -35,59 +38,53 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
     this.signer = const XadesBesSigner(),
     this.zipCodec = const CpeZipCodec(),
     this.includeSoapActionHeader = true,
-  })  : httpClient = httpClient ?? DefaultCpeHttpClient(),
-        validator = validator ?? CpeMathValidator();
+  }) : httpClient = httpClient ?? DefaultCpeHttpClient(),
+       validator = validator ?? CpeMathValidator();
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.purchaseSettlement,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.purchaseSettlement,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
     SalesCpeDocument document,
-  ) =>
-      _executeSendBill(
-        document,
-        totalAmountForQr: document.totals.importeTotalPagar,
-        igvAmountForQr: document.totals.totalIgv,
-        customerForQr: document.customer,
-      );
+  ) => _executeSendBill(
+    document,
+    totalAmountForQr: document.totals.importeTotalPagar,
+    igvAmountForQr: document.totals.totalIgv,
+    customerForQr: document.customer,
+  );
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
     AgentCpeDocument document,
-  ) =>
-      _executeSendBill(
-        document,
-        totalAmountForQr: document.totalAmountInPen,
-        igvAmountForQr: Decimal.zero,
-        customerForQr: document.partner,
-      );
+  ) => _executeSendBill(
+    document,
+    totalAmountForQr: document.totalAmountInPen,
+    igvAmountForQr: Decimal.zero,
+    customerForQr: document.partner,
+  );
 
   @override
   Future<CpeResult<TicketResponse>> sendDailySummary(
     DailySummaryDocument summary,
-  ) =>
-      _executeSendSummary(summary);
+  ) => _executeSendSummary(summary);
 
   @override
-  Future<CpeResult<TicketResponse>> sendVoidedDocument(
-    VoidedDocument voided,
-  ) =>
+  Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided) =>
       _executeSendSummary(voided);
 
   @override
   Future<CpeResult<TicketResponse>> sendDespatchAdvice(
     DespatchAdviceDocument guide,
-  ) =>
-      _executeSendSummary(guide);
+  ) => _executeSendSummary(guide);
 
   Future<CpeResult<CpeEmissionResponse>> _executeSendBill(
     CpeDocument document, {
@@ -109,13 +106,17 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
       );
 
       final soapEnvelope = buildSoapEnvelope(
-        bodyXml: '<ser:sendBill>'
+        bodyXml:
+            '<ser:sendBill>'
             '<fileName>${document.id.fileNameBase}.zip</fileName>'
             '<contentFile>${encodedZip.base64Zip}</contentFile>'
             '</ser:sendBill>',
       );
 
-      final response = await _postSoap(soapEnvelope, soapAction: 'urn:sendBill');
+      final response = await _postSoap(
+        soapEnvelope,
+        soapAction: 'urn:sendBill',
+      );
       final faultError = parseSoapFaultIfPresent(response);
       if (faultError != null) {
         return CpeFailure(faultError);
@@ -123,7 +124,7 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
 
       final xmlDoc = XmlDocument.parse(response.bodyAsString);
       final appResponseBase64 = xmlDoc
-          .findAllElements('applicationResponse', namespace: '*')
+          .findAllElements('applicationResponse', namespaceUri: '*')
           .firstOrNull
           ?.innerText
           .trim();
@@ -131,7 +132,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
       if (appResponseBase64 == null || appResponseBase64.isEmpty) {
         return CpeFailure(
           OseTransportException(
-            message: 'Missing <applicationResponse> in SOAP sendBill response from $providerId',
+            message:
+                'Missing <applicationResponse> in SOAP sendBill response from $providerId',
             httpStatusCode: response.statusCode,
             rawResponse: response.bodyAsString,
           ),
@@ -196,7 +198,9 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
     }
   }
 
-  Future<CpeResult<TicketResponse>> _executeSendSummary(CpeDocument document) async {
+  Future<CpeResult<TicketResponse>> _executeSendSummary(
+    CpeDocument document,
+  ) async {
     final validation = validator.validate(document);
     if (validation is CpeFailure<void>) {
       return CpeFailure(validation.error);
@@ -211,13 +215,17 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
       );
 
       final soapEnvelope = buildSoapEnvelope(
-        bodyXml: '<ser:sendSummary>'
+        bodyXml:
+            '<ser:sendSummary>'
             '<fileName>${document.id.fileNameBase}.zip</fileName>'
             '<contentFile>${encodedZip.base64Zip}</contentFile>'
             '</ser:sendSummary>',
       );
 
-      final response = await _postSoap(soapEnvelope, soapAction: 'urn:sendSummary');
+      final response = await _postSoap(
+        soapEnvelope,
+        soapAction: 'urn:sendSummary',
+      );
       final faultError = parseSoapFaultIfPresent(response);
       if (faultError != null) {
         return CpeFailure(faultError);
@@ -225,7 +233,7 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
 
       final xmlDoc = XmlDocument.parse(response.bodyAsString);
       final ticket = xmlDoc
-          .findAllElements('ticket', namespace: '*')
+          .findAllElements('ticket', namespaceUri: '*')
           .firstOrNull
           ?.innerText
           .trim();
@@ -233,7 +241,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
       if (ticket == null || ticket.isEmpty) {
         return CpeFailure(
           OseTransportException(
-            message: 'Missing <ticket> in SOAP sendSummary response from $providerId',
+            message:
+                'Missing <ticket> in SOAP sendSummary response from $providerId',
             httpStatusCode: response.statusCode,
             rawResponse: response.bodyAsString,
           ),
@@ -268,26 +277,31 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
   }) async {
     try {
       final soapEnvelope = buildSoapEnvelope(
-        bodyXml: '<ser:getStatus>'
+        bodyXml:
+            '<ser:getStatus>'
             '<ticket>$ticket</ticket>'
             '</ser:getStatus>',
       );
 
-      final response = await _postSoap(soapEnvelope, soapAction: 'urn:getStatus');
+      final response = await _postSoap(
+        soapEnvelope,
+        soapAction: 'urn:getStatus',
+      );
       final faultError = parseSoapFaultIfPresent(response);
       if (faultError != null) {
         return CpeFailure(faultError);
       }
 
       final xmlDoc = XmlDocument.parse(response.bodyAsString);
-      final statusCode = xmlDoc
-              .findAllElements('statusCode', namespace: '*')
+      final statusCode =
+          xmlDoc
+              .findAllElements('statusCode', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '98';
       final contentBase64 = xmlDoc
-          .findAllElements('content', namespace: '*')
+          .findAllElements('content', namespaceUri: '*')
           .firstOrNull
           ?.innerText
           .trim();
@@ -312,7 +326,9 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
         }
       }
 
-      if (statusCode == '0' || statusCode == '0000' || (cdr != null && cdr.isAccepted)) {
+      if (statusCode == '0' ||
+          statusCode == '0000' ||
+          (cdr != null && cdr.isAccepted)) {
         final processStatus = (cdr?.warnings.isNotEmpty ?? false)
             ? CpeProcessStatus.acceptedWithWarnings
             : CpeProcessStatus.accepted;
@@ -333,7 +349,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
           status: CpeProcessStatus.rejected,
           cdr: cdr,
           statusCode: statusCode,
-          statusMessage: cdr?.description ?? 'Ticket rechazado (código $statusCode)',
+          statusMessage:
+              cdr?.description ?? 'Ticket rechazado (código $statusCode)',
         ),
       );
     } on CpeException catch (e) {
@@ -355,7 +372,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
   ) async {
     try {
       final soapEnvelope = buildSoapEnvelope(
-        bodyXml: '<ser:getStatusCdr>'
+        bodyXml:
+            '<ser:getStatusCdr>'
             '<rucComprobante>${query.issuerRuc}</rucComprobante>'
             '<tipoComprobante>${query.documentType.code}</tipoComprobante>'
             '<serieComprobante>${query.series}</serieComprobante>'
@@ -363,27 +381,32 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
             '</ser:getStatusCdr>',
       );
 
-      final response = await _postSoap(soapEnvelope, soapAction: 'urn:getStatusCdr');
+      final response = await _postSoap(
+        soapEnvelope,
+        soapAction: 'urn:getStatusCdr',
+      );
       final faultError = parseSoapFaultIfPresent(response);
       if (faultError != null) {
         return CpeFailure(faultError);
       }
 
       final xmlDoc = XmlDocument.parse(response.bodyAsString);
-      final statusCode = xmlDoc
-              .findAllElements('statusCode', namespace: '*')
+      final statusCode =
+          xmlDoc
+              .findAllElements('statusCode', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '0';
-      final statusMessage = xmlDoc
-              .findAllElements('statusMessage', namespace: '*')
+      final statusMessage =
+          xmlDoc
+              .findAllElements('statusMessage', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
       final contentBase64 = xmlDoc
-          .findAllElements('content', namespace: '*')
+          .findAllElements('content', namespaceUri: '*')
           .firstOrNull
           ?.innerText
           .trim();
@@ -393,12 +416,19 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
         cdr = zipCodec.parseCdrFromBase64Zip(contentBase64);
       }
 
-      final isAccepted = statusCode == '0' || statusCode == '0004' || (cdr?.isAccepted ?? false);
+      final isAccepted =
+          statusCode == '0' ||
+          statusCode == '0004' ||
+          (cdr?.isAccepted ?? false);
       return CpeSuccess(
         CpeStatusQueryResponse(
-          status: isAccepted ? CpeProcessStatus.accepted : CpeProcessStatus.rejected,
+          status: isAccepted
+              ? CpeProcessStatus.accepted
+              : CpeProcessStatus.rejected,
           statusCode: statusCode,
-          statusMessage: statusMessage.isNotEmpty ? statusMessage : (cdr?.description ?? ''),
+          statusMessage: statusMessage.isNotEmpty
+              ? statusMessage
+              : (cdr?.description ?? ''),
           cdr: cdr,
         ),
       );
@@ -473,30 +503,36 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
 
     try {
       final doc = XmlDocument.parse(body);
-      final faultEl = doc.findAllElements('Fault', namespace: '*').firstOrNull;
+      final faultEl = doc
+          .findAllElements('Fault', namespaceUri: '*')
+          .firstOrNull;
       if (faultEl == null) return null;
 
-      final faultCode = faultEl
-              .findAllElements('faultcode', namespace: '*')
+      final faultCode =
+          faultEl
+              .findAllElements('faultcode', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
-      final faultString = faultEl
-              .findAllElements('faultstring', namespace: '*')
+      final faultString =
+          faultEl
+              .findAllElements('faultstring', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
-      final detailMsg = faultEl
-              .findAllElements('message', namespace: '*')
+      final detailMsg =
+          faultEl
+              .findAllElements('message', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
 
       final combinedText = '$faultCode $faultString $detailMsg';
-      final codeMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b').firstMatch(combinedText);
+      final codeMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b')
+          .firstMatch(combinedText);
 
       if (codeMatch != null) {
         final sunatCode = int.parse(codeMatch.group(1)!);
@@ -504,7 +540,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
 
         if (sunatCode >= 100 && sunatCode <= 109) {
           return OseAuthException(
-            message: 'WS-Security authentication error ($sunatCode): $description',
+            message:
+                'WS-Security authentication error ($sunatCode): $description',
             code: sunatCode.toString().padLeft(4, '0'),
             rawResponse: body,
           );
@@ -533,7 +570,8 @@ abstract base class BaseUblOseProvider with TicketPollingMixin implements OsePro
       );
     } catch (_) {
       return OseTransportException(
-        message: 'Unparseable SOAP Fault from $providerId (HTTP ${response.statusCode})',
+        message:
+            'Unparseable SOAP Fault from $providerId (HTTP ${response.statusCode})',
         httpStatusCode: response.statusCode,
         rawResponse: body,
       );

@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'facturalo_config.dart';
 import 'mappers/facturalo_dispatch_mapper.dart';
 import 'mappers/facturalo_document_mapper.dart';
@@ -46,22 +48,22 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
     this.voidedMapper = const FacturaloVoidedMapper(),
     this.dispatchMapper = const FacturaloDispatchMapper(),
     this.responseMapper = const FacturaloResponseMapper(),
-  })  : httpClient = httpClient ?? DefaultCpeHttpClient(),
-        validator = validator ?? CpeMathValidator();
+  }) : httpClient = httpClient ?? DefaultCpeHttpClient(),
+       validator = validator ?? CpeMathValidator();
 
   @override
   String get providerId => 'facturaloperu';
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-        ProviderCapability.taxpayerLookup,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+    ProviderCapability.taxpayerLookup,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
@@ -211,11 +213,9 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
     try {
       final endpoint = switch (referenceId?.type) {
         CpeDocumentType.comunicacionBaja ||
-        CpeDocumentType.reversion =>
-          '/api/voided/status',
+        CpeDocumentType.reversion => '/api/voided/status',
         CpeDocumentType.guiaRemisionRemitente ||
-        CpeDocumentType.guiaRemisionTransportista =>
-          '/api/dispatches/status',
+        CpeDocumentType.guiaRemisionTransportista => '/api/dispatches/status',
         _ => '/api/summaries/status',
       };
       final response = await _postJson(endpoint, {
@@ -256,13 +256,13 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
       return switch (mapped) {
         CpeFailure<TicketStatusResponse>(:final error) => CpeFailure(error),
         CpeSuccess<TicketStatusResponse>(:final data) => CpeSuccess(
-            CpeStatusQueryResponse(
-              status: data.status,
-              statusCode: data.statusCode ?? '05',
-              statusMessage: data.statusMessage ?? '',
-              cdr: data.cdr,
-            ),
+          CpeStatusQueryResponse(
+            status: data.status,
+            statusCode: data.statusCode ?? '05',
+            statusMessage: data.statusMessage ?? '',
+            cdr: data.cdr,
           ),
+        ),
       };
     } on CpeException catch (e) {
       return CpeFailure(e);
@@ -312,7 +312,8 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
       return CpeSuccess(
         FacturaloTaxpayerInfo(
           documentNumber: documentNumber,
-          nameOrLegalName: data['name']?.toString() ??
+          nameOrLegalName:
+              data['name']?.toString() ??
               data['nombre_o_razon_social']?.toString() ??
               '',
           status: data['state']?.toString() ?? data['estado']?.toString(),
@@ -335,10 +336,7 @@ final class FacturaloProvider with TicketPollingMixin implements OseProvider {
     }
   }
 
-  Future<CpeHttpResponse> _postJson(
-    String path,
-    Map<String, dynamic> payload,
-  ) {
+  Future<CpeHttpResponse> _postJson(String path, Map<String, dynamic> payload) {
     final baseStr = config.baseUri.toString().replaceAll(RegExp(r'/+$'), '');
     final cleanPath = path.startsWith('/') ? path : '/$path';
     return httpClient.send(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Acquires and caches OAuth2 Bearer tokens from `api-seguridad.sunat.gob.pe` for SUNAT REST GRE.
@@ -55,7 +56,8 @@ final class SunatDirectOAuth2Interceptor implements CpeHttpInterceptor {
 
     if (response.statusCode != 200) {
       throw OseAuthException(
-        message: 'Fallo en la autenticación OAuth2 de SUNAT (HTTP ${response.statusCode}): ${response.bodyAsString}',
+        message:
+            'Fallo en la autenticación OAuth2 de SUNAT (HTTP ${response.statusCode}): ${response.bodyAsString}',
         code: response.statusCode.toString(),
         rawResponse: response.bodyAsString,
       );
@@ -83,10 +85,7 @@ final class SunatDirectOAuth2Interceptor implements CpeHttpInterceptor {
     }
     final token = await getValidAccessToken();
     return request.copyWith(
-      headers: {
-        ...request.headers,
-        'Authorization': 'Bearer $token',
-      },
+      headers: {...request.headers, 'Authorization': 'Bearer $token'},
     );
   }
 

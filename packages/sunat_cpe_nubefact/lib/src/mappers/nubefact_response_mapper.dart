@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Maps Nubefact JSON HTTP responses into `sunat_cpe_core` result and response types.
@@ -27,9 +28,13 @@ final class NubefactResponseMapper {
     final sunatNote = _str(map['sunat_note']);
     final sunatSoapError = _str(map['sunat_soap_error']);
 
-    if (!acceptedBySunat && (sunatCode.isNotEmpty || sunatSoapError.isNotEmpty)) {
-      final parsedCode = int.tryParse(sunatCode) ?? _extractNumberFromText(sunatSoapError);
-      final msg = sunatDescription.isNotEmpty ? sunatDescription : sunatSoapError;
+    if (!acceptedBySunat &&
+        (sunatCode.isNotEmpty || sunatSoapError.isNotEmpty)) {
+      final parsedCode =
+          int.tryParse(sunatCode) ?? _extractNumberFromText(sunatSoapError);
+      final msg = sunatDescription.isNotEmpty
+          ? sunatDescription
+          : sunatSoapError;
       if (parsedCode != null && parsedCode >= 100 && parsedCode < 2000) {
         return CpeFailure(
           SunatExceptionError(
@@ -114,7 +119,9 @@ final class NubefactResponseMapper {
     }
 
     final ticket = _str(map['sunat_ticket_numero']);
-    final resolvedTicket = ticket.isNotEmpty ? ticket : referenceId.fileNameBase;
+    final resolvedTicket = ticket.isNotEmpty
+        ? ticket
+        : referenceId.fileNameBase;
 
     return CpeSuccess(
       TicketResponse(
@@ -151,7 +158,9 @@ final class NubefactResponseMapper {
       final cdr = CdrData(
         id: ticket,
         responseCode: sunatCode.isNotEmpty ? sunatCode : '0',
-        description: sunatDescription.isNotEmpty ? sunatDescription : 'Aceptado',
+        description: sunatDescription.isNotEmpty
+            ? sunatDescription
+            : 'Aceptado',
         responseDateTime: DateTime.now(),
         digestValue: _nullableStr(map['codigo_hash']),
       );
@@ -173,7 +182,9 @@ final class NubefactResponseMapper {
           ticket: ticket,
           status: CpeProcessStatus.rejected,
           statusCode: sunatCode.isNotEmpty ? sunatCode : '2000',
-          statusMessage: sunatDescription.isNotEmpty ? sunatDescription : sunatSoapError,
+          statusMessage: sunatDescription.isNotEmpty
+              ? sunatDescription
+              : sunatSoapError,
         ),
         providerRawMetadata: map,
       );
@@ -211,7 +222,9 @@ final class NubefactResponseMapper {
 
     final status = accepted
         ? CpeProcessStatus.accepted
-        : (sunatCode.isNotEmpty ? CpeProcessStatus.rejected : CpeProcessStatus.inProcess);
+        : (sunatCode.isNotEmpty
+              ? CpeProcessStatus.rejected
+              : CpeProcessStatus.inProcess);
 
     final cdr = accepted
         ? CdrData(
@@ -238,7 +251,9 @@ final class NubefactResponseMapper {
     );
   }
 
-  static CpeResult<Map<String, Object?>> _decodeJsonOrFail(CpeHttpResponse response) {
+  static CpeResult<Map<String, Object?>> _decodeJsonOrFail(
+    CpeHttpResponse response,
+  ) {
     try {
       final raw = json.decode(response.bodyAsString);
       if (raw is Map<String, Object?>) {
@@ -254,7 +269,8 @@ final class NubefactResponseMapper {
     } catch (e) {
       return CpeFailure(
         OseTransportException(
-          message: 'Invalid JSON response from Nubefact (HTTP ${response.statusCode}): $e',
+          message:
+              'Invalid JSON response from Nubefact (HTTP ${response.statusCode}): $e',
           httpStatusCode: response.statusCode,
           rawResponse: response.bodyAsString,
         ),
@@ -294,10 +310,7 @@ final class NubefactResponseMapper {
       return CpeValidationException(
         message: message,
         issues: [
-          ValidationIssue(
-            field: 'nubefact_code_$codigo',
-            message: message,
-          ),
+          ValidationIssue(field: 'nubefact_code_$codigo', message: message),
         ],
       );
     }

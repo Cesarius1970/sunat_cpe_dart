@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:pointycastle/export.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
@@ -14,11 +15,17 @@ final class SunatDirectMockCertificateFactory {
     if (_cachedMock != null) {
       return _cachedMock!;
     }
-    final keyParams = RSAKeyGeneratorParameters(BigInt.parse('65537'), 1024, 12);
+    final keyParams = RSAKeyGeneratorParameters(
+      BigInt.parse('65537'),
+      1024,
+      12,
+    );
     final secureRandom = FortunaRandom()
       ..seed(
         KeyParameter(
-          Uint8List.fromList(List<int>.generate(32, (i) => (i * 7 + 13) & 0xFF)),
+          Uint8List.fromList(
+            List<int>.generate(32, (i) => (i * 7 + 13) & 0xFF),
+          ),
         ),
       );
 

@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'sunat_direct_mock_certificate.dart';
 
 /// Operating environments for direct SUNAT Web Services (SOAP & REST GRE).
@@ -13,50 +14,41 @@ enum SunatDirectEnvironment {
   produccion;
 
   /// SOAP endpoint for Invoices (01), Boletas (03), Settlements (04), Notes (07/08), RC, and RA.
-  Uri get soapInvoiceUri => Uri.parse(
-        switch (this) {
-          SunatDirectEnvironment.beta =>
-            'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService',
-          SunatDirectEnvironment.homologacion =>
-            'https://www.sunat.gob.pe/ol-ti-itcpgem-sqa/billService',
-          SunatDirectEnvironment.produccion =>
-            'https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService',
-        },
-      );
+  Uri get soapInvoiceUri => Uri.parse(switch (this) {
+    SunatDirectEnvironment.beta =>
+      'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService',
+    SunatDirectEnvironment.homologacion =>
+      'https://www.sunat.gob.pe/ol-ti-itcpgem-sqa/billService',
+    SunatDirectEnvironment.produccion =>
+      'https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService',
+  });
 
   /// SOAP endpoint for Retentions (20), Perceptions (40), and Reversions (RR).
-  Uri get soapOtrosCpeUri => Uri.parse(
-        switch (this) {
-          SunatDirectEnvironment.beta =>
-            'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService',
-          SunatDirectEnvironment.homologacion =>
-            'https://www.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-sqa/billService',
-          SunatDirectEnvironment.produccion =>
-            'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService',
-        },
-      );
+  Uri get soapOtrosCpeUri => Uri.parse(switch (this) {
+    SunatDirectEnvironment.beta => 'https://e-beta.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-beta/billService',
+    SunatDirectEnvironment.homologacion =>
+      'https://www.sunat.gob.pe/ol-ti-itemision-otroscpe-gem-sqa/billService',
+    SunatDirectEnvironment.produccion =>
+      'https://e-factura.sunat.gob.pe/ol-ti-itemision-otroscpe-gem/billService',
+  });
 
   /// Legacy SOAP endpoint for Despatch Advice (09/31) when `useRestForGre` is false.
-  Uri get soapGuiaRemisionUri => Uri.parse(
-        switch (this) {
-          SunatDirectEnvironment.beta =>
-            'https://e-beta.sunat.gob.pe/ol-ti-itemision-guia-gem-beta/billService',
-          SunatDirectEnvironment.homologacion =>
-            'https://www.sunat.gob.pe/ol-ti-itemision-guia-gem-sqa/billService',
-          SunatDirectEnvironment.produccion =>
-            'https://e-guiaremision.sunat.gob.pe/ol-ti-itemision-guia-gem/billService',
-        },
-      );
+  Uri get soapGuiaRemisionUri => Uri.parse(switch (this) {
+    SunatDirectEnvironment.beta =>
+      'https://e-beta.sunat.gob.pe/ol-ti-itemision-guia-gem-beta/billService',
+    SunatDirectEnvironment.homologacion =>
+      'https://www.sunat.gob.pe/ol-ti-itemision-guia-gem-sqa/billService',
+    SunatDirectEnvironment.produccion => 'https://e-guiaremision.sunat.gob.pe/ol-ti-itemision-guia-gem/billService',
+  });
 
   /// OAuth2 token endpoint for SUNAT REST API (`api-seguridad.sunat.gob.pe`).
   Uri restOAuthTokenUri(String clientId) => Uri.parse(
-        'https://api-seguridad.sunat.gob.pe/v1/clientessol/$clientId/oauth2/token',
-      );
+    'https://api-seguridad.sunat.gob.pe/v1/clientessol/$clientId/oauth2/token',
+  );
 
   /// Base URL for SUNAT REST GRE API (`api-cpe.sunat.gob.pe`).
-  Uri get restGreBaseUri => Uri.parse(
-        'https://api-cpe.sunat.gob.pe/v1/contribuyente/gem',
-      );
+  Uri get restGreBaseUri =>
+      Uri.parse('https://api-cpe.sunat.gob.pe/v1/contribuyente/gem');
 }
 
 /// Configuration and SOL / OAuth2 credentials for [SunatDirectProvider].
@@ -102,10 +94,10 @@ final class SunatDirectConfig {
     this.useRestForGre = true,
     this.timeout = const Duration(seconds: 30),
   }) : certificate = _resolveCertificate(
-          environment: environment,
-          certificate: certificate,
-          isMockCertificate: isMockCertificate,
-        );
+         environment: environment,
+         certificate: certificate,
+         isMockCertificate: isMockCertificate,
+       );
 
   /// Convenience factory for SUNAT Beta (`20100066603` / `MODDATOS` / `moddatos`).
   factory SunatDirectConfig.beta({

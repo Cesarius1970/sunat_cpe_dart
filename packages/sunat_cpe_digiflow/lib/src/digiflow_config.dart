@@ -1,10 +1,7 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Environment for Digiflow OSE endpoints.
-enum DigiflowEnvironment {
-  production,
-  testing,
-}
+enum DigiflowEnvironment { production, testing }
 
 /// Submission mode for Despatch Advice (`09` / `31`) in Digiflow OSE.
 enum DigiflowDespatchMode {

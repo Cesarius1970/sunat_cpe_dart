@@ -9,39 +9,35 @@ sealed class CpeResult<T> {
   bool get isFailure => this is CpeFailure<T>;
 
   T? get dataOrNull => switch (this) {
-        CpeSuccess<T>(:final data) => data,
-        CpeFailure<T>() => null,
-      };
+    CpeSuccess<T>(:final data) => data,
+    CpeFailure<T>() => null,
+  };
 
   CpeException? get errorOrNull => switch (this) {
-        CpeSuccess<T>() => null,
-        CpeFailure<T>(:final error) => error,
-      };
+    CpeSuccess<T>() => null,
+    CpeFailure<T>(:final error) => error,
+  };
 
   /// Unwraps the value or throws the typed [CpeException].
   T getOrThrow() => switch (this) {
-        CpeSuccess<T>(:final data) => data,
-        CpeFailure<T>(:final error) => throw error,
-      };
+    CpeSuccess<T>(:final data) => data,
+    CpeFailure<T>(:final error) => throw error,
+  };
 
   R fold<R>(
     R Function(T data) onSuccess,
     R Function(CpeException error) onFailure,
-  ) =>
-      switch (this) {
-        CpeSuccess<T>(:final data) => onSuccess(data),
-        CpeFailure<T>(:final error) => onFailure(error),
-      };
+  ) => switch (this) {
+    CpeSuccess<T>(:final data) => onSuccess(data),
+    CpeFailure<T>(:final error) => onFailure(error),
+  };
 }
 
 final class CpeSuccess<T> extends CpeResult<T> {
   final T data;
   final Map<String, Object?> providerRawMetadata;
 
-  const CpeSuccess(
-    this.data, {
-    this.providerRawMetadata = const {},
-  });
+  const CpeSuccess(this.data, {this.providerRawMetadata = const {}});
 }
 
 final class CpeFailure<T> extends CpeResult<T> {
@@ -63,8 +59,9 @@ final class ValidationIssue {
   });
 
   @override
-  String toString() =>
-      lineNumber != null ? '[Line $lineNumber] $field: $message' : '$field: $message';
+  String toString() => lineNumber != null
+      ? '[Line $lineNumber] $field: $message'
+      : '$field: $message';
 }
 
 /// Sealed hierarchy for all CPE/OSE/SUNAT exceptions.
@@ -89,10 +86,8 @@ sealed class CpeException implements Exception {
 final class CpeValidationException extends CpeException {
   final List<ValidationIssue> issues;
 
-  const CpeValidationException({
-    required super.message,
-    required this.issues,
-  }) : super(code: 'LOCAL_VALIDATION_ERROR');
+  const CpeValidationException({required super.message, required this.issues})
+    : super(code: 'LOCAL_VALIDATION_ERROR');
 
   @override
   String toString() =>

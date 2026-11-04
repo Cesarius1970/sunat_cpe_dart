@@ -1,10 +1,7 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Environment for TCI OSE endpoints.
-enum TciEnvironment {
-  production,
-  testing,
-}
+enum TciEnvironment { production, testing }
 
 /// Configuration for [TciProvider].
 final class TciConfig {

@@ -8,9 +8,15 @@ final class EfactJsonMapper {
     final issueDate = _formatIsoDate(document.issueDate);
     return switch (document) {
       final SalesCpeDocument sales => _mapSalesDocument(sales, issueDate),
-      final DailySummaryDocument summary => _mapDailySummary(summary, issueDate),
+      final DailySummaryDocument summary => _mapDailySummary(
+        summary,
+        issueDate,
+      ),
       final VoidedDocument voided => _mapVoidedDocument(voided, issueDate),
-      final DespatchAdviceDocument guide => _mapDespatchAdvice(guide, issueDate),
+      final DespatchAdviceDocument guide => _mapDespatchAdvice(
+        guide,
+        issueDate,
+      ),
       final AgentCpeDocument agent => _mapAgentDocument(agent, issueDate),
     };
   }
@@ -74,18 +80,18 @@ final class EfactJsonMapper {
       map['paymentTerms'] = switch (doc.paymentTerms) {
         CashPaymentTerms() => {'type': 'Contado'},
         final CreditPaymentTerms credit => {
-            'type': 'Credito',
-            'netPendingAmount': credit.netPendingAmount.toStringAsFixed(2),
-            'installments': credit.installments
-                .map(
-                  (c) => {
-                    'number': c.number,
-                    'amount': c.amount.toStringAsFixed(2),
-                    'dueDate': _formatIsoDate(c.dueDate),
-                  },
-                )
-                .toList(),
-          },
+          'type': 'Credito',
+          'netPendingAmount': credit.netPendingAmount.toStringAsFixed(2),
+          'installments': credit.installments
+              .map(
+                (c) => {
+                  'number': c.number,
+                  'amount': c.amount.toStringAsFixed(2),
+                  'dueDate': _formatIsoDate(c.dueDate),
+                },
+              )
+              .toList(),
+        },
       };
     } else if (doc is CreditNoteDocument) {
       map['noteReasonCode'] = doc.reasonCode.code;

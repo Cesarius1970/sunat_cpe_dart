@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import '../nubefact_config.dart';
 import 'nubefact_catalog_mapper.dart';
 
@@ -11,7 +12,9 @@ final class NubefactRequestMapper {
   /// Builds payload for `"operacion": "generar_comprobante"`.
   Map<String, Object?> mapSalesDocument(SalesCpeDocument doc) {
     final totals = doc.totals;
-    final opType = doc is InvoiceDocument ? doc.operationType : OperationType.ventaInterna;
+    final opType = doc is InvoiceDocument
+        ? doc.operationType
+        : OperationType.ventaInterna;
 
     var igvRate = Decimal.parse('18.00');
     for (final item in doc.items) {
@@ -28,16 +31,21 @@ final class NubefactRequestMapper {
       'numero': doc.id.number,
       'sunat_transaction': NubefactCatalogMapper.mapOperationType(opType),
       'cliente_tipo_de_documento':
-          NubefactCatalogMapper.mapIdentityDocumentType(doc.customer.documentType),
+          NubefactCatalogMapper.mapIdentityDocumentType(
+            doc.customer.documentType,
+          ),
       'cliente_numero_de_documento': doc.customer.documentNumber,
       'cliente_denominacion': doc.customer.legalName,
       'cliente_direccion': doc.customer.address?.streetLine ?? '',
       'cliente_email': doc.customer.email ?? '',
       'fecha_de_emision': NubefactCatalogMapper.formatDate(doc.issueDate),
-      'fecha_de_vencimiento':
-          doc.dueDate != null ? NubefactCatalogMapper.formatDate(doc.dueDate!) : '',
+      'fecha_de_vencimiento': doc.dueDate != null
+          ? NubefactCatalogMapper.formatDate(doc.dueDate!)
+          : '',
       'moneda': NubefactCatalogMapper.mapCurrency(doc.currency),
-      'tipo_de_cambio': doc.exchangeRate != null ? doc.exchangeRate.toString() : '',
+      'tipo_de_cambio': doc.exchangeRate != null
+          ? doc.exchangeRate.toString()
+          : '',
       'porcentaje_de_igv': _num2(igvRate),
       'descuento_global': _optionalNum2(totals.descuentoGlobalAfectaBase),
       'total_descuento': _optionalNum2(
@@ -65,7 +73,8 @@ final class NubefactRequestMapper {
     if (doc is InvoiceDocument) {
       payload['detraccion'] = doc.detraction != null;
       if (doc.detraction != null) {
-        payload['detraccion_tipo'] = int.tryParse(doc.detraction!.code) ?? doc.detraction!.code;
+        payload['detraccion_tipo'] =
+            int.tryParse(doc.detraction!.code) ?? doc.detraction!.code;
         payload['detraccion_total'] = _num2(doc.detraction!.amountInPen);
         payload['detraccion_porcentaje'] = _num2(doc.detraction!.percentage);
         payload['medio_de_pago_detraccion'] =
@@ -91,7 +100,9 @@ final class NubefactRequestMapper {
       }
     } else if (doc is CreditNoteDocument) {
       payload['documento_que_se_modifica_tipo'] =
-          NubefactCatalogMapper.mapDocumentType(doc.affectedDocument.documentType);
+          NubefactCatalogMapper.mapDocumentType(
+            doc.affectedDocument.documentType,
+          );
       payload['documento_que_se_modifica_serie'] = doc.affectedDocument.series;
       payload['documento_que_se_modifica_numero'] = doc.affectedDocument.number;
       payload['tipo_de_nota_de_credito'] =
@@ -99,7 +110,9 @@ final class NubefactRequestMapper {
       payload['motivo_o_sustento_de_nota'] = doc.reasonDescription;
     } else if (doc is DebitNoteDocument) {
       payload['documento_que_se_modifica_tipo'] =
-          NubefactCatalogMapper.mapDocumentType(doc.affectedDocument.documentType);
+          NubefactCatalogMapper.mapDocumentType(
+            doc.affectedDocument.documentType,
+          );
       payload['documento_que_se_modifica_serie'] = doc.affectedDocument.series;
       payload['documento_que_se_modifica_numero'] = doc.affectedDocument.number;
       payload['tipo_de_nota_de_debito'] =
@@ -111,7 +124,9 @@ final class NubefactRequestMapper {
       payload['guias'] = doc.relatedGuides
           .map(
             (g) => <String, Object?>{
-              'guia_tipo': NubefactCatalogMapper.mapDocumentType(g.documentType),
+              'guia_tipo': NubefactCatalogMapper.mapDocumentType(
+                g.documentType,
+              ),
               'guia_serie_numero': g.formattedId,
             },
           )
@@ -123,7 +138,9 @@ final class NubefactRequestMapper {
   }
 
   Map<String, Object?> _mapLineItem(CpeLineItem item) {
-    final unitVal = item.igvAffectation.isFree ? item.unitPrice : item.unitValue;
+    final unitVal = item.igvAffectation.isFree
+        ? item.unitPrice
+        : item.unitValue;
     return <String, Object?>{
       'unidad_de_medida': item.unitCode,
       'codigo': item.internalCode ?? '',
@@ -134,9 +151,13 @@ final class NubefactRequestMapper {
       'precio_unitario': double.parse(item.unitPrice.toString()),
       'descuento': item.discount != null ? _num2(item.discount!.amount) : '',
       'subtotal': _num2(item.lineExtensionAmount),
-      'tipo_de_igv': NubefactCatalogMapper.mapIgvAffectation(item.igvAffectation),
+      'tipo_de_igv': NubefactCatalogMapper.mapIgvAffectation(
+        item.igvAffectation,
+      ),
       'igv': _num2(item.igvAmount),
-      'impuesto_bolsas': item.icbperAmount != null ? _num2(item.icbperAmount!) : '',
+      'impuesto_bolsas': item.icbperAmount != null
+          ? _num2(item.icbperAmount!)
+          : '',
       'total': _num2(item.totalLineAmount),
       'anticipo_regularizacion': false,
     };
@@ -146,7 +167,9 @@ final class NubefactRequestMapper {
   Map<String, Object?> mapVoidedLine(VoidedLine line) {
     return <String, Object?>{
       'operacion': 'generar_anulacion',
-      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(line.documentType),
+      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(
+        line.documentType,
+      ),
       'serie': line.series,
       'numero': line.number,
       'motivo': line.voidReason,
@@ -161,11 +184,15 @@ final class NubefactRequestMapper {
 
     return <String, Object?>{
       'operacion': 'generar_guia',
-      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(guide.id.type),
+      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(
+        guide.id.type,
+      ),
       'serie': guide.id.series,
       'numero': guide.id.number,
       'cliente_tipo_de_documento':
-          NubefactCatalogMapper.mapIdentityDocumentType(guide.recipient.documentType),
+          NubefactCatalogMapper.mapIdentityDocumentType(
+            guide.recipient.documentType,
+          ),
       'cliente_numero_de_documento': guide.recipient.documentNumber,
       'cliente_denominacion': guide.recipient.legalName,
       'cliente_direccion': guide.recipient.address?.streetLine ?? '',
@@ -175,14 +202,17 @@ final class NubefactRequestMapper {
       'peso_bruto_unidad_de_medida': guide.weightUnitCode,
       'numero_de_bultos': guide.packageCount ?? 1,
       'tipo_de_transporte': guide.transportMode.code,
-      'fecha_de_inicio_de_traslado':
-          NubefactCatalogMapper.formatDate(guide.transferStartDate),
+      'fecha_de_inicio_de_traslado': NubefactCatalogMapper.formatDate(
+        guide.transferStartDate,
+      ),
       'transportista_documento_tipo': '6',
       'transportista_documento_numero': guide.carrier?.ruc ?? '',
       'transportista_denominacion': guide.carrier?.legalName ?? '',
       'transportista_placa_numero': principalVehicle?.plateNumber ?? '',
       'conductor_documento_tipo': principalDriver != null
-          ? NubefactCatalogMapper.mapIdentityDocumentType(principalDriver.documentType)
+          ? NubefactCatalogMapper.mapIdentityDocumentType(
+              principalDriver.documentType,
+            )
           : '',
       'conductor_documento_numero': principalDriver?.documentNumber ?? '',
       'conductor_nombre': principalDriver?.firstName ?? '',
@@ -216,7 +246,9 @@ final class NubefactRequestMapper {
       'serie': doc.id.series,
       'numero': doc.id.number,
       'cliente_tipo_de_documento':
-          NubefactCatalogMapper.mapIdentityDocumentType(doc.partner.documentType),
+          NubefactCatalogMapper.mapIdentityDocumentType(
+            doc.partner.documentType,
+          ),
       'cliente_numero_de_documento': doc.partner.documentNumber,
       'cliente_denominacion': doc.partner.legalName,
       'cliente_direccion': doc.partner.address?.streetLine ?? '',
@@ -246,7 +278,9 @@ final class NubefactRequestMapper {
   }) {
     return <String, Object?>{
       'operacion': operation,
-      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(documentType),
+      'tipo_de_comprobante': NubefactCatalogMapper.mapDocumentType(
+        documentType,
+      ),
       'serie': series,
       'numero': number,
     };

@@ -14,23 +14,28 @@ final class BizlinksSoapFaultParser {
 
     try {
       final doc = XmlDocument.parse(body);
-      final faultEl = doc.findAllElements('Fault', namespace: '*').firstOrNull;
+      final faultEl = doc
+          .findAllElements('Fault', namespaceUri: '*')
+          .firstOrNull;
       if (faultEl == null) return null;
 
-      final faultCode = faultEl
-              .findAllElements('faultcode', namespace: '*')
+      final faultCode =
+          faultEl
+              .findAllElements('faultcode', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
-      final faultString = faultEl
-              .findAllElements('faultstring', namespace: '*')
+      final faultString =
+          faultEl
+              .findAllElements('faultstring', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
           '';
-      final detailMsg = faultEl
-              .findAllElements('message', namespace: '*')
+      final detailMsg =
+          faultEl
+              .findAllElements('message', namespaceUri: '*')
               .firstOrNull
               ?.innerText
               .trim() ??
@@ -42,7 +47,8 @@ final class BizlinksSoapFaultParser {
       final regexMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b')
           .firstMatch('$faultCode $faultString $detailMsg');
 
-      final int? sunatCode = directCode ??
+      final int? sunatCode =
+          directCode ??
           (suffixMatch != null ? int.tryParse(suffixMatch.group(1)!) : null) ??
           (regexMatch != null ? int.tryParse(regexMatch.group(1)!) : null);
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:sunat_cpe_nubefact/sunat_cpe_nubefact.dart';
 import 'package:test/test.dart';
@@ -114,46 +115,54 @@ void main() {
   });
 
   group('NubefactProvider End-to-End Operations', () {
-    test('sends Authorization Token header and maps accepted response with links', () async {
-      final client = _FakeHttpClient((req) async {
-        expect(req.headers['Authorization'], 'Token token="secret-nubefact-token"');
-        final sentBody = json.decode(req.body.toString()) as Map<String, Object?>;
-        expect(sentBody['operacion'], 'generar_comprobante');
+    test(
+      'sends Authorization Token header and maps accepted response with links',
+      () async {
+        final client = _FakeHttpClient((req) async {
+          expect(
+            req.headers['Authorization'],
+            'Token token="secret-nubefact-token"',
+          );
+          final sentBody =
+              json.decode(req.body.toString()) as Map<String, Object?>;
+          expect(sentBody['operacion'], 'generar_comprobante');
 
-        return CpeHttpResponse(
-          statusCode: 200,
-          headers: const {'content-type': 'application/json'},
-          bodyBytes: Uint8List.fromList(
-            utf8.encode(
-              json.encode({
-                'tipo_de_comprobante': 1,
-                'serie': 'FFF1',
-                'numero': 15,
-                'aceptada_por_sunat': true,
-                'sunat_description': 'La Factura numero FFF1-15, ha sido aceptada',
-                'sunat_note': null,
-                'sunat_responsecode': '0',
-                'sunat_soap_error': '',
-                'codigo_hash': 'hashNube123=',
-                'cadena_para_codigo_qr': '20100066603|01|FFF1|15|18.00|118.00|30/10/2026|6|20600695771|hashNube123=|',
-                'enlace_del_pdf': 'https://nubefact.com/pdf/15.pdf',
-                'enlace_del_xml': 'https://nubefact.com/xml/15.xml',
-                'enlace_del_cdr': 'https://nubefact.com/cdr/15.zip',
-              }),
+          return CpeHttpResponse(
+            statusCode: 200,
+            headers: const {'content-type': 'application/json'},
+            bodyBytes: Uint8List.fromList(
+              utf8.encode(
+                json.encode({
+                  'tipo_de_comprobante': 1,
+                  'serie': 'FFF1',
+                  'numero': 15,
+                  'aceptada_por_sunat': true,
+                  'sunat_description':
+                      'La Factura numero FFF1-15, ha sido aceptada',
+                  'sunat_note': null,
+                  'sunat_responsecode': '0',
+                  'sunat_soap_error': '',
+                  'codigo_hash': 'hashNube123=',
+                  'cadena_para_codigo_qr': '20100066603|01|FFF1|15|18.00|118.00|30/10/2026|6|20600695771|hashNube123=|',
+                  'enlace_del_pdf': 'https://nubefact.com/pdf/15.pdf',
+                  'enlace_del_xml': 'https://nubefact.com/xml/15.xml',
+                  'enlace_del_cdr': 'https://nubefact.com/cdr/15.zip',
+                }),
+              ),
             ),
-          ),
-        );
-      });
+          );
+        });
 
-      final provider = NubefactProvider(config: config, httpClient: client);
-      final result = await provider.sendDocument(_sampleCreditInvoice());
-      final response = result.getOrThrow();
+        final provider = NubefactProvider(config: config, httpClient: client);
+        final result = await provider.sendDocument(_sampleCreditInvoice());
+        final response = result.getOrThrow();
 
-      expect(response.status, CpeProcessStatus.accepted);
-      expect(response.digestValue, 'hashNube123=');
-      expect(response.pdfDownloadUrl, 'https://nubefact.com/pdf/15.pdf');
-      expect(response.cdr?.isAccepted, isTrue);
-    });
+        expect(response.status, CpeProcessStatus.accepted);
+        expect(response.digestValue, 'hashNube123=');
+        expect(response.pdfDownloadUrl, 'https://nubefact.com/pdf/15.pdf');
+        expect(response.cdr?.isAccepted, isTrue);
+      },
+    );
 
     test('maps Nubefact error codes (10 -> OseAuthException, 21 -> CpeValidationException) and SUNAT rejections', () async {
       var mockStatus = 401;
@@ -194,88 +203,93 @@ void main() {
       expect((rejRes.errorOrNull as SunatRejectionException).sunatCode, 2017);
     });
 
-    test('handles generar_anulacion and polls consultar_anulacion until accepted', () async {
-      var checkCalls = 0;
+    test(
+      'handles generar_anulacion and polls consultar_anulacion until accepted',
+      () async {
+        var checkCalls = 0;
 
-      final client = _FakeHttpClient((req) async {
-        final sent = json.decode(req.body.toString()) as Map<String, Object?>;
-        final op = sent['operacion'];
+        final client = _FakeHttpClient((req) async {
+          final sent = json.decode(req.body.toString()) as Map<String, Object?>;
+          final op = sent['operacion'];
 
-        if (op == 'generar_anulacion') {
+          if (op == 'generar_anulacion') {
+            return CpeHttpResponse(
+              statusCode: 200,
+              headers: const {'content-type': 'application/json'},
+              bodyBytes: Uint8List.fromList(
+                utf8.encode(
+                  json.encode({
+                    'aceptada_por_sunat': false,
+                    'sunat_ticket_numero': '202600998877',
+                  }),
+                ),
+              ),
+            );
+          }
+
+          expect(op, 'consultar_anulacion');
+          checkCalls++;
+          final accepted = checkCalls >= 2;
           return CpeHttpResponse(
             statusCode: 200,
             headers: const {'content-type': 'application/json'},
             bodyBytes: Uint8List.fromList(
               utf8.encode(
                 json.encode({
-                  'aceptada_por_sunat': false,
-                  'sunat_ticket_numero': '202600998877',
+                  'aceptada_por_sunat': accepted,
+                  'sunat_responsecode': accepted ? '0' : '',
+                  'sunat_description': accepted
+                      ? 'La Comunicacion de baja ha sido aceptada'
+                      : '',
                 }),
               ),
             ),
           );
-        }
+        });
 
-        expect(op, 'consultar_anulacion');
-        checkCalls++;
-        final accepted = checkCalls >= 2;
-        return CpeHttpResponse(
-          statusCode: 200,
-          headers: const {'content-type': 'application/json'},
-          bodyBytes: Uint8List.fromList(
-            utf8.encode(
-              json.encode({
-                'aceptada_por_sunat': accepted,
-                'sunat_responsecode': accepted ? '0' : '',
-                'sunat_description': accepted ? 'La Comunicacion de baja ha sido aceptada' : '',
-              }),
+        final provider = NubefactProvider(config: config, httpClient: client);
+        final voided = VoidedDocument(
+          id: const DocumentId(
+            issuerRuc: '20100066603',
+            type: CpeDocumentType.comunicacionBaja,
+            series: 'RA-20261030',
+            number: 1,
+          ),
+          issuer: const CompanyParty(
+            ruc: '20100066603',
+            legalName: 'EMISOR DEMO S.A.C.',
+            address: Address(streetLine: 'AV. LIMA 100'),
+          ),
+          issueDate: DateTime(2026, 10, 30),
+          referenceDate: DateTime(2026, 10, 30),
+          lines: const [
+            VoidedLine(
+              lineNumber: 1,
+              documentType: CpeDocumentType.factura,
+              series: 'FFF1',
+              number: 15,
+              voidReason: 'ERROR DE DIGITACION',
             ),
-          ),
+          ],
         );
-      });
 
-      final provider = NubefactProvider(config: config, httpClient: client);
-      final voided = VoidedDocument(
-        id: const DocumentId(
-          issuerRuc: '20100066603',
-          type: CpeDocumentType.comunicacionBaja,
-          series: 'RA-20261030',
-          number: 1,
-        ),
-        issuer: const CompanyParty(
-          ruc: '20100066603',
-          legalName: 'EMISOR DEMO S.A.C.',
-          address: Address(streetLine: 'AV. LIMA 100'),
-        ),
-        issueDate: DateTime(2026, 10, 30),
-        referenceDate: DateTime(2026, 10, 30),
-        lines: const [
-          VoidedLine(
-            lineNumber: 1,
-            documentType: CpeDocumentType.factura,
-            series: 'FFF1',
-            number: 15,
-            voidReason: 'ERROR DE DIGITACION',
+        final ticketRes = (await provider.sendVoidedDocument(voided))
+            .getOrThrow();
+        expect(ticketRes.ticket, '202600998877');
+
+        final cdr = (await provider.pollTicketUntilDone(
+          ticketRes.ticket,
+          referenceId: ticketRes.referenceId,
+          config: const PollingConfig(
+            initialDelay: Duration(milliseconds: 5),
+            maxDelay: Duration(milliseconds: 20),
+            maxAttempts: 4,
           ),
-        ],
-      );
+        )).getOrThrow();
 
-      final ticketRes = (await provider.sendVoidedDocument(voided)).getOrThrow();
-      expect(ticketRes.ticket, '202600998877');
-
-      final cdr = (await provider.pollTicketUntilDone(
-        ticketRes.ticket,
-        referenceId: ticketRes.referenceId,
-        config: const PollingConfig(
-          initialDelay: Duration(milliseconds: 5),
-          maxDelay: Duration(milliseconds: 20),
-          maxAttempts: 4,
-        ),
-      ))
-          .getOrThrow();
-
-      expect(checkCalls, 2);
-      expect(cdr.isAccepted, isTrue);
-    });
+        expect(checkCalls, 2);
+        expect(cdr.isAccepted, isTrue);
+      },
+    );
   });
 }

@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import '../mifact_config.dart';
 import 'mifact_invoice_mapper.dart';
 
@@ -20,8 +21,9 @@ final class MifactGuideMapper {
       'FEC_EMIS': MifactInvoiceMapper.formatIsoDate(guide.issueDate),
       'COD_MOT_TRASLADO': guide.transferReason.code,
       'MOD_TRASLADO': guide.transportMode.code,
-      'FEC_INI_TRASLADO':
-          MifactInvoiceMapper.formatIsoDate(guide.transferStartDate),
+      'FEC_INI_TRASLADO': MifactInvoiceMapper.formatIsoDate(
+        guide.transferStartDate,
+      ),
       'PESO_BRUTO': guide.grossWeight.toString(),
       'UND_PESO_BRUTO': guide.weightUnitCode,
       'COD_UBI_PARTIDA': guide.originAddress.ubigeo ?? '150101',

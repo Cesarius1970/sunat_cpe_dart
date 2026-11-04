@@ -15,10 +15,7 @@ final class SunatWarning {
   final String code;
   final String description;
 
-  const SunatWarning({
-    required this.code,
-    required this.description,
-  });
+  const SunatWarning({required this.code, required this.description});
 
   @override
   String toString() => '[$code] $description';

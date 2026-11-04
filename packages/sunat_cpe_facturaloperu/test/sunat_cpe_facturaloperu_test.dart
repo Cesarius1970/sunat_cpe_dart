@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:sunat_cpe_facturaloperu/sunat_cpe_facturaloperu.dart';
 import 'package:test/test.dart';
@@ -28,10 +29,7 @@ InvoiceDocument _sampleInvoice() {
     issuer: const CompanyParty(
       ruc: '20100066603',
       legalName: 'EMPRESA DEMO S.A.C.',
-      address: Address(
-        ubigeo: '150101',
-        streetLine: 'AV. PRINCIPAL 123',
-      ),
+      address: Address(ubigeo: '150101', streetLine: 'AV. PRINCIPAL 123'),
     ),
     customer: const CustomerParty(
       documentType: IdentityDocumentType.ruc,
@@ -116,9 +114,12 @@ void main() {
                   },
                 },
                 'links': {
-                  'xml': 'https://demo.facturaloperu.com/downloads/xml/9b1deb4d',
-                  'pdf': 'https://demo.facturaloperu.com/downloads/pdf/9b1deb4d',
-                  'cdr': 'https://demo.facturaloperu.com/downloads/cdr/9b1deb4d',
+                  'xml':
+                      'https://demo.facturaloperu.com/downloads/xml/9b1deb4d',
+                  'pdf':
+                      'https://demo.facturaloperu.com/downloads/pdf/9b1deb4d',
+                  'cdr':
+                      'https://demo.facturaloperu.com/downloads/cdr/9b1deb4d',
                 },
               }),
             ),

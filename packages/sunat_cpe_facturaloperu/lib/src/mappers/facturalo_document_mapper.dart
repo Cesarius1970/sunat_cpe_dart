@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import '../facturalo_config.dart';
 
 /// Maps [SalesCpeDocument] and [AgentCpeDocument] to FacturaloPeru `/api/documents` and `/api/retentions` JSON.

@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'mappers/nubefact_request_mapper.dart';
 import 'mappers/nubefact_response_mapper.dart';
 import 'nubefact_config.dart';
@@ -15,21 +17,21 @@ final class NubefactProvider with TicketPollingMixin implements OseProvider {
     required this.config,
     CpeHttpClient? httpClient,
     CpeMathValidator? validator,
-  })  : httpClient = httpClient ?? DefaultCpeHttpClient(),
-        validator = validator ?? CpeMathValidator(),
-        _requestMapper = NubefactRequestMapper(config);
+  }) : httpClient = httpClient ?? DefaultCpeHttpClient(),
+       validator = validator ?? CpeMathValidator(),
+       _requestMapper = NubefactRequestMapper(config);
 
   @override
   String get providerId => 'nubefact';
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.retentionPerception,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.retentionPerception,
+    ProviderCapability.statusQuery,
+  };
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
@@ -204,8 +206,7 @@ final class NubefactProvider with TicketPollingMixin implements OseProvider {
     if (referenceId == null) {
       return const CpeFailure(
         CpeValidationException(
-          message:
-              'Nubefact requires referenceId (type, series, number) to query ticket status (consultar_anulacion / consultar_guia)',
+          message: 'Nubefact requires referenceId (type, series, number) to query ticket status (consultar_anulacion / consultar_guia)',
           issues: [
             ValidationIssue(
               field: 'referenceId',
@@ -216,7 +217,8 @@ final class NubefactProvider with TicketPollingMixin implements OseProvider {
       );
     }
 
-    final isGuide = referenceId.type == CpeDocumentType.guiaRemisionRemitente ||
+    final isGuide =
+        referenceId.type == CpeDocumentType.guiaRemisionRemitente ||
         referenceId.type == CpeDocumentType.guiaRemisionTransportista;
 
     try {

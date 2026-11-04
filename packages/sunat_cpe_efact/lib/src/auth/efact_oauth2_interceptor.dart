@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 /// Interceptor that acquires and refreshes EFACT OAuth2 Bearer tokens (`/oauth/token`).
@@ -39,8 +40,11 @@ final class EfactOAuth2Interceptor implements CpeHttpInterceptor {
       return _cachedToken!;
     }
 
-    final basicCredentials = base64.encode(utf8.encode('$clientId:$clientSecret'));
-    final formBody = 'grant_type=password'
+    final basicCredentials = base64.encode(
+      utf8.encode('$clientId:$clientSecret'),
+    );
+    final formBody =
+        'grant_type=password'
         '&username=${Uri.encodeQueryComponent(username)}'
         '&password=${Uri.encodeQueryComponent(password)}';
 
@@ -59,7 +63,8 @@ final class EfactOAuth2Interceptor implements CpeHttpInterceptor {
 
     if (response.statusCode != 200) {
       throw OseAuthException(
-        message: 'Failed to obtain EFACT OAuth2 token (HTTP ${response.statusCode}): ${response.bodyAsString}',
+        message:
+            'Failed to obtain EFACT OAuth2 token (HTTP ${response.statusCode}): ${response.bodyAsString}',
         code: response.statusCode.toString(),
         rawResponse: response.bodyAsString,
       );
@@ -68,7 +73,8 @@ final class EfactOAuth2Interceptor implements CpeHttpInterceptor {
     final decoded = jsonDecode(response.bodyAsString);
     if (decoded is! Map<String, dynamic>) {
       throw OseAuthException(
-        message: 'Invalid OAuth2 JSON response from EFACT: ${response.bodyAsString}',
+        message:
+            'Invalid OAuth2 JSON response from EFACT: ${response.bodyAsString}',
         rawResponse: response.bodyAsString,
       );
     }
@@ -76,7 +82,8 @@ final class EfactOAuth2Interceptor implements CpeHttpInterceptor {
     final token = decoded['access_token']?.toString();
     if (token == null || token.isEmpty) {
       throw OseAuthException(
-        message: 'Missing access_token in EFACT OAuth2 response: ${response.bodyAsString}',
+        message:
+            'Missing access_token in EFACT OAuth2 response: ${response.bodyAsString}',
         rawResponse: decoded,
       );
     }
@@ -97,10 +104,7 @@ final class EfactOAuth2Interceptor implements CpeHttpInterceptor {
     }
     final token = await getValidAccessToken();
     return request.copyWith(
-      headers: {
-        ...request.headers,
-        'Authorization': 'Bearer $token',
-      },
+      headers: {...request.headers, 'Authorization': 'Bearer $token'},
     );
   }
 

@@ -37,11 +37,7 @@ final class NubefactDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const NubefactDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const NubefactDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for EFACT (REST OAuth2 XML/JSON + SOAP 1.1 OSE/PSE).
@@ -50,11 +46,7 @@ final class EfactDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const EfactDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const EfactDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for Mifact (REST JSON PSE/OSE).
@@ -63,11 +55,7 @@ final class MifactDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const MifactDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const MifactDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for Bizlinks (SOAP 1.1 WS-Security OSE).
@@ -76,11 +64,7 @@ final class BizlinksDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const BizlinksDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const BizlinksDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for Digiflow (SOAP 1.1 WS-Security OSE).
@@ -89,11 +73,7 @@ final class DigiflowDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const DigiflowDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const DigiflowDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for Sovos / Paperless (SOAP 1.1 OSE/PSE).
@@ -102,11 +82,7 @@ final class SovosDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const SovosDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const SovosDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for FacturaloPeru / Facturador PRO (REST JSON Bearer PSE).
@@ -115,11 +91,7 @@ final class FacturaloDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const FacturaloDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const FacturaloDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for TCI (SOAP 1.1 WS-Security OSE).
@@ -128,11 +100,7 @@ final class TciDescriptor extends SunatProviderDescriptor {
   final CpeHttpClient? httpClient;
   final CpeMathValidator? validator;
 
-  const TciDescriptor(
-    this.config, {
-    this.httpClient,
-    this.validator,
-  });
+  const TciDescriptor(this.config, {this.httpClient, this.validator});
 }
 
 /// Descriptor for Cavali / Gosocket OSE + Factrack Factoring REST OAuth2.

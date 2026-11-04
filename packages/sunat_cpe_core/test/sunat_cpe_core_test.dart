@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:archive/archive.dart';
 import 'package:pointycastle/export.dart';
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
@@ -33,7 +34,9 @@ final class _TestUblOseProvider extends BaseUblOseProvider {
 CpeCertificateCredentials _generateTestCertificate() {
   final keyParams = RSAKeyGeneratorParameters(BigInt.parse('65537'), 1024, 12);
   final secureRandom = FortunaRandom();
-  secureRandom.seed(KeyParameter(Uint8List.fromList(List.generate(32, (i) => i + 1))));
+  secureRandom.seed(
+    KeyParameter(Uint8List.fromList(List.generate(32, (i) => i + 1))),
+  );
 
   final generator = RSAKeyGenerator()
     ..init(ParametersWithRandom(keyParams, secureRandom));
@@ -41,7 +44,9 @@ CpeCertificateCredentials _generateTestCertificate() {
 
   return CpeCertificateCredentials(
     privateKey: pair.privateKey,
-    base64X509Certificate: base64.encode(utf8.encode('FAKE-X509-CERT-DER-BYTES')),
+    base64X509Certificate: base64.encode(
+      utf8.encode('FAKE-X509-CERT-DER-BYTES'),
+    ),
   );
 }
 
@@ -65,10 +70,7 @@ InvoiceDocument _buildValidInvoice({
     documentType: IdentityDocumentType.ruc,
     documentNumber: '20600695771',
     legalName: 'CLIENTE CORPORATIVO S.A.C.',
-    address: Address(
-      ubigeo: '150122',
-      streetLine: 'CALLE LIBERTAD 116',
-    ),
+    address: Address(ubigeo: '150122', streetLine: 'CALLE LIBERTAD 116'),
   );
 
   final item = CpeLineItem(
@@ -127,7 +129,8 @@ String _buildSampleCdrBase64Zip({
   List<String> notes = const [],
 }) {
   final notesXml = notes.map((n) => '<cbc:Note>$n</cbc:Note>').join();
-  final cdrXml = '<?xml version="1.0" encoding="UTF-8"?>'
+  final cdrXml =
+      '<?xml version="1.0" encoding="UTF-8"?>'
       '<ar:ApplicationResponse xmlns:ar="urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2" '
       'xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" '
       'xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">'
@@ -146,7 +149,9 @@ String _buildSampleCdrBase64Zip({
 
   final xmlBytes = utf8.encode(cdrXml);
   final archive = Archive()
-    ..addFile(ArchiveFile('R-20100066603-01-F001-42.xml', xmlBytes.length, xmlBytes));
+    ..addFile(
+      ArchiveFile('R-20100066603-01-F001-42.xml', xmlBytes.length, xmlBytes),
+    );
   return base64.encode(ZipEncoder().encode(archive));
 }
 
@@ -160,70 +165,70 @@ void main() {
       expect(result.isSuccess, isTrue);
     });
 
-    test('fails when header totalIgv does not match sum of line IGV amounts', () {
-      final brokenInvoice = _buildValidInvoice(
-        overrideTotalIgv: Decimal.parse('150.00'),
-      );
-      final result = validator.validate(brokenInvoice);
-      expect(result.isFailure, isTrue);
-      expect(
-        () => result.getOrThrow(),
-        throwsA(
-          isA<CpeValidationException>().having(
-            (e) => e.issues.any((i) => i.field == 'totals.totalIgv'),
-            'contains totals.totalIgv issue',
-            isTrue,
-          ),
-        ),
-      );
-    });
-
     test(
-      'enforces SUNAT RS 000193-2020 rule: credit netPendingAmount must deduct detraction from payable total',
+      'fails when header totalIgv does not match sum of line IGV amounts',
       () {
-        final detraction = DetractionInfo(
-          code: '022',
-          bankAccountNumber: '00-000-123456',
-          percentage: Decimal.parse('12.00'),
-          amountInPen: Decimal.parse('141.60'),
+        final brokenInvoice = _buildValidInvoice(
+          overrideTotalIgv: Decimal.parse('150.00'),
         );
-
-        // Wrong credit terms: installments sum to full 1180.00 instead of deducting 141.60 detraction (1038.40)
-        final wrongCreditInvoice = _buildValidInvoice(
-          detraction: detraction,
-          paymentTerms: CreditPaymentTerms(
-            netPendingAmount: Decimal.parse('1180.00'),
-            installments: [
-              PaymentInstallment(
-                number: 1,
-                amount: Decimal.parse('1180.00'),
-                dueDate: DateTime(2026, 11, 30),
-              ),
-            ],
+        final result = validator.validate(brokenInvoice);
+        expect(result.isFailure, isTrue);
+        expect(
+          () => result.getOrThrow(),
+          throwsA(
+            isA<CpeValidationException>().having(
+              (e) => e.issues.any((i) => i.field == 'totals.totalIgv'),
+              'contains totals.totalIgv issue',
+              isTrue,
+            ),
           ),
         );
-
-        final wrongResult = validator.validate(wrongCreditInvoice);
-        expect(wrongResult.isFailure, isTrue);
-
-        // Correct credit terms: netPendingAmount = 1180.00 - 141.60 = 1038.40
-        final validCreditInvoice = _buildValidInvoice(
-          detraction: detraction,
-          paymentTerms: CreditPaymentTerms(
-            netPendingAmount: Decimal.parse('1038.40'),
-            installments: [
-              PaymentInstallment(
-                number: 1,
-                amount: Decimal.parse('1038.40'),
-                dueDate: DateTime(2026, 11, 30),
-              ),
-            ],
-          ),
-        );
-
-        expect(validator.validate(validCreditInvoice).isSuccess, isTrue);
       },
     );
+
+    test('enforces SUNAT RS 000193-2020 rule: credit netPendingAmount must deduct detraction from payable total', () {
+      final detraction = DetractionInfo(
+        code: '022',
+        bankAccountNumber: '00-000-123456',
+        percentage: Decimal.parse('12.00'),
+        amountInPen: Decimal.parse('141.60'),
+      );
+
+      // Wrong credit terms: installments sum to full 1180.00 instead of deducting 141.60 detraction (1038.40)
+      final wrongCreditInvoice = _buildValidInvoice(
+        detraction: detraction,
+        paymentTerms: CreditPaymentTerms(
+          netPendingAmount: Decimal.parse('1180.00'),
+          installments: [
+            PaymentInstallment(
+              number: 1,
+              amount: Decimal.parse('1180.00'),
+              dueDate: DateTime(2026, 11, 30),
+            ),
+          ],
+        ),
+      );
+
+      final wrongResult = validator.validate(wrongCreditInvoice);
+      expect(wrongResult.isFailure, isTrue);
+
+      // Correct credit terms: netPendingAmount = 1180.00 - 141.60 = 1038.40
+      final validCreditInvoice = _buildValidInvoice(
+        detraction: detraction,
+        paymentTerms: CreditPaymentTerms(
+          netPendingAmount: Decimal.parse('1038.40'),
+          installments: [
+            PaymentInstallment(
+              number: 1,
+              amount: Decimal.parse('1038.40'),
+              dueDate: DateTime(2026, 11, 30),
+            ),
+          ],
+        ),
+      );
+
+      expect(validator.validate(validCreditInvoice).isSuccess, isTrue);
+    });
   });
 
   group('UblXmlBuilder & XadesBesSigner (Pure Dart UBL 2.1 + RSA-SHA256)', () {
@@ -233,21 +238,30 @@ void main() {
       cert = _generateTestCertificate();
     });
 
-    test('generates UBL 2.1 XML and injects verifiable RSA-SHA256 signature', () {
-      const builder = UblXmlBuilder();
-      const signer = XadesBesSigner();
-      final invoice = _buildValidInvoice();
+    test(
+      'generates UBL 2.1 XML and injects verifiable RSA-SHA256 signature',
+      () {
+        const builder = UblXmlBuilder();
+        const signer = XadesBesSigner();
+        final invoice = _buildValidInvoice();
 
-      final unsignedXml = builder.buildUnsignedXml(invoice);
-      expect(unsignedXml, contains('<cbc:UBLVersionID>2.1</cbc:UBLVersionID>'));
-      expect(unsignedXml, contains('<cbc:ID>F001-42</cbc:ID>'));
+        final unsignedXml = builder.buildUnsignedXml(invoice);
+        expect(
+          unsignedXml,
+          contains('<cbc:UBLVersionID>2.1</cbc:UBLVersionID>'),
+        );
+        expect(unsignedXml, contains('<cbc:ID>F001-42</cbc:ID>'));
 
-      final signed = signer.signXml(unsignedXml, cert);
-      expect(signed.digestValue, isNotEmpty);
-      expect(signed.signatureValue, isNotEmpty);
-      expect(signed.signedXml, contains('Id="SignSUNAT"'));
-      expect(signed.signedXml, contains('<ds:DigestValue>${signed.digestValue}</ds:DigestValue>'));
-    });
+        final signed = signer.signXml(unsignedXml, cert);
+        expect(signed.digestValue, isNotEmpty);
+        expect(signed.signatureValue, isNotEmpty);
+        expect(signed.signedXml, contains('Id="SignSUNAT"'));
+        expect(
+          signed.signedXml,
+          contains('<ds:DigestValue>${signed.digestValue}</ds:DigestValue>'),
+        );
+      },
+    );
   });
 
   group('BaseUblOseProvider & TicketPollingMixin End-to-End Pipeline', () {
@@ -266,7 +280,10 @@ void main() {
 
       final client = _FakeHttpClient((req) async {
         expect(req.headers['SOAPAction'], '"urn:sendBill"');
-        expect(req.body.toString(), contains('<fileName>20100066603-01-F001-42.zip</fileName>'));
+        expect(
+          req.body.toString(),
+          contains('<fileName>20100066603-01-F001-42.zip</fileName>'),
+        );
 
         return CpeHttpResponse(
           statusCode: 200,
@@ -286,7 +303,9 @@ void main() {
       });
 
       final provider = _TestUblOseProvider(
-        endpointUri: Uri.parse('https://ose.example.pe/ol-ti-itcpe/billService'),
+        endpointUri: Uri.parse(
+          'https://ose.example.pe/ol-ti-itcpe/billService',
+        ),
         wsseUsername: '20100066603MODDATOS',
         wssePassword: 'moddatos',
         certificate: cert,
@@ -299,7 +318,12 @@ void main() {
       expect(response.status, CpeProcessStatus.acceptedWithWarnings);
       expect(response.cdr?.responseCode, '0');
       expect(response.cdr?.warnings.single.code, '4252');
-      expect(response.qrContent, startsWith('20100066603|01|F001|42|180.00|1180.00|2026-10-30|6|20600695771|'));
+      expect(
+        response.qrContent,
+        startsWith(
+          '20100066603|01|F001|42|180.00|1180.00|2026-10-30|6|20600695771|',
+        ),
+      );
     });
 
     test('distinguishes SUNAT Exception (0100-1999) from Rejection (2000-3999) on SOAP Fault', () async {
@@ -326,7 +350,9 @@ void main() {
       });
 
       final provider = _TestUblOseProvider(
-        endpointUri: Uri.parse('https://ose.example.pe/ol-ti-itcpe/billService'),
+        endpointUri: Uri.parse(
+          'https://ose.example.pe/ol-ti-itcpe/billService',
+        ),
         wsseUsername: '20100066603MODDATOS',
         wssePassword: 'moddatos',
         certificate: cert,
@@ -343,7 +369,10 @@ void main() {
       faultMsgToReturn = 'El RUC del receptor no esta activo';
       final rejResult = await provider.sendDocument(_buildValidInvoice());
       expect(rejResult.errorOrNull, isA<SunatRejectionException>());
-      expect((rejResult.errorOrNull as SunatRejectionException).sunatCode, 2017);
+      expect(
+        (rejResult.errorOrNull as SunatRejectionException).sunatCode,
+        2017,
+      );
     });
 
     test('pollTicketUntilDone retries while statusCode is 98 and resolves when statusCode is 0', () async {
@@ -380,7 +409,9 @@ void main() {
       });
 
       final provider = _TestUblOseProvider(
-        endpointUri: Uri.parse('https://ose.example.pe/ol-ti-itcpe/billService'),
+        endpointUri: Uri.parse(
+          'https://ose.example.pe/ol-ti-itcpe/billService',
+        ),
         wsseUsername: '20100066603MODDATOS',
         wssePassword: 'moddatos',
         certificate: cert,

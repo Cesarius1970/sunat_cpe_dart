@@ -1,17 +1,24 @@
 name: sunat_cpe_efact
 description: EFACT OSE/PSE adapter for SUNAT Electronic Invoicing (CPE) in pure Dart, supporting REST OAuth2 (XML/JSON) and SOAP 1.1 UBL 2.1.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_efact
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_efact
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
 resolution: workspace
+
+topics:
+  - sunat
+  - cpe
+  - facturacion-electronica
+  - ose
+  - peru
 
 environment:
   sdk: ">=3.13.5 <4.0.0"
 
 dependencies:
   decimal: ^3.2.1
-  sunat_cpe_core: ^0.1.0
+  sunat_cpe_core: ^0.1.1
 
 dev_dependencies:
   lints: ^6.0.0

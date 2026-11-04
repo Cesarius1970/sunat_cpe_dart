@@ -12,35 +12,37 @@ final class NubefactCatalogMapper {
   /// - `09` Guía de Remisión Remitente -> `7`
   /// - `31` Guía de Remisión Transportista -> `8`
   static int mapDocumentType(CpeDocumentType type) => switch (type) {
-        CpeDocumentType.factura => 1,
-        CpeDocumentType.boleta => 2,
-        CpeDocumentType.notaCredito => 3,
-        CpeDocumentType.notaDebito => 4,
-        CpeDocumentType.guiaRemisionRemitente => 7,
-        CpeDocumentType.guiaRemisionTransportista => 8,
-        _ => throw CpeValidationException(
-            message: 'Document type ${type.code} is not supported by Nubefact document mapper',
-            issues: [
-              ValidationIssue(
-                field: 'id.type',
-                message: 'Unsupported Nubefact document type: ${type.code}',
-              ),
-            ],
-          ),
-      };
+    CpeDocumentType.factura => 1,
+    CpeDocumentType.boleta => 2,
+    CpeDocumentType.notaCredito => 3,
+    CpeDocumentType.notaDebito => 4,
+    CpeDocumentType.guiaRemisionRemitente => 7,
+    CpeDocumentType.guiaRemisionTransportista => 8,
+    _ => throw CpeValidationException(
+      message:
+          'Document type ${type.code} is not supported by Nubefact document mapper',
+      issues: [
+        ValidationIssue(
+          field: 'id.type',
+          message: 'Unsupported Nubefact document type: ${type.code}',
+        ),
+      ],
+    ),
+  };
 
   /// Translates [CurrencyCode] to Nubefact `moneda`:
   /// - `PEN` -> `1`
   /// - `USD` -> `2`
   /// - `EUR` -> `3`
   static int mapCurrency(CurrencyCode currency) => switch (currency) {
-        CurrencyCode.pen => 1,
-        CurrencyCode.usd => 2,
-        CurrencyCode.eur => 3,
-      };
+    CurrencyCode.pen => 1,
+    CurrencyCode.usd => 2,
+    CurrencyCode.eur => 3,
+  };
 
   /// Translates [IdentityDocumentType] to Nubefact `cliente_tipo_de_documento`.
-  static String mapIdentityDocumentType(IdentityDocumentType type) => switch (type) {
+  static String mapIdentityDocumentType(IdentityDocumentType type) =>
+      switch (type) {
         IdentityDocumentType.noDomiciliado => '-',
         IdentityDocumentType.dni => '1',
         IdentityDocumentType.carnetExtranjeria => '4',
@@ -52,20 +54,22 @@ final class NubefactCatalogMapper {
 
   /// Translates [OperationType] (Catálogo 51) to Nubefact `sunat_transaction`.
   static int mapOperationType(OperationType op) => switch (op) {
-        OperationType.ventaInterna => 1,
-        OperationType.exportacionBienes || OperationType.exportacionServiciosPais => 2,
-        OperationType.ventaInternaAnticipos => 4,
-        OperationType.operacionSujetaDetraccion => 30,
-        OperationType.operacionSujetaDetraccionRecursosHidrobiologicos => 31,
-        OperationType.operacionSujetaDetraccionTransportePasajeros => 32,
-        OperationType.operacionSujetaDetraccionTransporteCarga => 33,
-        OperationType.operacionSujetaPercepcion => 1,
-        OperationType.operacionSujetaRetencion => 1,
-        OperationType.ventaItinerante => 1,
-      };
+    OperationType.ventaInterna => 1,
+    OperationType.exportacionBienes ||
+    OperationType.exportacionServiciosPais => 2,
+    OperationType.ventaInternaAnticipos => 4,
+    OperationType.operacionSujetaDetraccion => 30,
+    OperationType.operacionSujetaDetraccionRecursosHidrobiologicos => 31,
+    OperationType.operacionSujetaDetraccionTransportePasajeros => 32,
+    OperationType.operacionSujetaDetraccionTransporteCarga => 33,
+    OperationType.operacionSujetaPercepcion => 1,
+    OperationType.operacionSujetaRetencion => 1,
+    OperationType.ventaItinerante => 1,
+  };
 
   /// Translates [IgvAffectationType] (Catálogo 07) to Nubefact `tipo_de_igv` (1..17).
-  static int mapIgvAffectation(IgvAffectationType affectation) => switch (affectation) {
+  static int mapIgvAffectation(IgvAffectationType affectation) =>
+      switch (affectation) {
         IgvAffectationType.gravadoOperacionOnerosa => 1,
         IgvAffectationType.gravadoRetiroPremio => 2,
         IgvAffectationType.gravadoRetiroDonacion => 3,
@@ -92,12 +96,12 @@ final class NubefactCatalogMapper {
 
   /// Translates [DebitNoteReasonCode] (Catálogo 10) to Nubefact `tipo_de_nota_de_debito` (1..5).
   static int mapDebitNoteReason(DebitNoteReasonCode reason) => switch (reason) {
-        DebitNoteReasonCode.interesesPorMora => 1,
-        DebitNoteReasonCode.aumentoEnElValor => 2,
-        DebitNoteReasonCode.penalidadesOtrosConceptos => 3,
-        DebitNoteReasonCode.ajustesOperacionesExportacion => 4,
-        DebitNoteReasonCode.ajustesAfectosIvap => 5,
-      };
+    DebitNoteReasonCode.interesesPorMora => 1,
+    DebitNoteReasonCode.aumentoEnElValor => 2,
+    DebitNoteReasonCode.penalidadesOtrosConceptos => 3,
+    DebitNoteReasonCode.ajustesOperacionesExportacion => 4,
+    DebitNoteReasonCode.ajustesAfectosIvap => 5,
+  };
 
   /// Formats [DateTime] to Nubefact's preferred `DD-MM-YYYY` format.
   static String formatDate(DateTime date) {

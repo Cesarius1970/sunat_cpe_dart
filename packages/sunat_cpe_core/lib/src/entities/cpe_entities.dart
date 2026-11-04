@@ -2,6 +2,7 @@
 library;
 
 import 'package:decimal/decimal.dart';
+
 import '../catalogs/sunat_catalogs.dart';
 
 part 'common_entities.dart';

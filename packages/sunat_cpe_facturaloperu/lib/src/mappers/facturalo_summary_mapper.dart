@@ -1,4 +1,5 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
+
 import 'facturalo_document_mapper.dart';
 
 /// Maps [DailySummaryDocument] to FacturaloPeru `/api/summaries` JSON.
@@ -7,8 +8,9 @@ final class FacturaloSummaryMapper {
 
   Map<String, dynamic> mapDailySummary(DailySummaryDocument summary) {
     return {
-      'fecha_de_emision_de_documentos':
-          FacturaloDocumentMapper.formatIsoDate(summary.referenceDate),
+      'fecha_de_emision_de_documentos': FacturaloDocumentMapper.formatIsoDate(
+        summary.referenceDate,
+      ),
       'codigo_tipo_proceso': '1',
       'documentos': summary.lines
           .map(

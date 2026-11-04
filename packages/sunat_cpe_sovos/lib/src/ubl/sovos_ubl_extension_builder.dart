@@ -16,7 +16,7 @@ final class SovosUblExtensionBuilder {
 
     final doc = XmlDocument.parse(unsignedXml);
     final extensionsEl = doc
-        .findAllElements('UBLExtensions', namespace: '*')
+        .findAllElements('UBLExtensions', namespaceUri: '*')
         .firstOrNull;
     if (extensionsEl == null) {
       return unsignedXml;

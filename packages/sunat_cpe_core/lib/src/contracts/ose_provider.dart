@@ -41,16 +41,22 @@ abstract interface class OseProvider {
   Set<ProviderCapability> get capabilities;
 
   /// Sends a Sales Document (01 Factura, 03 Boleta, 04 Liquidación, 07 NC, 08 ND).
-  Future<CpeResult<CpeEmissionResponse>> sendDocument(SalesCpeDocument document);
+  Future<CpeResult<CpeEmissionResponse>> sendDocument(
+    SalesCpeDocument document,
+  );
 
   /// Sends a Daily Summary of Boletas (RC). Returns a Ticket immediately.
-  Future<CpeResult<TicketResponse>> sendDailySummary(DailySummaryDocument summary);
+  Future<CpeResult<TicketResponse>> sendDailySummary(
+    DailySummaryDocument summary,
+  );
 
   /// Sends a Voided Document Communication (RA) or Reversion (RR). Returns a Ticket.
   Future<CpeResult<TicketResponse>> sendVoidedDocument(VoidedDocument voided);
 
   /// Sends a Despatch Advice / Guía de Remisión (09 Remitente, 31 Transportista).
-  Future<CpeResult<TicketResponse>> sendDespatchAdvice(DespatchAdviceDocument guide);
+  Future<CpeResult<TicketResponse>> sendDespatchAdvice(
+    DespatchAdviceDocument guide,
+  );
 
   /// Sends a Retention (20) or Perception (40) document.
   Future<CpeResult<CpeEmissionResponse>> sendRetentionOrPerception(
@@ -104,7 +110,8 @@ base mixin TicketPollingMixin implements OseProvider {
               CdrData(
                 id: ticket,
                 responseCode: data.statusCode ?? '0',
-                description: data.statusMessage ?? 'Ticket procesado correctamente',
+                description:
+                    data.statusMessage ?? 'Ticket procesado correctamente',
                 responseDateTime: DateTime.now(),
               ),
             );
@@ -128,7 +135,8 @@ base mixin TicketPollingMixin implements OseProvider {
       }
 
       await Future<void>.delayed(currentDelay);
-      final nextMs = (currentDelay.inMilliseconds * config.backoffMultiplier).round();
+      final nextMs = (currentDelay.inMilliseconds * config.backoffMultiplier)
+          .round();
       currentDelay = Duration(
         milliseconds: nextMs.clamp(
           config.initialDelay.inMilliseconds,

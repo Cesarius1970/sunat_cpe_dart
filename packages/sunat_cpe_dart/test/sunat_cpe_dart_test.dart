@@ -10,22 +10,19 @@ final class _FakeOseProvider with TicketPollingMixin implements OseProvider {
 
   @override
   Set<ProviderCapability> get capabilities => const {
-        ProviderCapability.invoiceAndNotes,
-        ProviderCapability.despatchAdvice,
-        ProviderCapability.dailySummary,
-        ProviderCapability.voidedDocuments,
-        ProviderCapability.statusQuery,
-      };
+    ProviderCapability.invoiceAndNotes,
+    ProviderCapability.despatchAdvice,
+    ProviderCapability.dailySummary,
+    ProviderCapability.voidedDocuments,
+    ProviderCapability.statusQuery,
+  };
 
   final List<String> callLog = [];
 
   Future<CpeResult<CpeEmissionResponse>> Function(SalesCpeDocument doc)?
-      onSendDocument;
+  onSendDocument;
 
-  _FakeOseProvider({
-    required this.providerId,
-    this.onSendDocument,
-  });
+  _FakeOseProvider({required this.providerId, this.onSendDocument});
 
   @override
   Future<CpeResult<CpeEmissionResponse>> sendDocument(
@@ -248,78 +245,82 @@ DespatchAdviceDocument _sampleGuide() {
 
 void main() {
   group('SunatCpeRouter - Content-Based Routing & Ticket Origin Registry', () {
-    test(
-      'routes Facturas (01) to primary OSE/PSE and Guías (09) to sunat_cpe_direct, tracking ticket origin automatically',
-      () async {
-        final osePrimary = _FakeOseProvider(providerId: 'nubefact');
+    test('routes Facturas (01) to primary OSE/PSE and Guías (09) to sunat_cpe_direct, tracking ticket origin automatically', () async {
+      final osePrimary = _FakeOseProvider(providerId: 'nubefact');
 
-        final directRestMock = _MockHttpClient((req) async {
-          if (req.uri.path.endsWith('/comprobantes/20100066603-09-T001-1')) {
-            return CpeHttpResponse(
-              statusCode: 200,
-              headers: const {'content-type': 'application/json'},
-              bodyBytes: Uint8List.fromList(
-                utf8.encode(
-                  '{"numTicket":"SUNAT-DIRECT-TICKET-777","fecRecepcion":"2026-11-04T15:00:00"}',
-                ),
+      final directRestMock = _MockHttpClient((req) async {
+        if (req.uri.path.endsWith('/comprobantes/20100066603-09-T001-1')) {
+          return CpeHttpResponse(
+            statusCode: 200,
+            headers: const {'content-type': 'application/json'},
+            bodyBytes: Uint8List.fromList(
+              utf8.encode(
+                '{"numTicket":"SUNAT-DIRECT-TICKET-777","fecRecepcion":"2026-11-04T15:00:00"}',
               ),
-            );
-          }
-          if (req.uri.path.endsWith('/comprobantes/envios/SUNAT-DIRECT-TICKET-777')) {
-            return CpeHttpResponse(
-              statusCode: 200,
-              headers: const {'content-type': 'application/json'},
-              bodyBytes: Uint8List.fromList(
-                utf8.encode('{"codRespuesta":"0","indCdrGenerado":"1"}'),
-              ),
-            );
-          }
-          throw StateError('Unexpected URI: ${req.uri}');
-        });
+            ),
+          );
+        }
+        if (req.uri.path.endsWith(
+          '/comprobantes/envios/SUNAT-DIRECT-TICKET-777',
+        )) {
+          return CpeHttpResponse(
+            statusCode: 200,
+            headers: const {'content-type': 'application/json'},
+            bodyBytes: Uint8List.fromList(
+              utf8.encode('{"codRespuesta":"0","indCdrGenerado":"1"}'),
+            ),
+          );
+        }
+        throw StateError('Unexpected URI: ${req.uri}');
+      });
 
-        final directProvider = SunatDirectProvider(
-          config: SunatDirectConfig.beta(
-            clientId: 'client-id-sunat',
-            clientSecret: 'client-secret-sunat',
-          ),
-          restHttpClient: directRestMock,
-        );
+      final directProvider = SunatDirectProvider(
+        config: SunatDirectConfig.beta(
+          clientId: 'client-id-sunat',
+          clientSecret: 'client-secret-sunat',
+        ),
+        restHttpClient: directRestMock,
+      );
 
-        final router = SunatCpeRouter.simple(
-          primaryProvider: osePrimary,
-          routesByDocumentType: {
-            CpeDocumentType.guiaRemisionRemitente: directProvider,
-            CpeDocumentType.guiaRemisionTransportista: directProvider,
-          },
-        );
+      final router = SunatCpeRouter.simple(
+        primaryProvider: osePrimary,
+        routesByDocumentType: {
+          CpeDocumentType.guiaRemisionRemitente: directProvider,
+          CpeDocumentType.guiaRemisionTransportista: directProvider,
+        },
+      );
 
-        // 1. Send Invoice (01) -> Must route to osePrimary ('nubefact')
-        final invoiceResult = await router.sendDocument(_sampleInvoice());
-        expect(invoiceResult.isSuccess, isTrue);
-        expect(osePrimary.callLog, contains('sendDocument:F001-100'));
-        expect(
-          (invoiceResult as CpeSuccess<CpeEmissionResponse>)
-              .providerRawMetadata['routedProviderId'],
-          'nubefact',
-        );
+      // 1. Send Invoice (01) -> Must route to osePrimary ('nubefact')
+      final invoiceResult = await router.sendDocument(_sampleInvoice());
+      expect(invoiceResult.isSuccess, isTrue);
+      expect(osePrimary.callLog, contains('sendDocument:F001-100'));
+      expect(
+        (invoiceResult as CpeSuccess<CpeEmissionResponse>)
+            .providerRawMetadata['routedProviderId'],
+        'nubefact',
+      );
 
-        // 2. Send Despatch Advice (09) -> Must route to directProvider ('sunat_direct')
-        final guideResult = await router.sendDespatchAdvice(_sampleGuide());
-        expect(guideResult.isSuccess, isTrue);
-        final ticketData = guideResult.getOrThrow();
-        expect(ticketData.ticket, 'SUNAT-DIRECT-TICKET-777');
-        expect(
-          router.getRegisteredProviderForTicket('SUNAT-DIRECT-TICKET-777')?.providerId,
-          'sunat_direct',
-        );
+      // 2. Send Despatch Advice (09) -> Must route to directProvider ('sunat_direct')
+      final guideResult = await router.sendDespatchAdvice(_sampleGuide());
+      expect(guideResult.isSuccess, isTrue);
+      final ticketData = guideResult.getOrThrow();
+      expect(ticketData.ticket, 'SUNAT-DIRECT-TICKET-777');
+      expect(
+        router
+            .getRegisteredProviderForTicket('SUNAT-DIRECT-TICKET-777')
+            ?.providerId,
+        'sunat_direct',
+      );
 
-        // 3. Check Ticket WITHOUT referenceId -> Router remembers it came from sunat_direct!
-        final statusResult = await router.checkTicket('SUNAT-DIRECT-TICKET-777');
-        expect(statusResult.isSuccess, isTrue);
-        expect(statusResult.getOrThrow().status, CpeProcessStatus.accepted);
-        expect(osePrimary.callLog, isNot(contains('checkTicket:SUNAT-DIRECT-TICKET-777')));
-      },
-    );
+      // 3. Check Ticket WITHOUT referenceId -> Router remembers it came from sunat_direct!
+      final statusResult = await router.checkTicket('SUNAT-DIRECT-TICKET-777');
+      expect(statusResult.isSuccess, isTrue);
+      expect(statusResult.getOrThrow().status, CpeProcessStatus.accepted);
+      expect(
+        osePrimary.callLog,
+        isNot(contains('checkTicket:SUNAT-DIRECT-TICKET-777')),
+      );
+    });
   });
 
   group('SunatCpeRouter - Circuit-Safe Fallback Policy', () {
@@ -351,27 +352,30 @@ void main() {
       expect(success.providerRawMetadata['primaryProviderId'], 'efact');
     });
 
-    test('triggers fallbackProvider on SunatExceptionError (code 0130)', () async {
-      final primary = _FakeOseProvider(
-        providerId: 'bizlinks',
-        onSendDocument: (_) async => CpeFailure(
-          SunatExceptionError(
-            sunatCode: 130,
-            message: 'No se pudo procesar su solicitud (Error técnico)',
+    test(
+      'triggers fallbackProvider on SunatExceptionError (code 0130)',
+      () async {
+        final primary = _FakeOseProvider(
+          providerId: 'bizlinks',
+          onSendDocument: (_) async => CpeFailure(
+            SunatExceptionError(
+              sunatCode: 130,
+              message: 'No se pudo procesar su solicitud (Error técnico)',
+            ),
           ),
-        ),
-      );
-      final fallback = _FakeOseProvider(providerId: 'sunat_direct');
+        );
+        final fallback = _FakeOseProvider(providerId: 'sunat_direct');
 
-      final router = SunatCpeRouter.simple(
-        primaryProvider: primary,
-        fallbackProvider: fallback,
-      );
+        final router = SunatCpeRouter.simple(
+          primaryProvider: primary,
+          fallbackProvider: fallback,
+        );
 
-      final result = await router.sendDocument(_sampleInvoice());
-      expect(result.isSuccess, isTrue);
-      expect(fallback.callLog, ['sendDocument:F001-100']);
-    });
+        final result = await router.sendDocument(_sampleInvoice());
+        expect(result.isSuccess, isTrue);
+        expect(fallback.callLog, ['sendDocument:F001-100']);
+      },
+    );
 
     test('NEVER triggers fallbackProvider on SunatRejectionException (codes 2000-3999) or CpeValidationException', () async {
       final fallback = _FakeOseProvider(providerId: 'sunat_direct');
@@ -416,7 +420,9 @@ void main() {
         fallbackProvider: fallback,
       );
 
-      final validationResult = await routerInvalid.sendDocument(_sampleInvoice());
+      final validationResult = await routerInvalid.sendDocument(
+        _sampleInvoice(),
+      );
       expect(validationResult.isFailure, isTrue);
       expect(validationResult.errorOrNull, isA<CpeValidationException>());
       expect(fallback.callLog, isEmpty);
@@ -441,12 +447,16 @@ void main() {
 
       expect(router.providerId, 'router(nubefact)');
       expect(
-        router.resolveProviderForDocumentType(CpeDocumentType.factura).providerId,
+        router
+            .resolveProviderForDocumentType(CpeDocumentType.factura)
+            .providerId,
         'nubefact',
       );
       expect(
         router
-            .resolveProviderForDocumentType(CpeDocumentType.guiaRemisionRemitente)
+            .resolveProviderForDocumentType(
+              CpeDocumentType.guiaRemisionRemitente,
+            )
             .providerId,
         'sunat_direct',
       );
