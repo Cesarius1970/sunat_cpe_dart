@@ -1,0 +1,17 @@
+name: sunat_cpe_cavali
+description: Cavali / Gosocket / Carvajal OSE SOAP 1.1 and Factrack Factoring REST OAuth2 adapter for SUNAT CPE in pure Dart.
+version: 0.1.0
+homepage: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_cavali
+repository: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_cavali
+issue_tracker: https://github.com/Cesarius1970/sunat_cpe/issues
+resolution: workspace
+
+environment:
+  sdk: ">=3.13.5 <4.0.0"
+
+dependencies:
+  sunat_cpe_core: ^0.1.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

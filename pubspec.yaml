@@ -16,6 +16,7 @@ workspace:
   - packages/sunat_cpe_sovos
   - packages/sunat_cpe_facturaloperu
   - packages/sunat_cpe_tci
+  - packages/sunat_cpe_cavali
 
 dev_dependencies:
   melos: ^8.9.0
