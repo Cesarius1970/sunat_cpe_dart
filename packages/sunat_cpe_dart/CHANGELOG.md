@@ -1,14 +1,20 @@
+## 1.0.2
+
+- Traducción completa de la documentación API (`dartdoc`), `README.md` y metadatos del paquete al español técnico.
+- Ampliación de `example/main.dart` demostrando: fábrica declarativa multi-tenant (`SunatProviderFactory` y `SunatCpeRouter.fromDescriptors`), enrutamiento inteligente por tipo de comprobante (`routesByDocumentType`), rastreo automático de origen de tickets con `prefixTicketsWithProviderId: true`, y política de contingencia contablemente segura (`fallbackProvider`).
+- Actualización de las restricciones de dependencia de `sunat_cpe_core`, `sunat_cpe_direct` y los 9 adaptadores OSE/PSE a `^0.1.2`.
+
 ## 1.0.1
 
-- Add executable package example (`example/main.dart`) for pub.dev Pana 160/160 score.
-- Upgrade internal adapter constraints to `^0.1.1` (`xml: ^7.0.0`).
+- Adición de ejemplo ejecutable (`example/main.dart`) para alcanzar la puntuación máxima de 160/160 en Pana (`pub.dev`).
+- Actualización de las restricciones internas de adaptadores a `^0.1.1` (`xml: ^7.0.0`).
 
 ## 1.0.0
 
-- Major architectural evolution into a modular pure-Dart monorepo:
-  - Umbrella re-export of `sunat_cpe_core`, `sunat_cpe_direct`, and all 9 OSE/PSE adapters (`nubefact`, `efact`, `mifact`, `bizlinks`, `digiflow`, `sovos`, `facturaloperu`, `tci`, `cavali`).
-  - `SunatCpeRouter` implementing `OseProvider` with dynamic routing by `CpeDocumentType`, circuit-safe fallback (`OseTransportException` & `SunatExceptionError` only), and automatic ticket origin tracking.
-  - `SunatProviderDescriptor` sealed hierarchy and `SunatProviderFactory` for declarative multi-tenant initialization.
+- Evolución arquitectónica mayor hacia un monorepo modular en Dart 3 puro:
+  - Re-exportación unificada (umbrella) de `sunat_cpe_core`, `sunat_cpe_direct` y los 9 adaptadores OSE/PSE (`nubefact`, `efact`, `mifact`, `bizlinks`, `digiflow`, `sovos`, `facturaloperu`, `tci`, `cavali`).
+  - `SunatCpeRouter` implementando `OseProvider` con enrutamiento dinámico por `CpeDocumentType`, contingencia contablemente segura (`OseTransportException` y `SunatExceptionError` únicamente) y rastreo automático del proveedor de origen de tickets.
+  - Jerarquía sellada `SunatProviderDescriptor` y `SunatProviderFactory` para inicialización declarativa multi-tenant.
 
 ## 0.1.1
 

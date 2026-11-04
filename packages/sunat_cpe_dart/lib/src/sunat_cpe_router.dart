@@ -4,25 +4,27 @@ import 'sunat_cpe_router_config.dart';
 import 'sunat_provider_descriptor.dart';
 import 'sunat_provider_factory.dart';
 
-/// Intelligent CPE orchestrator and router implementing [OseProvider].
+/// Orquestador y enrutador inteligente de CPE que implementa [OseProvider].
 ///
-/// Allows discerning dynamically between direct emission to SUNAT (`sunat_cpe_direct`)
-/// and any of the 9 OSE/PSE adapters (`nubefact`, `efact`, `mifact`, `bizlinks`,
-/// `digiflow`, `sovos`, `facturaloperu`, `tci`, `cavali`) with:
-/// - Per-[CpeDocumentType] routing ([SunatCpeRouterConfig.routesByDocumentType]).
-/// - Circuit-safe contingency fallback ([SunatCpeRouterConfig.fallbackProvider])
-///   restricted strictly to [OseTransportException] and [SunatExceptionError].
-/// - Automatic ticket-to-provider origin tracking for [checkTicket] and [pollTicketUntilDone].
+/// Permite discernir dinámicamente entre la emisión directa a SUNAT (`sunat_cpe_direct`)
+/// y cualquiera de los 9 adaptadores OSE/PSE (`nubefact`, `efact`, `mifact`, `bizlinks`,
+/// `digiflow`, `sovos`, `facturaloperu`, `tci`, `cavali`) con:
+/// - Enrutamiento por [CpeDocumentType] ([SunatCpeRouterConfig.routesByDocumentType]).
+/// - Conmutación por error contablemente segura ([SunatCpeRouterConfig.fallbackProvider])
+///   restringida estrictamente a [OseTransportException] y [SunatExceptionError].
+/// - Rastreo automático del proveedor de origen de cada ticket para [checkTicket] y [pollTicketUntilDone].
 final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
+  /// Configuración de enrutamiento y contingencia del router.
   final SunatCpeRouterConfig config;
 
-  /// In-memory registry mapping emitted asynchronous tickets to the exact
-  /// [OseProvider] instance that generated them.
+  /// Registro en memoria que asocia los tickets asíncronos emitidos con la
+  /// instancia exacta de [OseProvider] que los generó.
   final Map<String, OseProvider> _ticketProviderRegistry = {};
 
+  /// Crea un [SunatCpeRouter] a partir de su configuración [config].
   SunatCpeRouter({required this.config});
 
-  /// Convenience constructor accepting provider instances directly.
+  /// Constructor abreviado que recibe instancias de proveedores directamente.
   SunatCpeRouter.simple({
     required OseProvider primaryProvider,
     Map<CpeDocumentType, OseProvider> routesByDocumentType = const {},
@@ -37,7 +39,7 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
          prefixTicketsWithProviderId: prefixTicketsWithProviderId,
        );
 
-  /// Declarative factory constructor that builds providers from [SunatProviderDescriptor]s.
+  /// Constructor de fábrica declarativo que construye los proveedores a partir de [SunatProviderDescriptor]s.
   factory SunatCpeRouter.fromDescriptors({
     required SunatProviderDescriptor primaryDescriptor,
     Map<CpeDocumentType, SunatProviderDescriptor>
@@ -82,7 +84,7 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
     return Set.unmodifiable(merged);
   }
 
-  /// Resolves the target [OseProvider] for a given [documentType].
+  /// Resuelve el [OseProvider] objetivo para un [documentType] determinado.
   OseProvider resolveProviderForDocumentType(CpeDocumentType? documentType) {
     if (documentType != null) {
       final specific = config.routesByDocumentType[documentType];
@@ -93,7 +95,7 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
     return config.primaryProvider;
   }
 
-  /// Returns the provider recorded for [ticket], if present in the registry.
+  /// Devuelve el proveedor registrado para [ticket], si se encuentra en el registro.
   OseProvider? getRegisteredProviderForTicket(String ticket) =>
       _ticketProviderRegistry[ticket];
 
@@ -181,13 +183,13 @@ final class SunatCpeRouter with TicketPollingMixin implements OseProvider {
     );
   }
 
-  /// Determines whether [error] is safe for contingency failover.
+  /// Determina si [error] es seguro para activar el proveedor de contingencia.
   ///
-  /// Accounting safety rule:
-  /// - ONLY [OseTransportException] and (when enabled) [SunatExceptionError] (`0100–1999`)
-  ///   guarantee that the document was NOT registered by SUNAT/OSE.
-  /// - [CpeValidationException], [SunatRejectionException] (`2000–3999`), and
-  ///   [OseAuthException] NEVER trigger fallback.
+  /// Regla de seguridad contable:
+  /// - ÚNICAMENTE [OseTransportException] y (cuando está habilitado) [SunatExceptionError] (`0100–1999`)
+  ///   garantizan que el comprobante NO fue registrado por SUNAT ni por el OSE.
+  /// - [CpeValidationException], [SunatRejectionException] (`2000–3999`) y
+  ///   [OseAuthException] NUNCA activan el proveedor de contingencia.
   bool _shouldTriggerFallback(CpeException error) {
     return switch (error) {
       OseTransportException() => true,

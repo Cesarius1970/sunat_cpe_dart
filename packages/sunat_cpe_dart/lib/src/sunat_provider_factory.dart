@@ -12,9 +12,9 @@ import 'package:sunat_cpe_tci/sunat_cpe_tci.dart';
 
 import 'sunat_provider_descriptor.dart';
 
-/// Factory that builds an [OseProvider] instance from any [SunatProviderDescriptor].
+/// Fábrica estática que construye una instancia de [OseProvider] a partir de cualquier [SunatProviderDescriptor].
 abstract final class SunatProviderFactory {
-  /// Instantiates the concrete [OseProvider] described by [descriptor].
+  /// Instancia el [OseProvider] concreto descrito por [descriptor].
   static OseProvider create(SunatProviderDescriptor descriptor) {
     return switch (descriptor) {
       DirectSunatDescriptor(

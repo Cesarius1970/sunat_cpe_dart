@@ -1,5 +1,5 @@
 name: sunat_cpe_workspace
-description: Monorepo for Peruvian Electronic Invoicing (SUNAT CPE) core, direct SOL adapter, and OSE/PSE adapters in pure Dart.
+description: "Monorepo en Dart puro para facturación electrónica SUNAT (Perú): motor UBL 2.1, firma XAdES-BES, envío directo SOL y 9 adaptadores OSE/PSE."
 repository: https://github.com/Cesarius1970/sunat_cpe_dart
 publish_to: none
 

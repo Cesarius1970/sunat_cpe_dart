@@ -1,5 +1,5 @@
-/// Umbrella package and intelligent CPE router (`SunatCpeRouter`) for
-/// Peruvian Electronic Invoicing (SUNAT Direct SOL + 9 OSE/PSE adapters).
+/// Paquete principal (umbrella) y enrutador inteligente de CPE (`SunatCpeRouter`)
+/// para Facturación Electrónica SUNAT (Emisión Directa SOL + 9 adaptadores OSE/PSE).
 library;
 
 export 'package:sunat_cpe_bizlinks/sunat_cpe_bizlinks.dart';

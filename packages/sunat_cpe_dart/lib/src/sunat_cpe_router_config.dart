@@ -1,31 +1,32 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Routing and contingency policy configuration for `SunatCpeRouter`.
+/// Configuración de políticas de enrutamiento y contingencia para `SunatCpeRouter`.
 final class SunatCpeRouterConfig {
-  /// Default provider used whenever a document type is not explicitly mapped
-  /// in [routesByDocumentType].
+  /// Proveedor predeterminado utilizado siempre que un tipo de comprobante no esté
+  /// asignado explícitamente en [routesByDocumentType].
   final OseProvider primaryProvider;
 
-  /// Optional per-document-type routing table (e.g., routing Facturas `01` to
-  /// an OSE/PSE while routing Despatch Advices `09`/`31` to `SunatDirectProvider`).
+  /// Tabla opcional de enrutamiento por tipo de comprobante (p. ej., dirigir Facturas `01`
+  /// a un OSE/PSE mientras se envían Guías de Remisión `09`/`31` a `SunatDirectProvider`).
   final Map<CpeDocumentType, OseProvider> routesByDocumentType;
 
-  /// Optional contingency provider triggered ONLY on transport errors
-  /// ([OseTransportException]) or technical SUNAT/OSE exceptions
-  /// ([SunatExceptionError], codes `0100–1999` where the document was NOT registered).
+  /// Proveedor opcional de contingencia activado ÚNICAMENTE ante errores de transporte
+  /// ([OseTransportException]) o excepciones técnicas de SUNAT/OSE
+  /// ([SunatExceptionError], códigos `0100–1999` donde el comprobante NO fue registrado).
   ///
-  /// Never triggered on [CpeValidationException] or [SunatRejectionException] (`2000–3999`).
+  /// Nunca se activa ante [CpeValidationException] ni [SunatRejectionException] (`2000–3999`).
   final OseProvider? fallbackProvider;
 
-  /// Whether [SunatExceptionError] (`0100–1999`) should trigger [fallbackProvider]
-  /// in addition to [OseTransportException]. Defaults to `true`.
+  /// Indica si [SunatExceptionError] (`0100–1999`) debe activar [fallbackProvider]
+  /// además de [OseTransportException]. Su valor por defecto es `true`.
   final bool enableFallbackOnSunatExceptions;
 
-  /// Whether returned tickets in [TicketResponse.ticket] should be prefixed
-  /// with `{providerId}:{ticket}` in addition to being tracked in memory.
-  /// Defaults to `false`.
+  /// Indica si los tickets devueltos en [TicketResponse.ticket] deben llevar el prefijo
+  /// `{providerId}:{ticket}` además de registrarse en memoria.
+  /// Su valor por defecto es `false`.
   final bool prefixTicketsWithProviderId;
 
+  /// Crea una configuración inmutable para [SunatCpeRouter].
   const SunatCpeRouterConfig({
     required this.primaryProvider,
     this.routesByDocumentType = const {},
