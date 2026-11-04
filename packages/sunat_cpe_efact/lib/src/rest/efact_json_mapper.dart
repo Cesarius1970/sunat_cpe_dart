@@ -1,9 +1,11 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Maps Core [CpeDocument] entities into EFACT JSON UBL format for cloud-signed PSE mode.
+/// Transforma las entidades [CpeDocument] del Core al formato JSON UBL de EFACT para el modo PSE con firma en la nube.
 final class EfactJsonMapper {
+  /// Crea una instancia constante de [EfactJsonMapper].
   const EfactJsonMapper();
 
+  /// Convierte un [CpeDocument] en un mapa JSON compatible con el endpoint REST de EFACT.
   Map<String, dynamic> mapDocument(CpeDocument document) {
     final issueDate = _formatIsoDate(document.issueDate);
     return switch (document) {

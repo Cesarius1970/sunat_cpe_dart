@@ -1,4 +1,4 @@
-/// EFACT OSE/PSE adapter for Peruvian Electronic Invoicing (SUNAT CPE).
+/// Adaptador OSE/PSE de EFACT para Facturación Electrónica Peruana (SUNAT CPE).
 library;
 
 export 'src/auth/efact_oauth2_interceptor.dart';

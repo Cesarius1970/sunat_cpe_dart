@@ -8,19 +8,31 @@ import 'rest/efact_json_mapper.dart';
 import 'rest/efact_rest_client.dart';
 import 'soap/efact_soap_delegate.dart';
 
-/// EFACT OSE / PSE Provider supporting REST OAuth2 (XML/JSON) and SOAP 1.1 (`billService`).
+/// Proveedor OSE / PSE de EFACT que soporta REST OAuth2 (XML/JSON) y SOAP 1.1 (`billService`).
 final class EfactProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración activa de EFACT (modo, credenciales y endpoints).
   final EfactConfig config;
+
+  /// Validador aritmético y normativo de documentos CPE.
   final CpeMathValidator validator;
+
+  /// Generador de documentos XML UBL 2.1 / 2.0 sin firma.
   final UblXmlBuilder xmlBuilder;
+
+  /// Firmador digital XML-DSig / XAdES-BES en Dart puro.
   final XadesBesSigner signer;
+
+  /// Codificador y decodificador de archivos `.zip` y CDR XML.
   final CpeZipCodec zipCodec;
+
+  /// Transformador de entidades de dominio a formato JSON UBL de EFACT.
   final EfactJsonMapper jsonMapper;
 
   late final CpeHttpClient _httpClient;
   EfactRestClient? _restClient;
   EfactSoapDelegate? _soapDelegate;
 
+  /// Inicializa el proveedor de EFACT en el modo configurado (`restXml`, `restJson` o `soapUbl`).
   EfactProvider({
     required this.config,
     CpeHttpClient? httpClient,

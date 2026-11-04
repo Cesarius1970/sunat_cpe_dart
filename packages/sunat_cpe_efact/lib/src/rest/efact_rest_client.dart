@@ -2,13 +2,21 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// REST client for EFACT `api-efact-ose` (`/v1/document`, `/v1/cdr/{ticket}`, `/v1/xml/{ticket}`, `/v1/pdf/{ticket}`).
+/// Cliente REST para `api-efact-ose` de EFACT (`/v1/document`, `/v1/cdr/{ticket}`, `/v1/xml/{ticket}`, `/v1/pdf/{ticket}`).
 final class EfactRestClient {
+  /// URL base del servicio REST de EFACT.
   final Uri baseUri;
+
+  /// Cliente HTTP subyacente (usualmente configurado con [EfactOAuth2Interceptor]).
   final CpeHttpClient httpClient;
+
+  /// Codificador/decodificador para extraer el `<ApplicationResponse>` del CDR.
   final CpeZipCodec zipCodec;
+
+  /// Tiempo límite por operación HTTP.
   final Duration timeout;
 
+  /// Crea un cliente REST para interactuar con la API de EFACT.
   const EfactRestClient({
     required this.baseUri,
     required this.httpClient,
@@ -16,7 +24,7 @@ final class EfactRestClient {
     this.timeout = const Duration(seconds: 30),
   });
 
-  /// Sends a `multipart/form-data` payload to `POST /v1/document` and returns the Ticket UUID.
+  /// Envía un payload `multipart/form-data` a `POST /v1/document` y retorna el UUID del Ticket.
   Future<CpeResult<String>> submitMultipartDocument({
     required String fileName,
     required String contentType,
@@ -92,7 +100,7 @@ final class EfactRestClient {
     }
   }
 
-  /// Queries `GET /v1/cdr/{ticket}` to check ticket status and parse the CDR XML when ready.
+  /// Consulta `GET /v1/cdr/{ticket}` para verificar el estado del ticket y analizar el XML del CDR cuando esté disponible.
   Future<CpeResult<TicketStatusResponse>> fetchTicketCdr(String ticket) async {
     final uri = _resolveEndpoint('/v1/cdr/$ticket');
 
@@ -198,10 +206,15 @@ final class EfactRestClient {
     }
   }
 
+  /// Construye la URL de descarga del CDR (`/v1/cdr/{ticket}`).
   String cdrDownloadUrl(String ticket) =>
       _resolveEndpoint('/v1/cdr/$ticket').toString();
+
+  /// Construye la URL de descarga del XML firmado (`/v1/xml/{ticket}`).
   String xmlDownloadUrl(String ticket) =>
       _resolveEndpoint('/v1/xml/$ticket').toString();
+
+  /// Construye la URL de descarga de la representación impresa PDF (`/v1/pdf/{ticket}`).
   String pdfDownloadUrl(String ticket) =>
       _resolveEndpoint('/v1/pdf/$ticket').toString();
 
