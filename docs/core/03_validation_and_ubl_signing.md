@@ -1,19 +1,44 @@
+---
+title: "03. Validación Matemática, Motor UBL 2.1 y Firma XAdES-BES"
+aliases:
+  - "Validación Matemática"
+  - "CpeMathValidator"
+  - "UblXmlBuilder"
+  - "XadesBesSigner"
+  - "CpeZipCodec"
+tags:
+  - sunat
+  - cpe
+  - core
+  - ubl21
+  - xades-bes
+  - criptografia
+type: core-spec
+package: sunat_cpe_core
+status: implemented
+updated: 2026-11-04
+---
+
 # Validación Matemática Passthrough, Motor UBL 2.1 y Firma XAdES-BES (`sunat_cpe_core`)
 
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Anterior**: [[core/02_domain_entities_and_types|← 02. Entidades y Catálogos]] · **Siguiente**: [[providers/01_nubefact|Proveedor 01: Nubefact →]]
+> **Código Fuente**: [`cpe_math_validator.dart`](../../packages/sunat_cpe_core/lib/src/validation/cpe_math_validator.dart) · [`ubl_xml_builder.dart`](../../packages/sunat_cpe_core/lib/src/ubl/ubl_xml_builder.dart) · [`xades_bes_signer.dart`](../../packages/sunat_cpe_core/lib/src/signing/xades_bes_signer.dart) · [`cpe_zip_codec.dart`](../../packages/sunat_cpe_core/lib/src/signing/cpe_zip_codec.dart)
+
 Especificación de las tres piezas de infraestructura interna de `sunat_cpe_core`:
-1. **`CpeMathValidator`**: Validador aritmético y de reglas de negocio SUNAT en modo *Passthrough Estricto*.
-2. **`UblXmlBuilder`**: Generador de XML UBL 2.1 y UBL 2.0 según las Guías de Elaboración de Documentos Electrónicos de SUNAT.
+1. **`CpeMathValidator`**: Validador aritmético y de reglas de negocio SUNAT en modo *Passthrough Estricto* sobre las [[core/02_domain_entities_and_types|entidades de dominio]].
+2. **`UblXmlBuilder`**: Generador de XML UBL 2.1 y UBL 2.0 según las [Guías de Elaboración de Documentos Electrónicos de SUNAT](https://cpe.sunat.gob.pe/node/88).
 3. **`XadesBesSigner`**: Firmador digital XML-DSig / XAdES-BES en Dart puro.
 
 ---
 
 ## 1. Motor de Validación Matemática (`CpeMathValidator`)
 
-Dado que el paquete opera en modo **Passthrough Estricto** (el ERP envía todos los montos precalculados), `CpeMathValidator` actúa como barrera preventiva antes de invocar cualquier red OSE/PSE. Si detecta inconsistencias, retorna un `CpeFailure(CpeValidationException)` indicando exactamente qué línea o total falla.
+Dado que el paquete opera en modo **Passthrough Estricto** (el ERP envía todos los montos precalculados), [`CpeMathValidator`](../../packages/sunat_cpe_core/lib/src/validation/cpe_math_validator.dart) actúa como barrera preventiva antes de invocar cualquier red OSE/PSE. Si detecta inconsistencias, retorna un [[core/01_architecture_and_patterns#3. Modelo de Resultados y Errores (`CpeResult<T>`)|`CpeFailure(CpeValidationException)`]] indicando exactamente qué línea o total falla.
 
 ### 1.1 Reglas Aritméticas por Línea (`CpeLineItem`)
 
-Con una tolerancia configurable (por defecto `±0.01` para cruces directos y `±1.00` según tolerancia máxima UBL 2.1 SUNAT para cálculo de IGV sobre base):
+Con una tolerancia configurable (por defecto `±0.02` para cruces directos y `±1.00` según tolerancia máxima UBL 2.1 SUNAT para cálculo de IGV sobre base):
 
 1. **Operaciones Onerosas (`!igvAffectation.isFree`)**:
    - `lineExtensionAmount` debe cuadrar con `(quantity * unitValue) - (discount?.amount ?? 0)`.
@@ -48,13 +73,13 @@ Con una tolerancia configurable (por defecto `±0.01` para cruces directos y `±
    - `importeTotalPagar == totalPrecioVenta - descuentoGlobalNoAfectaBase + totalOtrosCargos - totalAnticipos + redondeo`.
 4. **Validación de Crédito y Cuotas (`CreditPaymentTerms`)**:
    - `sum(installment.amount) == netPendingAmount`.
-   - `netPendingAmount == importeTotalPagar - (detractionInDocumentCurrency ?? 0) - (retentionAmount ?? 0)`.
+   - `netPendingAmount == importeTotalPagar - (detractionInDocumentCurrency ?? 0) - (retentionAmount ?? 0)` (Regla obligatoria RS 000193-2020/SUNAT y [[providers/09_cavali_gosocket|Cavali Factrack]]).
 
 ---
 
 ## 2. Generador XML UBL 2.1 / 2.0 (`UblXmlBuilder`)
 
-Construye el árbol XML utilizando `package:xml` (`XmlBuilder`) respetando el orden estricto de etiquetas exigido por los esquemas XSD de SUNAT/OSE.
+Implementado en [`ubl_xml_builder.dart`](../../packages/sunat_cpe_core/lib/src/ubl/ubl_xml_builder.dart). Construye el árbol XML utilizando [`package:xml`](https://pub.dev/packages/xml) (`XmlBuilder`) respetando el orden estricto de etiquetas exigido por los esquemas XSD de SUNAT/OSE.
 
 ### 2.1 Versiones UBL por Tipo de Documento
 
@@ -97,13 +122,13 @@ Todo XML generado reserva el nodo `<ext:UBLExtensions>` en primer lugar con un `
 
 ## 3. Firmador Digital XAdES-BES en Dart Puro (`XadesBesSigner`)
 
-Para los OSEs que exigen envío de XML firmado localmente (Bizlinks, Digiflow, TCI, Sovos, Cavali, EFACT), `sunat_cpe_core` implementa la firma XML-DSig Enveloped con perfil SUNAT sin requerir binarios nativos (`openssl` o `xmlsec1`).
+Para los OSEs que exigen envío de XML firmado localmente ([[providers/04_bizlinks|Bizlinks]], [[providers/05_digiflow|Digiflow]], [[providers/08_tci|TCI]], [[providers/06_sovos_paperless|Sovos]], [[providers/09_cavali_gosocket|Cavali]], [[providers/02_efact|EFACT]]), [`xades_bes_signer.dart`](../../packages/sunat_cpe_core/lib/src/signing/xades_bes_signer.dart) implementa la firma XML-DSig Enveloped con perfil SUNAT sin requerir binarios nativos (`openssl` o `xmlsec1`).
 
 ### 3.1 Dependencias Dart Puro para Criptografía
-- `pointycastle`: RSA-SHA256 / RSA-SHA1, parseo ASN.1 de llave privada RSA y certificado X.509.
-- `crypto`: Hashing `sha256` y `sha1`.
-- `xml`: Manipulación del DOM y Canonicalización XML.
-- `archive`: Compresión `ZipEncoder` y descompresión `ZipDecoder` en memoria (`Uint8List`).
+- [`pointycastle`](https://pub.dev/packages/pointycastle): RSA-SHA256 / RSA-SHA1, parseo ASN.1 de llave privada RSA y certificado X.509.
+- [`crypto`](https://pub.dev/packages/crypto): Hashing `sha256` y `sha1`.
+- [`xml`](https://pub.dev/packages/xml): Manipulación del DOM y Canonicalización XML (W3C C14N).
+- [`archive`](https://pub.dev/packages/archive): Compresión `ZipEncoder` y descompresión `ZipDecoder` en memoria (`Uint8List`).
 
 ### 3.2 Algoritmo de Firma Paso a Paso
 
@@ -137,11 +162,13 @@ Soporta dos formatos de entrada para máxima compatibilidad en servidores Linux,
 
 ## 4. Empaquetado ZIP y Lector de CDR (`CpeZipCodec`)
 
-1. **Compresión de Envío (`encodeXmlToZipBase64`)**:
-   - Toma el `String xmlContent` codificado en `UTF-8` (o `ISO-8859-1` si se configura para caracteres especiales legacy).
+Implementado en [`cpe_zip_codec.dart`](../../packages/sunat_cpe_core/lib/src/signing/cpe_zip_codec.dart):
+
+1. **Compresión de Envío (`encodeXmlToZip`)**:
+   - Toma el `String xmlContent` codificado en `UTF-8`.
    - Crea una entrada `ArchiveFile('{RUC}-{TIPO}-{SERIE}-{NUMERO}.xml', bytes.length, bytes)`.
    - Comprime con nivel `Deflate` estándar y devuelve `Uint8List` y su representación `String` en Base64 para inyectar en `<contentFile>` (SOAP) o `multipart/form-data` (REST).
-2. **Descompresión y Parseo de CDR (`parseCdrZipBytes`)**:
+2. **Descompresión y Parseo de CDR (`parseCdrFromZipBytes` / `parseCdrFromXmlString`)**:
    - Recibe los bytes del archivo `R-{RUC}-{TIPO}-{SERIE}-{NUMERO}.zip` devuelto por el OSE.
    - Busca la entrada `.xml` que comienza con `R-` (ignorando carpetas vacías o archivos `dummy` que algunos OSE agregan).
    - Parsea el XML `<ar:ApplicationResponse>` extrayendo:
@@ -151,3 +178,10 @@ Soporta dos formatos de entrada para máxima compatibilidad en servidores Linux,
      - `<cac:DocumentResponse>/<cac:Response>/<cbc:Description>` -> Mensaje oficial.
      - `<cbc:Note>` -> Lista de observaciones (`4000+`) separando código y descripción.
      - `<ds:Reference>/<ds:DigestValue>` -> Hash del comprobante aceptado.
+
+---
+
+> [!TIP] Continúa leyendo
+> - [[README|🏠 Índice Principal]]
+> - [[core/02_domain_entities_and_types|← 02. Entidades de Dominio y Catálogos SUNAT]]
+> - [[providers/01_nubefact|Proveedor 01: Nubefact (PSE / OSE) →]]

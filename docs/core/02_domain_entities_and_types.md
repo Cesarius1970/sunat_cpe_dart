@@ -1,6 +1,30 @@
+---
+title: "02. Entidades de Dominio, Tipos de Datos y Catálogos SUNAT"
+aliases:
+  - "Entidades de Dominio"
+  - "Catálogos SUNAT"
+  - "CpeDocument"
+  - "SalesCpeDocument"
+tags:
+  - sunat
+  - cpe
+  - core
+  - entidades
+  - catalogos
+  - decimal
+type: core-spec
+package: sunat_cpe_core
+status: implemented
+updated: 2026-11-04
+---
+
 # Entidades de Dominio, Tipos de Datos y Catálogos SUNAT (`sunat_cpe_core`)
 
-Especificación completa del modelo de dominio en **Dart 3 puro** (`sealed class` y `final class`), utilizando `Decimal` (`package:decimal`) para todos los valores monetarios, tasas y cantidades.
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Anterior**: [[core/01_architecture_and_patterns|← 01. Arquitectura y Patrones]] · **Siguiente**: [[core/03_validation_and_ubl_signing|03. Validación y Firma UBL →]]
+> **Código Fuente**: [`sunat_catalogs.dart`](../../packages/sunat_cpe_core/lib/src/catalogs/sunat_catalogs.dart) · [`cpe_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/cpe_entities.dart) · [`common_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/common_entities.dart) · [`sales_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/sales_entities.dart) · [`summary_and_voided_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/summary_and_voided_entities.dart) · [`despatch_and_agent_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/despatch_and_agent_entities.dart)
+
+Especificación completa del modelo de dominio en **Dart 3 puro** (`sealed class` y `final class`), utilizando [`Decimal`](https://pub.dev/packages/decimal) (`package:decimal`) para todos los valores monetarios, tasas y cantidades.
 
 ---
 
@@ -8,18 +32,20 @@ Especificación completa del modelo de dominio en **Dart 3 puro** (`sealed class
 
 | Concepto | Tipo en Dart | Regla UBL 2.1 SUNAT / Formato |
 |----------|--------------|-------------------------------|
-| Montos Totales / Subtotales / Impuestos | `Decimal` | Exactamente 2 decimales al serializar (`0.00`). |
+| Montos Totales / Subtotales / Impuestos | `Decimal` | Exactamente 2 decimales al serializar (`0.00`). Validado por [[core/03_validation_and_ubl_signing#1. Motor de Validación Matemática (`CpeMathValidator`)\|`CpeMathValidator`]]. |
 | Valor Unitario / Precio Unitario de Ítem | `Decimal` | Hasta 10 decimales significativos (`0.00########`). |
 | Cantidad de Ítem / Peso Bruto | `Decimal` | Hasta 10 decimales en ítems; hasta 3 decimales en pesos de Guía (`KGM` / `TNE`). |
 | Porcentajes / Tasas (IGV, ISC, Detracción, Retención) | `Decimal` | Ej: `Decimal.parse('18.00')`, `Decimal.parse('3.00')`. |
 | Tipo de Cambio | `Decimal` | Hasta 3 o 6 decimales según proveedor (`3.754`). |
-| Fechas de Emisión / Vencimiento / Traslado | `LocalDate` (o `DateTime` UTC-5) | Formato ISO `YYYY-MM-DD`. |
+| Fechas de Emisión / Vencimiento / Traslado | `LocalDate` (o `DateTime` UTC-5) | Formato ISO `YYYY-MM-DD` (o `DD-MM-YYYY` en [[providers/01_nubefact\|Nubefact]]). |
 | Hora de Emisión | `LocalTime` (o `String`) | Formato `HH:mm:ss`. |
-| Identificadores y Códigos SUNAT | `enum` / `final class` | Tipado fuerte sobre Anexo N° 8 (Catálogos 01 al 65). |
+| Identificadores y Códigos SUNAT | `enum` / `final class` | Tipado fuerte sobre [Anexo N° 8 de SUNAT](https://cpe.sunat.gob.pe/node/88) (Catálogos 01 al 65). |
 
 ---
 
 ## 2. Catálogos Oficiales SUNAT (Anexo N° 8)
+
+Implementados en [`lib/src/catalogs/sunat_catalogs.dart`](../../packages/sunat_cpe_core/lib/src/catalogs/sunat_catalogs.dart):
 
 ```dart
 /// Catálogo 01: Código de Tipo de Documento
@@ -247,6 +273,8 @@ classDiagram
 
 ### 4.1 Identificación y Partes (`DocumentId`, `CompanyParty`, `CustomerParty`)
 
+Definidas en [`common_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/common_entities.dart):
+
 ```dart
 final class DocumentId {
   final String issuerRuc;            // 11 dígitos (ej. "20100066603")
@@ -323,6 +351,8 @@ final class CustomerParty {
 ```
 
 ### 4.2 Totales Monetarios e Impuestos (`MonetaryTotals` - Passthrough Estricto)
+
+Definidos en [`sales_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/sales_entities.dart):
 
 ```dart
 final class MonetaryTotals {
@@ -463,6 +493,9 @@ final class CpeLineItem {
 
 ### 4.4 Condiciones de Pago, Cuotas, Detracciones y Retenciones (RS 000193-2020/SUNAT)
 
+> [!IMPORTANT] Relevancia en Factoring y Cavali
+> Estas estructuras son validadas estrictamente por [[core/03_validation_and_ubl_signing#1.2 Reglas de Cuadre de Cabecera (`MonetaryTotals`)|`CpeMathValidator`]] y son obligatorias para la negociación de facturas en [[providers/09_cavali_gosocket|09. Cavali / Gosocket Factrack]].
+
 ```dart
 sealed class PaymentTerms {
   const PaymentTerms();
@@ -516,6 +549,8 @@ final class DetractionInfo {
 
 ### 4.5 Resúmenes, Bajas, Guías de Remisión, Retenciones y Percepciones
 
+Implementados en [`summary_and_voided_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/summary_and_voided_entities.dart) y [`despatch_and_agent_entities.dart`](../../packages/sunat_cpe_core/lib/src/entities/despatch_and_agent_entities.dart):
+
 - **`DailySummaryDocument` (`RC`)**:
   - `referenceDate`: Fecha de emisión de las boletas/notas incluidas.
   - `summaryDate`: Fecha de generación del resumen (`RC-YYYYMMDD-#####`).
@@ -536,3 +571,10 @@ final class DetractionInfo {
 - **`AgentCpeDocument` (`RetentionDocument` `20` y `PerceptionDocument` `40`)**:
   - Régimen de retención (Catálogo 23: `'01'` Tasa 3%, `'02'` Tasa 6%) o percepción (Catálogo 22: `'01'` Venta interna 2%, `'02'` Adquisición combustible 1%, `'03'` Tasa especial 0.5%).
   - Lista de comprobantes pagados/cobrados (`AgentDocumentLine`) con datos de moneda original, tipo de cambio, importe pagado e importe retenido/percibido en `PEN`.
+
+---
+
+> [!TIP] Continúa leyendo
+> - [[README|🏠 Índice Principal]]
+> - [[core/01_architecture_and_patterns|← 01. Arquitectura, Patrones e Interfaces]]
+> - [[core/03_validation_and_ubl_signing|03. Validación Matemática, Motor UBL 2.1 y Firma XAdES-BES →]]

@@ -1,0 +1,25 @@
+# Dart & Flutter build artifacts
+.dart_tool/
+.packages
+build/
+coverage/
+doc/api/
+
+# IDE files
+.idea/
+.vscode/
+.obsidian/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets / Certificates for local testing
+*.pfx
+*.p12
+*.pem
+*.key
+.env

@@ -1,35 +1,59 @@
+---
+title: "Proveedor 03: Mifact (PSE / OSE)"
+aliases:
+  - "Mifact"
+  - "sunat_cpe_mifact"
+tags:
+  - sunat
+  - cpe
+  - proveedor
+  - pse
+  - ose
+  - rest-json
+  - mifact
+type: provider-spec
+package: sunat_cpe_mifact
+protocol: REST JSON
+status: planned
+updated: 2026-11-04
+---
+
 # Análisis de Proveedor 03: Mifact (PSE / OSE)
 
-Especificación técnica para el paquete `packages/sunat_cpe_mifact`.
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Anterior**: [[providers/02_efact|← Proveedor 02: EFACT]] · **Siguiente**: [[providers/04_bizlinks|Proveedor 04: Bizlinks →]]
+> **Enlaces Externos**: [Portal Oficial Mifact](https://mifact.net/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_mifact)
+
+Especificación técnica para el paquete `packages/sunat_cpe_mifact` que implementa el contrato [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 
 ---
 
 ## 1. Perfil Técnico del Proveedor
 
-- **Rol en SUNAT**: PSE (Proveedor de Servicios Electrónicos) con integración directa a SUNAT y OSE.
+- **Rol en SUNAT**: PSE (Proveedor de Servicios Electrónicos) con integración directa a [SUNAT](https://cpe.sunat.gob.pe/) y OSE.
 - **Modo de Integración**: **Vía Delegada (JSON REST)**.
-- **Generación UBL y Firma**: Ejecutada en el servidor de Mifact (usando el certificado propio del contribuyente subido a Mifact o certificado PSE de Mifact).
-- **Protocolo y Transporte**: `HTTPS POST` con payload JSON en mayúsculas (`UPPER_SNAKE_CASE`).
-- **Autenticación**: A diferencia de otros proveedores que usan cabeceras HTTP, Mifact recibe la credencial **dentro del cuerpo del JSON** mediante la propiedad `"TOKEN"` (contiene un token de pruebas predefinido para beta `gN8zNRBV+/FVxTLwdaZx0w==` y un token único por emisor en producción).
+- **Generación UBL y Firma**: Ejecutada en el servidor de Mifact (usando el certificado propio del contribuyente subido a Mifact o certificado PSE de Mifact). Pre-validado localmente con [[core/03_validation_and_ubl_signing#1. Motor de Validación Matemática (`CpeMathValidator`)|`CpeMathValidator`]].
+- **Protocolo y Transporte**: `HTTPS POST` mediante [[core/01_architecture_and_patterns#6. Capa de Transporte (`CpeHttpClient`)|`CpeHttpClient`]] con payload JSON en mayúsculas (`UPPER_SNAKE_CASE`).
+- **Autenticación**: A diferencia de [[providers/01_nubefact|Nubefact]] o [[providers/07_facturaloperu|FacturaloPeru]] que usan cabeceras HTTP, Mifact recibe la credencial **dentro del cuerpo del JSON** mediante la propiedad `"TOKEN"` (contiene un token de pruebas predefinido para beta `gN8zNRBV+/FVxTLwdaZx0w==` y un token único por emisor en producción).
 
 ---
 
 ## 2. Endpoints Oficiales de Mifact
 
-| Operación | Método | Endpoint (Ruta Relativa sobre Dominio Mifact) |
-|-----------|--------|-----------------------------------------------|
-| Emitir Factura, Boleta, NC, ND | `POST` | `/service.asmx/SendInvoice` (o endpoint JSON REST v2 `/api/SendInvoice`) |
-| Emitir Guía de Remisión (09/31) | `POST` | `/service.asmx/SendGuide` |
-| Comunicación de Baja (`RA`) | `POST` | `/service.asmx/lowInvoice` |
-| Resumen Diario de Boletas (`RC`) | `POST` | `/service.asmx/SendSummary` |
-| Consultar Estado / CDR / PDF | `POST` | `/service.asmx/GetStatus` |
+| Operación | Método | Endpoint (Ruta Relativa sobre Dominio Mifact) | Método en [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares\|`OseProvider`]] |
+|-----------|--------|-----------------------------------------------|------------------------|
+| Emitir Factura, Boleta, NC, ND | `POST` | `/service.asmx/SendInvoice` (o `/api/SendInvoice`) | `sendDocument` |
+| Emitir Guía de Remisión (09/31) | `POST` | `/service.asmx/SendGuide` | `sendDespatchAdvice` |
+| Comunicación de Baja (`RA`) | `POST` | `/service.asmx/lowInvoice` | `sendVoidedDocument` |
+| Resumen Diario de Boletas (`RC`) | `POST` | `/service.asmx/SendSummary` | `sendDailySummary` |
+| Consultar Estado / CDR / PDF | `POST` | `/service.asmx/GetStatus` | `queryDocumentStatus` / `checkTicket` |
 
 ---
 
 ## 3. Estructura del Payload JSON en Mifact (`SendInvoice`)
 
-> [!NOTE]
-> **Convención de Nomenclatura de Mifact**: Todas las llaves del JSON de Mifact utilizan códigos de tres o cuatro letras en **MAYÚSCULAS** inspirados en los campos UBL/SUNAT (`TIP_DOCU`, `NUM_NIF_EMIS`, `MNT_TOT_GRAVADO`, etc.).
+> [!NOTE] Convención de Nomenclatura de Mifact
+> Todas las llaves del JSON de Mifact utilizan códigos de tres o cuatro letras en **MAYÚSCULAS** inspirados en los campos UBL/SUNAT (`TIP_DOCU`, `NUM_NIF_EMIS`, `MNT_TOT_GRAVADO`, etc.).
 
 ```json
 {
@@ -79,7 +103,7 @@ Especificación técnica para el paquete `packages/sunat_cpe_mifact`.
 ```
 
 ### 3.1 Ventaja del Mapeo en Mifact
-A diferencia de Nubefact, **Mifact utiliza exactamente los códigos oficiales de los Catálogos SUNAT**:
+A diferencia de [[providers/01_nubefact|Nubefact]], **Mifact utiliza exactamente los códigos oficiales de los [[core/02_domain_entities_and_types#2. Catálogos Oficiales SUNAT (Anexo N° 8)|Catálogos SUNAT]]**:
 - `COD_TIP_DOCU`: `'01'`, `'03'`, `'07'`, `'08'`.
 - `COD_MND`: `'PEN'`, `'USD'`.
 - `COD_TIP_AFECT_IGV_ITEM`: `'10'`, `'20'`, `'30'`, `'40'`, etc.
@@ -108,7 +132,7 @@ A diferencia de Nubefact, **Mifact utiliza exactamente los códigos oficiales de
 
 ### 4.2 Tabla de Estados Internos de Mifact (`estado_documento`)
 
-| `estado_documento` | Significado en Mifact | Mapeo en `sunat_cpe_core` |
+| `estado_documento` | Significado en Mifact | Mapeo en [[core/01_architecture_and_patterns#3. Modelo de Resultados y Errores (`CpeResult<T>`)\|`sunat_cpe_core`]] |
 |--------------------|-----------------------|---------------------------|
 | `"101"` | Registrado / En proceso (Pendiente de envío a SUNAT) | `CpeSuccess` -> `CpeProcessStatus.inProcess` |
 | `"102"` | **Aceptado por SUNAT** | `CpeSuccess` -> `CpeProcessStatus.accepted` |
@@ -134,3 +158,11 @@ packages/sunat_cpe_mifact/
 │           ├── mifact_summary_mapper.dart  # VoidedDocument / DailySummaryDocument
 │           └── mifact_response_mapper.dart # Decodifica estado_documento (101..105) y cdr_bytes Base64
 ```
+
+---
+
+> [!TIP] Navegación de Proveedores
+> - [[README|🏠 Índice Principal]]
+> - **Anterior**: [[providers/02_efact|← Proveedor 02: EFACT]]
+> - **Siguiente**: [[providers/04_bizlinks|Proveedor 04: Bizlinks →]]
+> - **Relacionados (JSON REST)**: [[providers/01_nubefact|01. Nubefact]] · [[providers/07_facturaloperu|07. FacturaloPeru / PRO]]

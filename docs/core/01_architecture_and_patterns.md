@@ -1,6 +1,29 @@
+---
+title: "01. Arquitectura, Patrones e Interfaces de sunat_cpe_core"
+aliases:
+  - "Arquitectura Core"
+  - "OseProvider"
+  - "CpeResult"
+  - "CpeHttpClient"
+tags:
+  - sunat
+  - cpe
+  - core
+  - arquitectura
+  - patrones
+type: core-spec
+package: sunat_cpe_core
+status: implemented
+updated: 2026-11-04
+---
+
 # Arquitectura, Patrones e Interfaces de `sunat_cpe_core`
 
-Especificación de la arquitectura limpia, contratos de proveedores, modelo de resultados/errores y capa de transporte para `sunat_cpe_core`.
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Siguiente**: [[core/02_domain_entities_and_types|02. Entidades de Dominio y Catálogos →]]
+> **Código Fuente**: [`ose_provider.dart`](../../packages/sunat_cpe_core/lib/src/contracts/ose_provider.dart) · [`cpe_result.dart`](../../packages/sunat_cpe_core/lib/src/results/cpe_result.dart) · [`cpe_http_client.dart`](../../packages/sunat_cpe_core/lib/src/transport/cpe_http_client.dart) · [`base_ubl_ose_provider.dart`](../../packages/sunat_cpe_core/lib/src/providers/base_ubl_ose_provider.dart)
+
+Especificación de la arquitectura limpia, contratos de proveedores ([[#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]]), modelo de resultados/errores ([[#3. Modelo de Resultados y Errores (`CpeResult<T>`)|`CpeResult<T>`]]) y capa de transporte ([[#6. Capa de Transporte (`CpeHttpClient`)|`CpeHttpClient`]]) para `sunat_cpe_core`.
 
 ---
 
@@ -53,10 +76,10 @@ flowchart TD
 ## 2. Patrones de Diseño Aplicados
 
 1. **Strategy + Adapter Pattern (`OseProvider`)**:
-   - Unifica 9 APIs heterogéneas (JSON plano, JSON anidado, Multipart CSV/XML, SOAP 1.1 WS-Security) detrás de una única interfaz semántica en Dart.
+   - Unifica 9 APIs heterogéneas (JSON plano en [[providers/01_nubefact|Nubefact]] y [[providers/03_mifact|Mifact]], JSON anidado en [[providers/07_facturaloperu|FacturaloPeru]], Multipart CSV/XML en [[providers/02_efact|EFACT]], SOAP 1.1 WS-Security en [[providers/04_bizlinks|Bizlinks]], [[providers/05_digiflow|Digiflow]], [[providers/06_sovos_paperless|Sovos]], [[providers/08_tci|TCI]] y [[providers/09_cavali_gosocket|Cavali]]) detrás de una única interfaz semántica en Dart.
 2. **Template Method (`BaseUblOseProvider` y `BaseRestPseProvider`)**:
-   - `BaseUblOseProvider`: Ejecuta el pipeline estándar para OSEs UBL:
-     `Validar Matemática -> Generar XML UBL 2.1 -> Firmar XAdES-BES -> Comprimir ZIP (`{RUC}-{TIPO}-{SERIE}-{NUMERO}.zip`) -> Enviar por SOAP/REST -> Extraer `applicationResponse` -> Parsear XML del CDR`.
+   - [`BaseUblOseProvider`](../../packages/sunat_cpe_core/lib/src/providers/base_ubl_ose_provider.dart): Ejecuta el pipeline estándar para OSEs UBL:
+     `Validar Matemática -> Generar XML UBL 2.1 -> Firmar XAdES-BES -> Comprimir ZIP ({RUC}-{TIPO}-{SERIE}-{NUMERO}.zip) -> Enviar por SOAP/REST -> Extraer applicationResponse -> Parsear XML del CDR` (ver detalle en [[core/03_validation_and_ubl_signing|03. Validación y Firma UBL]]).
    - `BaseRestPseProvider`: Ejecuta el pipeline estándar para PSEs JSON:
      `Validar Matemática -> Mapear Entidad a DTO JSON -> Enviar HTTP POST -> Mapear Respuesta JSON a CpeEmissionResponse`.
 3. **Railway Oriented Programming + Exception Escape Hatch (`CpeResult<T>`)**:
@@ -68,13 +91,15 @@ flowchart TD
 
 ## 3. Modelo de Resultados y Errores (`CpeResult<T>`)
 
-SUNAT y los OSE clasifican los eventos en 4 categorías críticas que **no deben mezclarse**:
+[SUNAT](https://cpe.sunat.gob.pe/) y los OSE clasifican los eventos en 4 categorías críticas que **no deben mezclarse**:
 - **Excepciones (`0100` - `1999`)**: Errores técnicos, de formato ZIP/XML, certificado o indisponibilidad temporal. **El comprobante NO fue registrado**; se puede corregir y reenviar con el mismo correlativo.
 - **Rechazos (`2000` - `3999`)**: Errores de negocio definitivos (ej. RUC clausurado, cálculos inválidos en OSE). **El comprobante queda RECHAZADO**; el correlativo queda inutilizado o requiere emitir un nuevo número según la regla específica.
 - **Aceptado (`0`)**: Comprobante válido con CDR emitido.
 - **Observaciones (`4000`+)**: Advertencias no bloqueantes incluidas dentro de un CDR **Aceptado (`0`)**.
 
 ### Definición en Dart 3
+
+Implementado en [`lib/src/results/cpe_result.dart`](../../packages/sunat_cpe_core/lib/src/results/cpe_result.dart):
 
 ```dart
 sealed class CpeResult<T> {
@@ -188,6 +213,8 @@ final class SunatRejectionException extends CpeException {
 
 ## 4. Interfaces de Respuesta Unificadas
 
+Implementadas en [`lib/src/results/cpe_responses.dart`](../../packages/sunat_cpe_core/lib/src/results/cpe_responses.dart):
+
 ```dart
 enum CpeProcessStatus {
   accepted,            // Código 0 sin observaciones
@@ -279,7 +306,7 @@ final class TicketStatusResponse {
 
 ## 5. Contrato Principal `OseProvider` y Capacidades Modulares
 
-Para cumplir con el Principio de Segregación de Interfaces (ISP) pero ofrecer un punto de entrada ergonómico, `OseProvider` define los métodos troncales y expone capacidades específicas.
+Para cumplir con el Principio de Segregación de Interfaces (ISP) pero ofrecer un punto de entrada ergonómico, [`OseProvider`](../../packages/sunat_cpe_core/lib/src/contracts/ose_provider.dart) define los métodos troncales que operan sobre las [[core/02_domain_entities_and_types|entidades de dominio]] y expone capacidades específicas.
 
 ```dart
 enum ProviderCapability {
@@ -290,7 +317,7 @@ enum ProviderCapability {
   despatchAdvice,        // 09, 31 (Guías de Remisión)
   retentionPerception,   // 20, 40
   statusQuery,           // Consulta CDR / Estado CPE
-  taxpayerLookup,        // Consulta RUC / DNI (exclusivo de ciertos PSEs)
+  taxpayerLookup,        // Consulta RUC / DNI (exclusivo de ciertos PSEs como FacturaloPeru)
   cavaliFactoring,       // Eventos de conformidad/acuse (Cavali / Gosocket)
 }
 
@@ -357,7 +384,7 @@ final class PollingConfig {
 
 ## 6. Capa de Transporte (`CpeHttpClient`)
 
-Abstracción sobre `package:http` que permite manejar tanto payloads JSON REST, `multipart/form-data` (EFACT REST) como sobres XML `text/xml; charset=utf-8` (SOAP 1.1).
+Abstracción sobre `package:http` (implementada en [`cpe_http_client.dart`](../../packages/sunat_cpe_core/lib/src/transport/cpe_http_client.dart)) que permite manejar tanto payloads JSON REST, `multipart/form-data` ([[providers/02_efact|EFACT REST]]) como sobres XML `text/xml; charset=utf-8` (SOAP 1.1).
 
 ```dart
 final class CpeHttpRequest {
@@ -403,6 +430,13 @@ abstract interface class CpeHttpClient {
 
 ### Interceptores Incluidos en `sunat_cpe_core`
 1. **`RetryInterceptor`**: Reintenta automáticamente ante `SocketException`, `TimeoutException` o códigos HTTP `502`/`503`/`504` (configurable; desactivado por defecto en `sendBill` si existe riesgo de duplicidad sin idempotencia, activado en `checkTicket` y `queryDocumentStatus`).
-2. **`SoapEnvelopeInterceptor`**: Envuelve el body en un sobre SOAP 1.1 e inyecta la cabecera `<wsse:Security>` con `<wsse:UsernameToken>` para Bizlinks, Digiflow, TCI, Sovos y Cavali.
-3. **`OAuth2BearerInterceptor`**: Gestiona el ciclo de vida del token `Bearer` en memoria con refresco automático antes de su expiración (usado por EFACT REST, Digiflow GRE, Cavali REST).
+2. **`SoapEnvelopeInterceptor`**: Envuelve el body en un sobre SOAP 1.1 e inyecta la cabecera `<wsse:Security>` con `<wsse:UsernameToken>` para [[providers/04_bizlinks|Bizlinks]], [[providers/05_digiflow|Digiflow]], [[providers/08_tci|TCI]], [[providers/06_sovos_paperless|Sovos]] y [[providers/09_cavali_gosocket|Cavali]].
+3. **`OAuth2BearerInterceptor`**: Gestiona el ciclo de vida del token `Bearer` en memoria con refresco automático antes de su expiración (usado por [[providers/02_efact|EFACT REST]], [[providers/05_digiflow|Digiflow GRE]], [[providers/09_cavali_gosocket|Cavali REST]]).
 4. **`SanitizedLoggerInterceptor`**: Registra peticiones y respuestas ocultando contraseñas SOL/OSE, tokens y truncando cadenas Base64 de archivos ZIP para no saturar los logs.
+
+---
+
+> [!TIP] Continúa leyendo
+> - [[README|🏠 Índice Principal]]
+> - [[core/02_domain_entities_and_types|02. Entidades de Dominio, Tipos de Datos y Catálogos SUNAT →]]
+> - [[core/03_validation_and_ubl_signing|03. Validación Matemática, Motor UBL 2.1 y Firma XAdES-BES →]]

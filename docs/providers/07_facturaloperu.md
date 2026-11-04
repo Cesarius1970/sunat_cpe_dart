@@ -1,6 +1,32 @@
+---
+title: "Proveedor 07: FacturaloPeru / Facturador PRO (Smart / APIPeru)"
+aliases:
+  - "FacturaloPeru"
+  - "Facturador PRO"
+  - "APIPeru"
+  - "sunat_cpe_facturaloperu"
+tags:
+  - sunat
+  - cpe
+  - proveedor
+  - pse
+  - ose
+  - rest-json
+  - facturaloperu
+type: provider-spec
+package: sunat_cpe_facturaloperu
+protocol: REST JSON Bearer
+status: planned
+updated: 2026-11-04
+---
+
 # Análisis de Proveedor 07: FacturaloPeru / Facturador PRO (Smart / APIPeru)
 
-Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu`.
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Anterior**: [[providers/06_sovos_paperless|← Proveedor 06: Sovos / Paperless]] · **Siguiente**: [[providers/08_tci|Proveedor 08: TCI / Efacturación →]]
+> **Enlaces Externos**: [Portal FacturaloPeru](https://facturaloperu.com/) · [APIPeru](https://apiperu.dev/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_facturaloperu)
+
+Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu` que implementa [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 
 ---
 
@@ -8,8 +34,8 @@ Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu`.
 
 - **Rol en el Ecosistema Peruano**: Familia de plataformas PSE / Facturadores basados en el estándar de API REST de **FacturaloPeru / Facturador PRO (PRO X, PRO 4, PRO 5, Smart, APIPeru)**. Es la arquitectura de API JSON más extendida en el mercado peruano para software a medida, casas de software y ERPs cloud/multi-tenant.
 - **Modo de Integración**: **Vía Delegada (JSON REST Anidado Semántico)**.
-- **Generación UBL y Firma**: Ejecutada en el servidor del Facturador (el cual a su vez despacha a SUNAT directo o al OSE configurado para el tenant).
-- **Protocolo y Transporte**: `HTTPS POST` sobre endpoints RESTful semánticos (`/api/documents`, `/api/voided`, `/api/summaries`, `/api/dispatches`, `/api/retentions`).
+- **Generación UBL y Firma**: Ejecutada en el servidor del Facturador (el cual a su vez despacha a SUNAT directo o al OSE configurado para el tenant). Validado previamente en local por [[core/03_validation_and_ubl_signing#1. Motor de Validación Matemática (`CpeMathValidator`)|`CpeMathValidator`]].
+- **Protocolo y Transporte**: `HTTPS POST` mediante [[core/01_architecture_and_patterns#6. Capa de Transporte (`CpeHttpClient`)|`CpeHttpClient`]] sobre endpoints RESTful semánticos (`/api/documents`, `/api/voided`, `/api/summaries`, `/api/dispatches`, `/api/retentions`).
 - **Autenticación**: Header estándar Bearer Token:
   ```http
   Authorization: Bearer 8f9d2a1b3c4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a...
@@ -21,7 +47,7 @@ Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu`.
 
 ## 2. Mapa de Endpoints REST (`FacturaloPeru / PRO`)
 
-| Operación | Método HTTP | Ruta del Endpoint | Método en `OseProvider` |
+| Operación | Método HTTP | Ruta del Endpoint | Método en [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares\|`OseProvider`]] |
 |-----------|-------------|-------------------|-------------------------|
 | Emitir Factura (`01`), Boleta (`03`), NC (`07`), ND (`08`) | `POST` | `/api/documents` | `sendDocument` |
 | Enviar Documento en Cola a SUNAT/OSE | `POST` | `/api/documents/send` | Interno / `queryDocumentStatus` |
@@ -32,13 +58,13 @@ Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu`.
 | Emitir Guía de Remisión (`09` / `31`) | `POST` | `/api/dispatches` | `sendDespatchAdvice` |
 | Consultar Ticket de Guía de Remisión | `POST` | `/api/dispatches/status` | `checkTicket` |
 | Emitir Comprobante de Retención (`20`) | `POST` | `/api/retentions` | `sendRetentionOrPerception` |
-| Consulta de RUC / DNI (Servicio Auxiliar) | `GET` | `/api/service/ruc/{ruc}` o `/dni/{dni}` | Capacidad `taxpayerLookup` |
+| Consulta de RUC / DNI (Servicio Auxiliar) | `GET` | `/api/service/ruc/{ruc}` o `/dni/{dni}` | Capacidad `ProviderCapability.taxpayerLookup` |
 
 ---
 
 ## 3. Estructura del Payload JSON Anidado (`POST /api/documents`)
 
-A diferencia de Nubefact, **FacturaloPeru / PRO respeta al 100% los códigos oficiales de los Catálogos SUNAT** (`"01"`, `"03"`, `"PEN"`, `"10"`, `"0101"`) y organiza el JSON en objetos anidados limpios:
+A diferencia de [[providers/01_nubefact|Nubefact]], **FacturaloPeru / PRO respeta al 100% los códigos oficiales de los [[core/02_domain_entities_and_types#2. Catálogos Oficiales SUNAT (Anexo N° 8)|Catálogos SUNAT]]** (`"01"`, `"03"`, `"PEN"`, `"10"`, `"0101"`) y organiza el JSON en objetos anidados limpios:
 
 ```json
 {
@@ -51,7 +77,7 @@ A diferencia de Nubefact, **FacturaloPeru / PRO respeta al 100% los códigos ofi
   "codigo_tipo_moneda": "PEN",
   "fecha_de_vencimiento": "2026-11-30",
   "numero_orden_de_compra": "OC-2026-99",
-  " codigo_condicion_de_pago": "02",
+  "codigo_condicion_de_pago": "02",
   "cuotas": [
     {
       "fecha": "2026-11-30",
@@ -106,8 +132,8 @@ A diferencia de Nubefact, **FacturaloPeru / PRO respeta al 100% los códigos ofi
 }
 ```
 
-> [!TIP]
-> **Correlativo Automático Opcional (`"#"`)**: Si en `DocumentId.number` se pasa `0` y en `FacturaloConfig` se activa `allowServerAutoIncrement: true`, el mapper enviará `"numero_documento": "#"` permitiendo que el servidor asigne el siguiente correlativo y lo devuelva en la respuesta. Por defecto usa el correlativo exacto provisto por el ERP.
+> [!TIP] Correlativo Automático Opcional (`"#"`)
+> Si en `DocumentId.number` se pasa `0` y en `FacturaloConfig` se activa `allowServerAutoIncrement: true`, el mapper enviará `"numero_documento": "#"` permitiendo que el servidor asigne el siguiente correlativo y lo devuelva en la respuesta. Por defecto usa el correlativo exacto provisto por el ERP.
 
 ---
 
@@ -143,7 +169,7 @@ A diferencia de Nubefact, **FacturaloPeru / PRO respeta al 100% los códigos ofi
 
 ### 4.2 Tabla de Estados (`state_type_id`) en FacturaloPeru / PRO
 
-| `state_type_id` | Descripción en Facturalo | Mapeo a `CpeResult` en `sunat_cpe_core` |
+| `state_type_id` | Descripción en Facturalo | Mapeo a [[core/01_architecture_and_patterns#3. Modelo de Resultados y Errores (`CpeResult<T>`)\|`CpeResult`]] en `sunat_cpe_core` |
 |-----------------|--------------------------|-----------------------------------------|
 | `"01"` | Registrado (Pendiente de envío a SUNAT/OSE) | `CpeSuccess` -> `CpeProcessStatus.inProcess` (con `ticket: external_id`) |
 | `"03"` | Enviado (Con ticket en espera de validación) | `CpeSuccess` -> `CpeProcessStatus.inProcess` |
@@ -171,3 +197,11 @@ packages/sunat_cpe_facturaloperu/
 │           ├── facturalo_dispatch_mapper.dart  # DespatchAdviceDocument -> /api/dispatches JSON
 │           └── facturalo_response_mapper.dart  # state_type_id (01..13) -> CpeEmissionResponse / CpeException
 ```
+
+---
+
+> [!TIP] Navegación de Proveedores
+> - [[README|🏠 Índice Principal]]
+> - **Anterior**: [[providers/06_sovos_paperless|← Proveedor 06: Sovos / Paperless]]
+> - **Siguiente**: [[providers/08_tci|Proveedor 08: TCI / Efacturación →]]
+> - **Relacionados (JSON REST)**: [[providers/01_nubefact|01. Nubefact]] · [[providers/03_mifact|03. Mifact]]

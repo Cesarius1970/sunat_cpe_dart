@@ -1,6 +1,31 @@
+---
+title: "Proveedor 02: EFACT (OSE / PSE)"
+aliases:
+  - "EFACT"
+  - "sunat_cpe_efact"
+tags:
+  - sunat
+  - cpe
+  - proveedor
+  - ose
+  - pse
+  - oauth2
+  - soap
+  - efact
+type: provider-spec
+package: sunat_cpe_efact
+protocol: REST OAuth2 + SOAP 1.1
+status: planned
+updated: 2026-11-04
+---
+
 # Análisis de Proveedor 02: EFACT (OSE / PSE)
 
-Especificación técnica para el paquete `packages/sunat_cpe_efact`.
+> [!NOTE] Navegación del Vault
+> [[README|🏠 Índice Principal]] · **Anterior**: [[providers/01_nubefact|← Proveedor 01: Nubefact]] · **Siguiente**: [[providers/03_mifact|Proveedor 03: Mifact →]]
+> **Enlaces Externos**: [Portal Oficial EFACT](https://www.efact.pe/) · [EFACT OSE](https://ose.efact.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_efact)
+
+Especificación técnica para el paquete `packages/sunat_cpe_efact` que implementa el contrato [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 
 ---
 
@@ -9,11 +34,11 @@ Especificación técnica para el paquete `packages/sunat_cpe_efact`.
 - **Rol en SUNAT**: Uno de los principales OSE (Operador de Servicios Electrónicos) y PSE en Perú por volumen transaccional.
 - **Modos de Integración Soportados por `sunat_cpe_efact`**:
   1. **Modo API REST (`api-efact-ose`) (Recomendado)**:
-     - Autenticación OAuth2 (`Bearer Token`).
-     - Envío mediante `multipart/form-data` aceptando **XML UBL 2.1 firmado localmente** (modo OSE puro) o **JSON UBL / CSV** (modo PSE con firma en la nube de EFACT).
-     - Flujo **Asíncrono por Ticket UUID**: El POST devuelve HTTP `200` con un `description` que contiene el `Ticket UUID`, seguido de consulta a `/v1/cdr/{ticket}`.
+     - Autenticación OAuth2 (`Bearer Token`) mediante interceptor en [[core/01_architecture_and_patterns#6. Capa de Transporte (`CpeHttpClient`)|`CpeHttpClient`]].
+     - Envío mediante `multipart/form-data` aceptando **XML UBL 2.1 firmado localmente** (generado con [[core/03_validation_and_ubl_signing#2. Generador XML UBL 2.1 / 2.0 (`UblXmlBuilder`)|`UblXmlBuilder`]] y [[core/03_validation_and_ubl_signing#3. Firmador Digital XAdES-BES en Dart Puro (`XadesBesSigner`)|`XadesBesSigner`]]) o **JSON UBL / CSV** (modo PSE con firma en la nube de EFACT).
+     - Flujo **Asíncrono por Ticket UUID**: El POST devuelve HTTP `200` con un `description` que contiene el `Ticket UUID`, seguido de consulta a `/v1/cdr/{ticket}` mediante [[core/01_architecture_and_patterns#Helper de Polling Asíncrono (`PollingConfig`)|`pollTicketUntilDone`]].
   2. **Modo SOAP 1.1 (`efact-ose.pe/ol-ti-itcpe/billService`)**:
-     - Compatible con el estándar `billService` de SUNAT (`sendBill`, `sendSummary`, `sendPack`, `getStatus`).
+     - Compatible con el estándar `billService` de SUNAT (`sendBill`, `sendSummary`, `sendPack`, `getStatus`) heredando de [[core/01_architecture_and_patterns#2. Patrones de Diseño Aplicados|`BaseUblOseProvider`]].
      - Autenticación mediante cabecera WS-Security `<wsse:UsernameToken>`.
 
 ---
@@ -86,14 +111,14 @@ Donde `description` es el **Ticket UUID** asignado por EFACT.
 
 | Recurso | Endpoint | Código HTTP en Proceso | Código HTTP Finalizado |
 |---------|----------|------------------------|------------------------|
-| **CDR (XML)** | `GET /v1/cdr/{ticket}` | `202 Accepted` o `412` (`code: -9998` En proceso) | `200 OK` (Retorna XML del CDR) |
+| **CDR (XML)** | `GET /v1/cdr/{ticket}` | `202 Accepted` o `412` (`code: -9998` En proceso) | `200 OK` (Retorna XML del CDR, parseado por [[core/03_validation_and_ubl_signing#4. Empaquetado ZIP y Lector de CDR (`CpeZipCodec`)\|`CpeZipCodec.parseCdrFromXmlString`]]) |
 | **XML Firmado** | `GET /v1/xml/{ticket}` | `202` / `412` | `200 OK` (Retorna XML UBL 2.1) |
 | **PDF Impreso** | `GET /v1/pdf/{ticket}` | `202` / `412` | `200 OK` (`application/pdf`) |
 
 ### 3.4 Comportamiento en `sunat_cpe_efact` para `sendDocument`
 
 Dado que la API REST de EFACT devuelve un Ticket UUID en el paso 1:
-- **Modo `autoPollInRest: true` (Por defecto en `EfactConfig`)**: `sendDocument()` envía el multipart a `/v1/document`, obtiene el `ticket` e invoca inmediatamente `pollTicketUntilDone(ticket)` (típicamente EFACT responde el CDR en `500ms - 1500ms`), devolviendo un `CpeEmissionResponse` completo con su `CdrData`.
+- **Modo `autoPollInRest: true` (Por defecto en `EfactConfig`)**: `sendDocument()` envía el multipart a `/v1/document`, obtiene el `ticket` e invoca inmediatamente `pollTicketUntilDone(ticket)` (típicamente EFACT responde el CDR en `500ms - 1500ms`), devolviendo un [[core/01_architecture_and_patterns#4. Interfaces de Respuesta Unificadas|`CpeEmissionResponse`]] completo con su `CdrData`.
 - **Modo `autoPollInRest: false`**: `sendDocument()` retorna de inmediato `CpeEmissionResponse(status: CpeProcessStatus.inProcess, ticket: uuid)` para que el consumidor consulte luego con `checkTicket(uuid)`.
 
 ---
@@ -125,3 +150,10 @@ packages/sunat_cpe_efact/
 │       └── soap/
 │           └── efact_soap_delegate.dart  # Extiende BaseUblOseProvider para billService SOAP
 ```
+
+---
+
+> [!TIP] Navegación de Proveedores
+> - [[README|🏠 Índice Principal]]
+> - **Anterior**: [[providers/01_nubefact|← Proveedor 01: Nubefact]]
+> - **Siguiente**: [[providers/03_mifact|Proveedor 03: Mifact →]]
