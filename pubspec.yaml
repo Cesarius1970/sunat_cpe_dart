@@ -1,6 +1,6 @@
-name: sunat_cpe
-description: Monorepo for Peruvian Electronic Invoicing (SUNAT CPE) core and OSE/PSE adapters in pure Dart.
-repository: https://github.com/Cesarius1970/sunat_cpe
+name: sunat_cpe_workspace
+description: Monorepo for Peruvian Electronic Invoicing (SUNAT CPE) core, direct SOL adapter, and OSE/PSE adapters in pure Dart.
+repository: https://github.com/Cesarius1970/sunat_cpe_dart
 publish_to: none
 
 environment:
@@ -18,7 +18,7 @@ workspace:
   - packages/sunat_cpe_tci
   - packages/sunat_cpe_cavali
   - packages/sunat_cpe_direct
-  - packages/sunat_cpe_main
+  - packages/sunat_cpe_dart
 
 dev_dependencies:
   melos: ^8.9.0

@@ -28,7 +28,7 @@ updated: 2026-11-04
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[providers/08_tci|← Proveedor 08: TCI / Efacturación]] · **Siguiente**: [[providers/10_sunat_direct|Proveedor 10: SUNAT Directo →]]
 > **Base Core**: [[core/01_architecture_and_patterns#2. Patrones de Diseño Aplicados|`BaseUblOseProvider`]] · [[core/02_domain_entities_and_types#4.4 Condiciones de Pago, Cuotas, Detracciones y Retenciones (RS 000193-2020/SUNAT)|`CreditPaymentTerms`]]
-> **Enlaces Externos**: [Portal Oficial Cavali](https://www.cavali.com.pe/) · [Gosocket](https://www.gosocket.net/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_cavali)
+> **Enlaces Externos**: [Portal Oficial Cavali](https://www.cavali.com.pe/) · [Gosocket](https://www.gosocket.net/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_cavali)
 
 Especificación técnica para el paquete `packages/sunat_cpe_cavali` que implementa [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]] y la capacidad extendida `ProviderCapability.cavaliFactoring`.
 

@@ -1,9 +1,9 @@
 name: sunat_cpe_tci
 description: TCI (Transporte Confidencial de Información / Efacturación) OSE/PSE SOAP 1.1 WS-Security adapter for SUNAT CPE in pure Dart.
 version: 0.1.0
-homepage: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_tci
-repository: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_tci
-issue_tracker: https://github.com/Cesarius1970/sunat_cpe/issues
+homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_tci
+repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_tci
+issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
 resolution: workspace
 
 environment:

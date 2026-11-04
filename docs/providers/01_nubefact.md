@@ -23,7 +23,7 @@ updated: 2026-11-04
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[core/03_validation_and_ubl_signing|← 03. Validación y Firma UBL]] · **Siguiente**: [[providers/02_efact|Proveedor 02: EFACT →]]
 > **Código Fuente**: [`sunat_cpe_nubefact.dart`](../../packages/sunat_cpe_nubefact/lib/sunat_cpe_nubefact.dart) · [`nubefact_provider.dart`](../../packages/sunat_cpe_nubefact/lib/src/nubefact_provider.dart) · [`nubefact_catalog_mapper.dart`](../../packages/sunat_cpe_nubefact/lib/src/mappers/nubefact_catalog_mapper.dart)
-> **Enlaces Externos**: [Portal Oficial Nubefact](https://www.nubefact.com/) · [Documentación API Nubefact](https://www.nubefact.com/integracion) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_nubefact)
+> **Enlaces Externos**: [Portal Oficial Nubefact](https://www.nubefact.com/) · [Documentación API Nubefact](https://www.nubefact.com/integracion) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_nubefact)
 
 Especificación técnica para el paquete `packages/sunat_cpe_nubefact` que implementa el contrato [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 

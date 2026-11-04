@@ -22,7 +22,7 @@ updated: 2026-11-04
 # Validación Matemática Passthrough, Motor UBL 2.1 y Firma XAdES-BES (`sunat_cpe_core`)
 
 > [!NOTE] Navegación del Vault
-> [[README|🏠 Índice Principal]] · **Anterior**: [[core/02_domain_entities_and_types|← 02. Entidades y Catálogos]] · **Siguiente**: [[core/04_main_router_and_orchestration|04. Router Principal (sunat_cpe_main) →]] · **Proveedores**: [[providers/01_nubefact|01. Nubefact →]]
+> [[README|🏠 Índice Principal]] · **Anterior**: [[core/02_domain_entities_and_types|← 02. Entidades y Catálogos]] · **Siguiente**: [[core/04_main_router_and_orchestration|04. Router Principal (sunat_cpe_dart) →]] · **Proveedores**: [[providers/01_nubefact|01. Nubefact →]]
 > **Código Fuente**: [`cpe_math_validator.dart`](../../packages/sunat_cpe_core/lib/src/validation/cpe_math_validator.dart) · [`ubl_xml_builder.dart`](../../packages/sunat_cpe_core/lib/src/ubl/ubl_xml_builder.dart) · [`xades_bes_signer.dart`](../../packages/sunat_cpe_core/lib/src/signing/xades_bes_signer.dart) · [`cpe_zip_codec.dart`](../../packages/sunat_cpe_core/lib/src/signing/cpe_zip_codec.dart)
 
 Especificación de las tres piezas de infraestructura interna de `sunat_cpe_core`:
@@ -184,5 +184,5 @@ Implementado en [`cpe_zip_codec.dart`](../../packages/sunat_cpe_core/lib/src/sig
 > [!TIP] Continúa leyendo
 > - [[README|🏠 Índice Principal]]
 > - [[core/02_domain_entities_and_types|← 02. Entidades de Dominio y Catálogos SUNAT]]
-> - [[core/04_main_router_and_orchestration|04. Paquete Principal y Enrutador Inteligente (`sunat_cpe_main`) →]]
+> - [[core/04_main_router_and_orchestration|04. Paquete Principal y Enrutador Inteligente (`sunat_cpe_dart`) →]]
 > - [[providers/01_nubefact|Proveedor 01: Nubefact (PSE / OSE) →]]

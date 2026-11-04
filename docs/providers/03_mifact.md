@@ -22,7 +22,7 @@ updated: 2026-11-04
 
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[providers/02_efact|← Proveedor 02: EFACT]] · **Siguiente**: [[providers/04_bizlinks|Proveedor 04: Bizlinks →]]
-> **Enlaces Externos**: [Portal Oficial Mifact](https://mifact.net/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_mifact)
+> **Enlaces Externos**: [Portal Oficial Mifact](https://mifact.net/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_mifact)
 
 Especificación técnica para el paquete `packages/sunat_cpe_mifact` que implementa el contrato [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 

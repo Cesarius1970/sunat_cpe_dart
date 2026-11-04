@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:sunat_cpe_main/sunat_cpe_main.dart';
+import 'package:sunat_cpe_dart/sunat_cpe_dart.dart';
 import 'package:test/test.dart';
 
 final class _FakeOseProvider with TicketPollingMixin implements OseProvider {

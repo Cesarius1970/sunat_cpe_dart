@@ -24,7 +24,7 @@ updated: 2026-11-04
 
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[providers/06_sovos_paperless|← Proveedor 06: Sovos / Paperless]] · **Siguiente**: [[providers/08_tci|Proveedor 08: TCI / Efacturación →]]
-> **Enlaces Externos**: [Portal FacturaloPeru](https://facturaloperu.com/) · [APIPeru](https://apiperu.dev/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_facturaloperu)
+> **Enlaces Externos**: [Portal FacturaloPeru](https://facturaloperu.com/) · [APIPeru](https://apiperu.dev/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_facturaloperu)
 
 Especificación técnica para el paquete `packages/sunat_cpe_facturaloperu` que implementa [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 

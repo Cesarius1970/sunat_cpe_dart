@@ -23,9 +23,9 @@ updated: 2026-11-04
 # Análisis de Proveedor 10: SUNAT Directo (`sunat_cpe_direct`)
 
 > [!NOTE] Navegación del Vault
-> [[README|🏠 Índice Principal]] · **Anterior**: [[providers/09_cavali_gosocket|← Proveedor 09: Cavali / Gosocket]] · **Orquestador**: [[core/04_main_router_and_orchestration|04. Router Principal (`sunat_cpe_main`) →]]
+> [[README|🏠 Índice Principal]] · **Anterior**: [[providers/09_cavali_gosocket|← Proveedor 09: Cavali / Gosocket]] · **Orquestador**: [[core/04_main_router_and_orchestration|04. Router Principal (`sunat_cpe_dart`) →]]
 > **Base Core**: [[core/01_architecture_and_patterns#2. Patrones de Diseño Aplicados|`BaseUblOseProvider`]] · [[core/03_validation_and_ubl_signing|Motor UBL 2.1 y Firma XAdES-BES]]
-> **Enlaces Externos**: [Portal Oficial SUNAT CPE](https://cpe.sunat.gob.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_direct)
+> **Enlaces Externos**: [Portal Oficial SUNAT CPE](https://cpe.sunat.gob.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_direct)
 
 Especificación técnica para el paquete `packages/sunat_cpe_direct` que integra las capacidades de emisión directa a los servidores de SUNAT (provenientes de `sunat_cpe_dart`) sobre la arquitectura unificada de [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`sunat_cpe_core`]].
 
@@ -121,4 +121,4 @@ packages/sunat_cpe_direct/
 > [!TIP] Navegación
 > - [[README|🏠 Índice Principal]]
 > - **Anterior**: [[providers/09_cavali_gosocket|← Proveedor 09: Cavali / Gosocket]]
-> - **Siguiente**: [[core/04_main_router_and_orchestration|04. Router Principal (`sunat_cpe_main`) →]]
+> - **Siguiente**: [[core/04_main_router_and_orchestration|04. Router Principal (`sunat_cpe_dart`) →]]

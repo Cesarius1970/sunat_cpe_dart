@@ -25,7 +25,7 @@ updated: 2026-11-04
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[providers/07_facturaloperu|← Proveedor 07: FacturaloPeru / PRO]] · **Siguiente**: [[providers/09_cavali_gosocket|Proveedor 09: Cavali / Gosocket →]]
 > **Base Core**: [[core/01_architecture_and_patterns#2. Patrones de Diseño Aplicados|`BaseUblOseProvider`]] · [[core/03_validation_and_ubl_signing|Motor UBL 2.1 y Firma XAdES-BES]]
-> **Enlaces Externos**: [Portal Oficial TCI](https://www.tci.net.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_tci)
+> **Enlaces Externos**: [Portal Oficial TCI](https://www.tci.net.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_tci)
 
 Especificación técnica para el paquete `packages/sunat_cpe_tci` que extiende [`BaseUblOseProvider`](../../packages/sunat_cpe_core/lib/src/providers/base_ubl_ose_provider.dart) e implementa [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 

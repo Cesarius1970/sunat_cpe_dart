@@ -1,9 +1,9 @@
 name: sunat_cpe_facturaloperu
 description: FacturaloPeru / Facturador PRO (Smart / APIPeru) PSE/OSE JSON REST adapter for SUNAT Electronic Invoicing (CPE) in pure Dart.
 version: 0.1.0
-homepage: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_facturaloperu
-repository: https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_facturaloperu
-issue_tracker: https://github.com/Cesarius1970/sunat_cpe/issues
+homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_facturaloperu
+repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_facturaloperu
+issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
 resolution: workspace
 
 environment:

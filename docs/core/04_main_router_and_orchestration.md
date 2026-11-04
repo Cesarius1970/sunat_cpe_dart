@@ -1,8 +1,8 @@
 ---
-title: "04. Paquete Principal y Enrutador Inteligente (sunat_cpe_main)"
+title: "04. Paquete Principal y Enrutador Inteligente (sunat_cpe_dart)"
 aliases:
   - "Router Principal"
-  - "sunat_cpe_main"
+  - "sunat_cpe_dart"
   - "SunatCpeRouter"
 tags:
   - sunat
@@ -12,26 +12,26 @@ tags:
   - fallback
   - arquitectura
 type: core-spec
-package: sunat_cpe_main
+package: sunat_cpe_dart
 status: active
 updated: 2026-11-04
 ---
 
-# 04. Paquete Principal y Enrutador Inteligente (`sunat_cpe_main`)
+# 04. Paquete Principal y Enrutador Inteligente (`sunat_cpe_dart`)
 
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[core/03_validation_and_ubl_signing|← 03. Validación, UBL 2.1 y Firma XAdES-BES]] · **Proveedor Directo**: [[providers/10_sunat_direct|10. SUNAT Directo →]]
-> **Código Fuente**: [`sunat_cpe_router.dart`](../../packages/sunat_cpe_main/lib/src/sunat_cpe_router.dart) · [`sunat_cpe_router_config.dart`](../../packages/sunat_cpe_main/lib/src/sunat_cpe_router_config.dart) · [`sunat_provider_descriptor.dart`](../../packages/sunat_cpe_main/lib/src/sunat_provider_descriptor.dart) · [`sunat_provider_factory.dart`](../../packages/sunat_cpe_main/lib/src/sunat_provider_factory.dart)
-> **Enlaces Externos**: [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_main)
+> **Código Fuente**: [`sunat_cpe_router.dart`](../../packages/sunat_cpe_dart/lib/src/sunat_cpe_router.dart) · [`sunat_cpe_router_config.dart`](../../packages/sunat_cpe_dart/lib/src/sunat_cpe_router_config.dart) · [`sunat_provider_descriptor.dart`](../../packages/sunat_cpe_dart/lib/src/sunat_provider_descriptor.dart) · [`sunat_provider_factory.dart`](../../packages/sunat_cpe_dart/lib/src/sunat_provider_factory.dart)
+> **Enlaces Externos**: [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_dart)
 
-Especificación de arquitectura para `packages/sunat_cpe_main`, el paquete **Umbrella y Orquestador / Router Inteligente** que permite a cualquier aplicación o ERP en Dart discernir dinámicamente entre el envío directo a SUNAT ([[providers/10_sunat_direct|`sunat_cpe_direct`]]) y cualquiera de los 9 adaptadores OSE/PSE ([[providers/01_nubefact|Nubefact]], [[providers/02_efact|EFACT]], [[providers/03_mifact|Mifact]], [[providers/04_bizlinks|Bizlinks]], [[providers/05_digiflow|Digiflow]], [[providers/06_sovos_paperless|Sovos]], [[providers/07_facturaloperu|FacturaloPeru]], [[providers/08_tci|TCI]], [[providers/09_cavali_gosocket|Cavali]]).
+Especificación de arquitectura para `packages/sunat_cpe_dart`, el paquete **Umbrella y Orquestador / Router Inteligente** que permite a cualquier aplicación o ERP en Dart discernir dinámicamente entre el envío directo a SUNAT ([[providers/10_sunat_direct|`sunat_cpe_direct`]]) y cualquiera de los 9 adaptadores OSE/PSE ([[providers/01_nubefact|Nubefact]], [[providers/02_efact|EFACT]], [[providers/03_mifact|Mifact]], [[providers/04_bizlinks|Bizlinks]], [[providers/05_digiflow|Digiflow]], [[providers/06_sovos_paperless|Sovos]], [[providers/07_facturaloperu|FacturaloPeru]], [[providers/08_tci|TCI]], [[providers/09_cavali_gosocket|Cavali]]).
 
 ---
 
-## 1. Propósito y Patrones de Diseño en `sunat_cpe_main`
+## 1. Propósito y Patrones de Diseño en `sunat_cpe_dart`
 
 1. **Punto Único de Entrada (Umbrella Export)**:
-   - Re-exporta `sunat_cpe_core`, `sunat_cpe_direct` y los 9 proveedores OSE/PSE para que el consumidor solo agregue `sunat_cpe_main` en su `pubspec.yaml` cuando necesite soporte multi-proveedor.
+   - Re-exporta `sunat_cpe_core`, `sunat_cpe_direct` y los 9 proveedores OSE/PSE para que el consumidor solo agregue `sunat_cpe_dart` en su `pubspec.yaml` cuando necesite soporte multi-proveedor.
 2. **Patrón Strategy + Content-Based Router (`SunatCpeRouter`)**:
    - Implementa la misma interfaz [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]] (transparente para el consumidor).
    - Permite definir un **proveedor por defecto** (`primaryProvider`) y un **mapa de enrutamiento por tipo de documento** (`Map<CpeDocumentType, OseProvider> routesByDocumentType`).
@@ -70,7 +70,7 @@ flowchart TD
 
 ## 3. Configuración Declarativa (`SunatCpeRouterConfig` y `SunatProviderDescriptor`)
 
-Además de permitir inyectar instancias directas de `OseProvider`, `sunat_cpe_main` ofrece una fábrica declarativa (`SunatProviderFactory`) basada en una jerarquía `sealed class SunatProviderDescriptor`:
+Además de permitir inyectar instancias directas de `OseProvider`, `sunat_cpe_dart` ofrece una fábrica declarativa (`SunatProviderFactory`) basada en una jerarquía `sealed class SunatProviderDescriptor`:
 
 - `DirectSunatDescriptor(SunatDirectConfig config)`
 - `NubefactDescriptor(NubefactConfig config)`
@@ -87,12 +87,12 @@ Esto permite instanciar `SunatCpeRouter.fromDescriptors(...)` leyendo la configu
 
 ---
 
-## 4. Diseño de Clases del Paquete `sunat_cpe_main`
+## 4. Diseño de Clases del Paquete `sunat_cpe_dart`
 
 ```text
-packages/sunat_cpe_main/
+packages/sunat_cpe_dart/
 ├── lib/
-│   ├── sunat_cpe_main.dart               # Umbrella export (core + direct + 9 proveedores + router)
+│   ├── sunat_cpe_dart.dart               # Umbrella export (core + direct + 9 proveedores + router)
 │   └── src/
 │       ├── sunat_provider_descriptor.dart # Sealed class con descriptores tipados para Direct y los 9 OSE/PSE
 │       ├── sunat_provider_factory.dart    # Instancia cualquier OseProvider a partir de su descriptor

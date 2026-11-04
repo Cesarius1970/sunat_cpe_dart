@@ -23,7 +23,7 @@ updated: 2026-11-04
 
 > [!NOTE] Navegación del Vault
 > [[README|🏠 Índice Principal]] · **Anterior**: [[providers/01_nubefact|← Proveedor 01: Nubefact]] · **Siguiente**: [[providers/03_mifact|Proveedor 03: Mifact →]]
-> **Enlaces Externos**: [Portal Oficial EFACT](https://www.efact.pe/) · [EFACT OSE](https://ose.efact.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe/tree/main/packages/sunat_cpe_efact)
+> **Enlaces Externos**: [Portal Oficial EFACT](https://www.efact.pe/) · [EFACT OSE](https://ose.efact.pe/) · [Paquete en Monorepo GitHub](https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_efact)
 
 Especificación técnica para el paquete `packages/sunat_cpe_efact` que implementa el contrato [[core/01_architecture_and_patterns#5. Contrato Principal `OseProvider` y Capacidades Modulares|`OseProvider`]].
 

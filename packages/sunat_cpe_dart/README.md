@@ -1,4 +1,4 @@
-# sunat_cpe_main
+# sunat_cpe_dart
 
 Umbrella package and intelligent CPE router (`SunatCpeRouter`) for Peruvian Electronic Invoicing (SUNAT CPE) in pure Dart.
 
@@ -15,7 +15,7 @@ Allows applications and multi-tenant ERPs to dynamically route electronic docume
 ## Usage
 
 ```dart
-import 'package:sunat_cpe_main/sunat_cpe_main.dart';
+import 'package:sunat_cpe_dart/sunat_cpe_dart.dart';
 
 void main() async {
   final router = SunatCpeRouter.fromDescriptors(
