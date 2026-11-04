@@ -3,10 +3,12 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import '../mifact_config.dart';
 import 'mifact_invoice_mapper.dart';
 
-/// Maps [DailySummaryDocument], [VoidedDocument], and status queries to Mifact JSON payloads.
+/// Transforma [DailySummaryDocument], [VoidedDocument] y consultas de estado en payloads JSON de Mifact.
 final class MifactSummaryMapper {
+  /// Crea una instancia constante de [MifactSummaryMapper].
   const MifactSummaryMapper();
 
+  /// Construye el payload JSON `SendSummary` para un Resumen Diario de Boletas (`RC`).
   Map<String, dynamic> mapDailySummary(
     DailySummaryDocument summary,
     MifactConfig config,
@@ -34,6 +36,7 @@ final class MifactSummaryMapper {
     };
   }
 
+  /// Construye el payload JSON `lowInvoice` para una Comunicación de Baja (`RA`).
   Map<String, dynamic> mapVoidedDocument(
     VoidedDocument voided,
     MifactConfig config,
@@ -59,6 +62,7 @@ final class MifactSummaryMapper {
     };
   }
 
+  /// Construye el payload JSON `GetStatus` para consultar el estado de un comprobante.
   Map<String, dynamic> mapStatusQuery(
     DocumentStatusQuery query,
     MifactConfig config,

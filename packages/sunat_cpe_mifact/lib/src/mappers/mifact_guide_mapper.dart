@@ -3,10 +3,12 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import '../mifact_config.dart';
 import 'mifact_invoice_mapper.dart';
 
-/// Maps [DespatchAdviceDocument] to Mifact `SendGuide` JSON payload.
+/// Transforma un [DespatchAdviceDocument] al payload JSON `SendGuide` de Mifact.
 final class MifactGuideMapper {
+  /// Crea una instancia constante de [MifactGuideMapper].
   const MifactGuideMapper();
 
+  /// Construye el mapa JSON en nomenclatura `UPPER_SNAKE_CASE` para una Guía de Remisión.
   Map<String, dynamic> mapGuide(
     DespatchAdviceDocument guide,
     MifactConfig config,

@@ -8,16 +8,30 @@ import 'mappers/mifact_response_mapper.dart';
 import 'mappers/mifact_summary_mapper.dart';
 import 'mifact_config.dart';
 
-/// Mifact PSE / OSE Provider implementing [OseProvider].
+/// Proveedor PSE / OSE de Mifact que implementa [OseProvider].
 final class MifactProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración activa de Mifact (URI base, token y opciones de envío).
   final MifactConfig config;
+
+  /// Cliente HTTP inyectable para las peticiones POST JSON.
   final CpeHttpClient httpClient;
+
+  /// Validador aritmético y normativo previo al envío.
   final CpeMathValidator validator;
+
+  /// Mapeador de comprobantes de venta y retención/percepción a `UPPER_SNAKE_CASE`.
   final MifactInvoiceMapper invoiceMapper;
+
+  /// Mapeador de guías de remisión al formato `SendGuide`.
   final MifactGuideMapper guideMapper;
+
+  /// Mapeador de resúmenes diarios, bajas y consultas de estado.
   final MifactSummaryMapper summaryMapper;
+
+  /// Mapeador de respuestas JSON de Mifact (`estado_documento` `100..105`) a resultados del Core.
   final MifactResponseMapper responseMapper;
 
+  /// Crea una instancia de [MifactProvider] con su configuración y dependencias opcionales.
   MifactProvider({
     required this.config,
     CpeHttpClient? httpClient,

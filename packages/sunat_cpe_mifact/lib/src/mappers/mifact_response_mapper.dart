@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Maps Mifact JSON responses (`estado_documento` `101..105`, `cdr_bytes`, `errors`) to Core results.
+/// Transforma las respuestas JSON de Mifact (`estado_documento` `101..105`, `cdr_bytes`, `errors`) en resultados del Core.
 final class MifactResponseMapper {
+  /// Codificador/decodificador para desempaquetar el CDR desde `cdr_bytes` en Base64.
   final CpeZipCodec zipCodec;
 
+  /// Crea una instancia constante de [MifactResponseMapper].
   const MifactResponseMapper({this.zipCodec = const CpeZipCodec()});
 
+  /// Convierte la respuesta HTTP de `SendInvoice` en un [CpeResult] de [CpeEmissionResponse].
   CpeResult<CpeEmissionResponse> mapEmissionResponse({
     required DocumentId documentId,
     required CpeHttpResponse response,
@@ -116,6 +119,7 @@ final class MifactResponseMapper {
     }
   }
 
+  /// Convierte la respuesta HTTP de `SendSummary`, `lowInvoice` o `SendGuide` en un [TicketResponse].
   CpeResult<TicketResponse> mapTicketResponse({
     required DocumentId referenceId,
     required CpeHttpResponse response,
@@ -149,6 +153,7 @@ final class MifactResponseMapper {
     }
   }
 
+  /// Convierte la respuesta HTTP de `GetStatus` en un [CpeStatusQueryResponse].
   CpeResult<CpeStatusQueryResponse> mapStatusQueryResponse(
     CpeHttpResponse response,
   ) {

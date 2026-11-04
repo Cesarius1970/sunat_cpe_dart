@@ -2,10 +2,12 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
 import '../mifact_config.dart';
 
-/// Maps [SalesCpeDocument] and [AgentCpeDocument] to Mifact `UPPER_SNAKE_CASE` JSON payloads.
+/// Transforma entidades [SalesCpeDocument] y [AgentCpeDocument] a payloads JSON `UPPER_SNAKE_CASE` de Mifact.
 final class MifactInvoiceMapper {
+  /// Crea una instancia constante de [MifactInvoiceMapper].
   const MifactInvoiceMapper();
 
+  /// Construye el payload JSON para Facturas (`01`), Boletas (`03`), Notas de Crédito (`07`) y Notas de Débito (`08`).
   Map<String, dynamic> mapSalesDocument(
     SalesCpeDocument doc,
     MifactConfig config,
@@ -101,6 +103,7 @@ final class MifactInvoiceMapper {
     return map;
   }
 
+  /// Construye el payload JSON para Comprobantes de Retención (`20`) y Percepción (`40`).
   Map<String, dynamic> mapAgentDocument(
     AgentCpeDocument doc,
     MifactConfig config,
@@ -128,6 +131,7 @@ final class MifactInvoiceMapper {
     };
   }
 
+  /// Formatea un [DateTime] al estándar ISO `YYYY-MM-DD` requerido por Mifact.
   static String formatIsoDate(DateTime dt) {
     final y = dt.year.toString().padLeft(4, '0');
     final m = dt.month.toString().padLeft(2, '0');

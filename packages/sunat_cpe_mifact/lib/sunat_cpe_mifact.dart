@@ -1,4 +1,4 @@
-/// Mifact PSE/OSE JSON REST adapter for Peruvian Electronic Invoicing (SUNAT CPE).
+/// Adaptador JSON REST de Mifact (PSE/OSE) para Facturación Electrónica Peruana (SUNAT CPE).
 library;
 
 export 'src/mappers/mifact_guide_mapper.dart';
