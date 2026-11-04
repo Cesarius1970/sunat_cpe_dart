@@ -3,13 +3,15 @@ import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import '../nubefact_config.dart';
 import 'nubefact_catalog_mapper.dart';
 
-/// Maps `sunat_cpe_core` domain entities into Nubefact REST JSON payloads.
+/// Transforma las entidades de dominio de `sunat_cpe_core` en payloads JSON REST de Nubefact.
 final class NubefactRequestMapper {
+  /// Configuración activa de Nubefact utilizada para banderas de envío y formato PDF.
   final NubefactConfig config;
 
+  /// Crea un mapeador de solicitudes de Nubefact asociado a [config].
   const NubefactRequestMapper(this.config);
 
-  /// Builds payload for `"operacion": "generar_comprobante"`.
+  /// Construye el payload JSON para `"operacion": "generar_comprobante"`.
   Map<String, Object?> mapSalesDocument(SalesCpeDocument doc) {
     final totals = doc.totals;
     final opType = doc is InvoiceDocument
@@ -163,7 +165,7 @@ final class NubefactRequestMapper {
     };
   }
 
-  /// Builds payload for `"operacion": "generar_anulacion"` from a [VoidedLine].
+  /// Construye el payload JSON para `"operacion": "generar_anulacion"` a partir de un [VoidedLine].
   Map<String, Object?> mapVoidedLine(VoidedLine line) {
     return <String, Object?>{
       'operacion': 'generar_anulacion',
@@ -177,7 +179,7 @@ final class NubefactRequestMapper {
     };
   }
 
-  /// Builds payload for `"operacion": "generar_guia"` from a [DespatchAdviceDocument].
+  /// Construye el payload JSON para `"operacion": "generar_guia"` a partir de un [DespatchAdviceDocument].
   Map<String, Object?> mapDespatchAdvice(DespatchAdviceDocument guide) {
     final principalDriver = guide.drivers.firstOrNull;
     final principalVehicle = guide.vehicles.firstOrNull;
@@ -238,7 +240,7 @@ final class NubefactRequestMapper {
     };
   }
 
-  /// Builds payload for `"operacion": "generar_retencion"` or `"generar_percepcion"`.
+  /// Construye el payload JSON para `"operacion": "generar_retencion"` o `"generar_percepcion"`.
   Map<String, Object?> mapAgentDocument(AgentCpeDocument doc) {
     final isRetention = doc is RetentionDocument;
     return <String, Object?>{
@@ -269,7 +271,7 @@ final class NubefactRequestMapper {
     };
   }
 
-  /// Builds payload for `"operacion": "consultar_comprobante"`, `"consultar_anulacion"`, or `"consultar_guia"`.
+  /// Construye el payload JSON para `"operacion": "consultar_comprobante"`, `"consultar_anulacion"` o `"consultar_guia"`.
   Map<String, Object?> mapStatusQuery({
     required String operation,
     required CpeDocumentType documentType,

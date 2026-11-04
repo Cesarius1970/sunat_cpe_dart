@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Maps Nubefact JSON HTTP responses into `sunat_cpe_core` result and response types.
+/// Transforma las respuestas HTTP JSON de Nubefact en tipos de resultado y respuesta de `sunat_cpe_core`.
 final class NubefactResponseMapper {
   const NubefactResponseMapper._();
 
-  /// Parses an emission response (`generar_comprobante`, `generar_retencion`, `generar_percepcion`).
+  /// Procesa una respuesta de emisión (`generar_comprobante`, `generar_retencion`, `generar_percepcion`).
   static CpeResult<CpeEmissionResponse> parseEmissionResponse({
     required DocumentId documentId,
     required CpeHttpResponse httpResponse,
@@ -102,7 +102,7 @@ final class NubefactResponseMapper {
     );
   }
 
-  /// Parses a Ticket response (`generar_anulacion` or `generar_guia`).
+  /// Procesa una respuesta de Ticket (`generar_anulacion` o `generar_guia`).
   static CpeResult<TicketResponse> parseTicketResponse({
     required DocumentId referenceId,
     required CpeHttpResponse httpResponse,
@@ -133,7 +133,7 @@ final class NubefactResponseMapper {
     );
   }
 
-  /// Parses `checkTicket` response (`consultar_anulacion` or `consultar_guia`).
+  /// Procesa la respuesta de `checkTicket` (`consultar_anulacion` o `consultar_guia`).
   static CpeResult<TicketStatusResponse> parseTicketStatusResponse({
     required String ticket,
     required CpeHttpResponse httpResponse,
@@ -201,7 +201,7 @@ final class NubefactResponseMapper {
     );
   }
 
-  /// Parses `queryDocumentStatus` response (`consultar_comprobante`).
+  /// Procesa la respuesta de `queryDocumentStatus` (`consultar_comprobante`).
   static CpeResult<CpeStatusQueryResponse> parseStatusQueryResponse(
     CpeHttpResponse httpResponse,
   ) {

@@ -1,6 +1,6 @@
 name: sunat_cpe_nubefact
-description: Nubefact PSE/OSE adapter for SUNAT Electronic Invoicing (CPE) in pure Dart, implementing sunat_cpe_core contracts.
-version: 0.1.1
+description: Adaptador PSE/OSE Nubefact en Dart puro para Facturación Electrónica SUNAT (CPE), implementando los contratos de sunat_cpe_core.
+version: 0.1.2
 homepage: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_nubefact
 repository: https://github.com/Cesarius1970/sunat_cpe_dart/tree/main/packages/sunat_cpe_nubefact
 issue_tracker: https://github.com/Cesarius1970/sunat_cpe_dart/issues
@@ -18,7 +18,7 @@ environment:
 
 dependencies:
   decimal: ^3.2.1
-  sunat_cpe_core: ^0.1.1
+  sunat_cpe_core: ^0.1.2
 
 dev_dependencies:
   lints: ^6.0.0

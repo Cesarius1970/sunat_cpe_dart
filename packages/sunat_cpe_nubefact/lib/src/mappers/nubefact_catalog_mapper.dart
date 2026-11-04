@@ -1,10 +1,10 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 
-/// Translates official SUNAT Anexo N° 8 catalog enums into Nubefact's proprietary integer codes.
+/// Traduce los catálogos oficiales del Anexo N° 8 de SUNAT a los códigos enteros propietarios de Nubefact.
 final class NubefactCatalogMapper {
   const NubefactCatalogMapper._();
 
-  /// Translates [CpeDocumentType] to Nubefact `tipo_de_comprobante`:
+  /// Traduce [CpeDocumentType] al campo `tipo_de_comprobante` de Nubefact:
   /// - `01` Factura -> `1`
   /// - `03` Boleta -> `2`
   /// - `07` Nota de Crédito -> `3`
@@ -30,7 +30,7 @@ final class NubefactCatalogMapper {
     ),
   };
 
-  /// Translates [CurrencyCode] to Nubefact `moneda`:
+  /// Traduce [CurrencyCode] al campo `moneda` de Nubefact:
   /// - `PEN` -> `1`
   /// - `USD` -> `2`
   /// - `EUR` -> `3`
@@ -40,7 +40,7 @@ final class NubefactCatalogMapper {
     CurrencyCode.eur => 3,
   };
 
-  /// Translates [IdentityDocumentType] to Nubefact `cliente_tipo_de_documento`.
+  /// Traduce [IdentityDocumentType] al campo `cliente_tipo_de_documento` de Nubefact.
   static String mapIdentityDocumentType(IdentityDocumentType type) =>
       switch (type) {
         IdentityDocumentType.noDomiciliado => '-',
@@ -52,7 +52,7 @@ final class NubefactCatalogMapper {
         IdentityDocumentType.tam => '0',
       };
 
-  /// Translates [OperationType] (Catálogo 51) to Nubefact `sunat_transaction`.
+  /// Traduce [OperationType] (Catálogo 51) al campo `sunat_transaction` de Nubefact.
   static int mapOperationType(OperationType op) => switch (op) {
     OperationType.ventaInterna => 1,
     OperationType.exportacionBienes ||
@@ -67,7 +67,7 @@ final class NubefactCatalogMapper {
     OperationType.ventaItinerante => 1,
   };
 
-  /// Translates [IgvAffectationType] (Catálogo 07) to Nubefact `tipo_de_igv` (1..17).
+  /// Traduce [IgvAffectationType] (Catálogo 07) al campo `tipo_de_igv` de Nubefact (`1..17`).
   static int mapIgvAffectation(IgvAffectationType affectation) =>
       switch (affectation) {
         IgvAffectationType.gravadoOperacionOnerosa => 1,
@@ -90,11 +90,11 @@ final class NubefactCatalogMapper {
         IgvAffectationType.gravadoIvap => 17,
       };
 
-  /// Translates [CreditNoteReasonCode] (Catálogo 09) to Nubefact `tipo_de_nota_de_credito` (1..13).
+  /// Traduce [CreditNoteReasonCode] (Catálogo 09) al campo `tipo_de_nota_de_credito` de Nubefact (`1..13`).
   static int mapCreditNoteReason(CreditNoteReasonCode reason) =>
       int.parse(reason.code);
 
-  /// Translates [DebitNoteReasonCode] (Catálogo 10) to Nubefact `tipo_de_nota_de_debito` (1..5).
+  /// Traduce [DebitNoteReasonCode] (Catálogo 10) al campo `tipo_de_nota_de_debito` de Nubefact (`1..5`).
   static int mapDebitNoteReason(DebitNoteReasonCode reason) => switch (reason) {
     DebitNoteReasonCode.interesesPorMora => 1,
     DebitNoteReasonCode.aumentoEnElValor => 2,
@@ -103,7 +103,7 @@ final class NubefactCatalogMapper {
     DebitNoteReasonCode.ajustesAfectosIvap => 5,
   };
 
-  /// Formats [DateTime] to Nubefact's preferred `DD-MM-YYYY` format.
+  /// Formatea un [DateTime] al formato `DD-MM-YYYY` requerido por Nubefact.
   static String formatDate(DateTime date) {
     final d = date.day.toString().padLeft(2, '0');
     final m = date.month.toString().padLeft(2, '0');

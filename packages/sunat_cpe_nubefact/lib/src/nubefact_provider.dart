@@ -6,13 +6,19 @@ import 'mappers/nubefact_request_mapper.dart';
 import 'mappers/nubefact_response_mapper.dart';
 import 'nubefact_config.dart';
 
-/// Nubefact PSE / OSE implementation of [OseProvider].
+/// Implementación de [OseProvider] para el PSE / OSE Nubefact.
 final class NubefactProvider with TicketPollingMixin implements OseProvider {
+  /// Configuración de ruta, token y preferencias de envío de Nubefact.
   final NubefactConfig config;
+
+  /// Cliente HTTP inyectable utilizado para las peticiones REST JSON.
   final CpeHttpClient httpClient;
+
+  /// Validador aritmético y normativo previo al envío del comprobante.
   final CpeMathValidator validator;
   final NubefactRequestMapper _requestMapper;
 
+  /// Inicializa el proveedor de Nubefact con la configuración y dependencias opcionales.
   NubefactProvider({
     required this.config,
     CpeHttpClient? httpClient,

@@ -1,20 +1,21 @@
-/// Configuration for the Nubefact PSE/OSE JSON REST API.
+/// Configuración para la API REST JSON de Nubefact (PSE/OSE).
 final class NubefactConfig {
-  /// Personal endpoint URL provided in Nubefact's control panel (RUTA).
+  /// URL del endpoint personal provisto en el panel de control de Nubefact (RUTA).
   final Uri routeUri;
 
-  /// Authentication token provided in Nubefact's control panel (TOKEN).
+  /// Token de autenticación provisto en el panel de control de Nubefact (TOKEN).
   final String apiToken;
 
-  /// Whether Nubefact should immediately forward the document to SUNAT/OSE (`enviar_automaticamente_a_la_sunat`).
+  /// Indica si Nubefact debe reenviar inmediatamente el comprobante a SUNAT/OSE (`enviar_automaticamente_a_la_sunat`).
   final bool autoSendToSunat;
 
-  /// Whether Nubefact should email the PDF/XML to the customer (`enviar_automaticamente_al_cliente`).
+  /// Indica si Nubefact debe enviar por correo electrónico el PDF/XML al cliente (`enviar_automaticamente_al_cliente`).
   final bool autoSendToCustomer;
 
-  /// Default PDF layout format (`"A4"`, `"A5"`, `"TICKET"`).
+  /// Formato de diseño de PDF por defecto (`"A4"`, `"A5"`, `"TICKET"`).
   final String pdfFormat;
 
+  /// Crea una instancia de configuración para el adaptador de Nubefact.
   const NubefactConfig({
     required this.routeUri,
     required this.apiToken,

@@ -1,4 +1,4 @@
-/// Nubefact PSE/OSE JSON REST adapter for SUNAT Electronic Invoicing (CPE).
+/// Adaptador JSON REST de Nubefact (PSE/OSE) para Facturación Electrónica SUNAT (CPE).
 library;
 
 export 'src/mappers/nubefact_catalog_mapper.dart';
