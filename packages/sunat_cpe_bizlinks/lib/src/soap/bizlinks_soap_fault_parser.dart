@@ -1,11 +1,13 @@
 import 'package:sunat_cpe_core/sunat_cpe_core.dart';
 import 'package:xml/xml.dart';
 
-/// Specialized SOAP Fault parser for Bizlinks OSE (`faultcode` and `faultstring` patterns).
+/// Analizador especializado de fallos SOAP (`<soap:Fault>`) para Bizlinks OSE
+/// (patrones en `faultcode`, `faultstring` numérico y `<detail><message>`).
 final class BizlinksSoapFaultParser {
+  /// Crea una instancia constante de [BizlinksSoapFaultParser].
   const BizlinksSoapFaultParser();
 
-  /// Parses Bizlinks-specific `<soap:Fault>` structures into typed [CpeException]s.
+  /// Analiza estructuras `<soap:Fault>` específicas de Bizlinks convirtiéndolas en subtipos tipados de [CpeException].
   CpeException? parseFault(CpeHttpResponse response) {
     final body = response.bodyAsString;
     if (!body.contains('Fault')) {
@@ -41,7 +43,7 @@ final class BizlinksSoapFaultParser {
               .trim() ??
           '';
 
-      // Bizlinks often returns numeric code directly in faultstring ("2017") with description in detail/message
+      // Bizlinks a menudo retorna el código numérico en faultstring ("2017") con la descripción en detail/message
       final directCode = int.tryParse(faultString);
       final suffixMatch = RegExp(r'\.(\d{4})$').firstMatch(faultCode);
       final regexMatch = RegExp(r'\b(0[1-9]\d{2}|[1-3]\d{3})\b')
