@@ -13,6 +13,7 @@ workspace:
   - packages/sunat_cpe_mifact
   - packages/sunat_cpe_bizlinks
   - packages/sunat_cpe_digiflow
+  - packages/sunat_cpe_sovos
 
 dev_dependencies:
   melos: ^8.9.0
